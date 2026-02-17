@@ -1,0 +1,197 @@
+# MOH Infectious Disease Analysis - Git Ignore File
+# Last Updated: 9 February 2026
+
+# ============================================================================
+# Python
+# ============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============================================================================
+# Virtual Environments
+# ============================================================================
+venv/
+.venv/
+ENV/
+env/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# ============================================================================
+# Jupyter Notebook
+# ============================================================================
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+*.ipynb_checkpoints/
+
+# Jupyter Notebook metadata
+.jupyter/
+.local/share/jupyter/
+
+# ============================================================================
+# Environment & Secrets
+# ============================================================================
+.env
+.env.local
+.env.*.local
+*.env
+kaggle.json
+secrets.yml
+credentials.json
+
+# ============================================================================
+# IDEs & Editors
+# ============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.history/
+*.code-workspace
+
+# ============================================================================
+# Data Files (Exclude large datasets)
+# ============================================================================
+
+!data/**/.gitkeep
+!data/sample_disease_data.csv
+
+# Downloaded datasets
+*.cache/
+.cache/
+kagglehub/
+
+# ============================================================================
+# Model Artifacts
+# ============================================================================
+models/*.pkl
+models/*.h5
+models/*.joblib
+models/*.onnx
+models/*.pt
+models/*.pth
+!models/.gitkeep
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# ============================================================================
+# Results & Outputs
+# ============================================================================
+
+reports/**/*.html
+reports/**/*.pdf
+reports/**/*.png
+reports/**/*.jpg
+!reports/**/.gitkeep
+
+# ============================================================================
+# Logs
+# ============================================================================
+logs/
+*.log
+log/
+*.log.*
+logs/**/*.log
+!logs/**/.gitkeep
+
+# ============================================================================
+# Testing
+# ============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ============================================================================
+# Databricks
+# ============================================================================
+.databricks/
+*.dbfs
+.dbfs/
+*.dbc
+
+# ============================================================================
+# OS & System Files
+# ============================================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bak
+*.tmp
+*.temp
+
+# ============================================================================
+# Documentation Build
+# ============================================================================
+docs/_build/
+docs/_static/
+docs/_templates/
+site/
+
+# ============================================================================
+# Temporary Files
+# ============================================================================
+tmp/
+temp/
+*.tmp
+*.temp
+~$*
+
+# ============================================================================
+# Package Management
+# ============================================================================
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# ============================================================================
+# Project-Specific
+# ============================================================================
+# Exclude analysis results with timestamps
+reports/*_20*.md
+reports/*_20*.html
+results/metrics/*_20*.json
+
+# Exclude large intermediate files
+data/infectious_disease_datasets_exploration.json
