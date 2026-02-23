@@ -1,7 +1,7 @@
 ---
 name: 'Visualization and Reporting Standards'
 description: 'Best practices for creating effective visualizations, dashboards, and stakeholder reports'
-applyTo: 'src/visualization/**, reports/figures/**, reports/dashboards/**, reports/presentations/**, notebooks/**/*, results/exports/**'
+applyTo: 'src/visualization/**, reports/figures/**, reports/dashboards/**, reports/presentations/**, notebooks/**/*, results/exports/**, docs/objectives/user_stories/**/*visual*.md'
 ---
 
 ## Purpose

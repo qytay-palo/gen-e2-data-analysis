@@ -54,6 +54,18 @@ The implementation MUST:
 - **Leverage MCP (Model Context Protocol) tools for all file and data operations as specified below**
 - **Implement ALL code blocks provided in the implementation plan verbatim (see Code Implementation Fidelity below)**
 - **Update README files to document the code running flow and execution instructions (see README Documentation Requirements below)**
+- **Create at least one Jupyter notebook for each execution** to facilitate user viewing of outputs and results
+  - **Notebook Location**: Place notebooks in `src/problem-statement-{num}-{name}/notebooks/` directory
+  - **Notebook Purpose**: Notebooks should demonstrate:
+    - Loading and exploring outputs from the execution (e.g., extracted data, profiles, results)
+    - Visualizing key metrics and data quality indicators
+    - Running validation checks and displaying results
+    - Providing a user-friendly interface to explore generated outputs
+  - **Example Structure**: For workforce capacity trends:
+    - Notebook: `src/problem-statement-001-workforce-capacity-trends/notebooks/explore_extraction_results.ipynb`
+    - Content: Load profiles, display data quality metrics, visualize extracted data distributions
+  - **Accessibility**: Notebooks MUST be self-contained and runnable independently after execution completes
+  - **Documentation**: Include markdown cells documenting each analysis step and interpretation of results
 
 ### Code Implementation Fidelity
 
@@ -259,6 +271,11 @@ The following stages represent a complete data analysis lifecycle and should be 
 - Identify data types, formats, and schema inconsistencies
 - Document data quality issues and anomalies
 - Create data profiling notebooks in `notebooks/1_exploratory/`
+- **Create exploration and results notebook in problem-statement directory** (`src/problem-statement-{num}-{name}/notebooks/`)
+  - Load and visualize extracted data/profiles
+  - Display key metrics and quality indicators
+  - Demonstrate data validation results
+  - Ensure users can easily view and explore outputs
 - Use **filesystem tools** to save profiling results to `results/tables/`
 - Establish data quality metrics and thresholds
 
@@ -317,6 +334,10 @@ The following stages represent a complete data analysis lifecycle and should be 
 - Ensure all code is well-commented and reproducible
 - Document limitations and future improvement opportunities
 - **Update README files with code execution instructions** (see README Documentation Requirements below)
+- **Verify at least one notebook exists in problem-statement directory** for users to explore outputs
+  - Ensure notebook is properly documented with markdown cells explaining each step
+  - Verify all outputs are visible and interactive
+  - Test notebook for readability and self-sufficiency
 
 #### Stage 10: Delivery & Handoff
 - Package final deliverables (data, code, reports, dashboards)
@@ -717,7 +738,7 @@ After updating README files, verify:
 ### Example README Update Using MCP Tools
 
 ```bash
-# After implementing wave-1 scripts, update README
+# After implementi   ng wave-1 scripts, update README
 Use filesystem tools to create src/problem-statement-001-seasonal-forecasting/wave-1/README.md
 
 # Verify README by testing instructions
@@ -736,6 +757,7 @@ If implementation or verification fails, the output MUST:
 - Suggest possible solutions or next steps
 
 ## Documentation Requirements
+5
 
 The final output MUST include:
 - Confirmation of completion if successful

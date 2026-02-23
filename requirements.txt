@@ -1,0 +1,5 @@
+polars
+loguru
+ruff
+pytest
+pyyaml

@@ -1,7 +1,7 @@
 ---
 name: 'Exploratory Data Analysis (EDA) Standards'
 description: 'Best practices for exploratory data analysis, initial profiling, and hypothesis generation'
-applyTo: 'notebooks/1_exploratory/**, notebooks/2_analysis/*exploratory*.ipynb, src/analysis/*eda*.py, reports/figures/exploratory/**'
+applyTo: 'notebooks/1_exploratory/**, notebooks/2_analysis/*exploratory*.ipynb, src/analysis/*eda*.py, reports/figures/exploratory/**, docs/objectives/user_stories/**/*analyz*.md, docs/objectives/user_stories/**/*exploratory*.md, docs/objectives/user_stories/**/*quantif*.md'
 ---
 
 ## Purpose

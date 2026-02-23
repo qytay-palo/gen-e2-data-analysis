@@ -175,9 +175,7 @@ This section MUST:
 - Define necessary data schemas and their location (dbt models, SQL schemas, Parquet schemas)
 - Detail the data pipeline strategy:
   - Data extraction methods (APIs, database queries, file ingestion) according to suitable methods to extract data defined in [docs/project_context/data-sources.md](../../../docs/project_context/data-sources.md)
-    - **Reference**: `.github/prompts/stages/data_extraction.prompt.md` for detailed extraction execution steps including schema documentation, metadata generation, and verification procedures
   - Data transformation steps (cleaning, aggregation)
-    - **Reference**: `.github/prompts/stages/data_cleaning.prompt.md` for dynamic dataset processing framework, auto-detection strategies, and validation approaches
   - Feature engineering and dimensionality reduction steps
   - Model training or analysis steps (algorithms, hyperparameters)
   - Model evaluation and validation approach
@@ -445,13 +443,6 @@ This section MUST follow a three-step validation process:
   - Domain-specific validation criteria and thresholds
   - Interpretation guidelines using domain context
 
-**Reference for Implementation**: `.github/prompts/stages/feature_engineering.prompt.md` provides comprehensive guidance on:
-- Temporal feature engineering (lag features, rolling aggregations, time-based indicators)
-- Categorical feature engineering (encoding strategies, rare category handling)
-- Numerical feature engineering (transformations, binning, interactions)
-- Text feature engineering (if applicable)
-- Feature documentation and statistics generation
-
 **Important**: Prioritize practicality over comprehensiveness. It is better to implement fewer features that are well-grounded in available data than to propose many features that cannot be reliably computed.
 
 ### 8. API Endpoints & Data Contracts (if applicable)
@@ -468,14 +459,10 @@ This section MUST (when feature includes APIs or data services):
 
 This section MUST (when applicable for dashboards or UI components):
 - Create an explicit mapping between design specs and implementation
-  - **Reference**: `.github/prompts/data-plugin/skills/data-visualization/SKILL.md` for chart selection best practices
-  - **Reference**: `.github/prompts/data-plugin/skills/interactive-dashboard-builder/SKILL.md` for dashboard design patterns
 - **Data Plugin for Visualization Planning**:
   - `/create-viz` - Prototype candidate visualizations during planning to validate design choices
   - `/explore-data` - Assess data characteristics (distributions, cardinality) to inform chart type selection
   - Use findings to refine visualization specifications before implementation
-- **Detailed Implementation Guidance**:
-  - **Reference**: `.github/prompts/stages/visualization.prompt.md` for comprehensive visualization and reporting execution steps 
 - For Power BI dashboards:
   - Always use direct hex color values from design specs
   - Document font sizes, weights, and line heights with exact implementation approach
@@ -683,8 +670,6 @@ This section MUST:
 
 This section MUST (when applicable for analytical/ML features):
 - Specify statistical methods and techniques:
-  - Descriptive statistics to be calculated
-    - **Reference**: `.github/prompts/stages/exploratory_analysis.prompt.md` for analysis execution workflow including metric calculation and statistical testing procedures
   - Hypothesis tests to be performed (with significance levels, e.g., α = 0.05)
   - Time series analysis methods (if applicable)
   - Handling of small sample sizes, imbalanced data, or rare events
@@ -696,7 +681,6 @@ This section MUST (when applicable for analytical/ML features):
   - Train/validation/test split ratios
   - Cross-validation approach (k-fold, time series split)
   - Hyperparameter tuning strategy (grid search, random search, Bayesian optimization)
-  - **Reference**: `.github/prompts/stages/model_training.prompt.md` for comprehensive model development workflow
 - Establish model evaluation criteria:
   - Primary and secondary metrics (RMSE, MAE, R², AUC-ROC, precision/recall)
   - Baseline models for comparison (mean/median, simple heuristics)
@@ -878,8 +862,6 @@ Implementation Steps section example:
 
 **2. Data Extraction:**
 - [ ] Create data extraction script: `scripts/extract_data.py`
-- [ ] Follow extraction procedures from `.github/prompts/stages/data_extraction.prompt.md`:
-
 **3. Initial Data Validation:**
 - [ ] Write unit tests for extraction functions: `tests/unit/test_extraction.py`
 - [ ] Validate extracted data schema matches expected structure
@@ -900,7 +882,6 @@ Implementation Steps section example:
 
 **5. Data Cleaning Implementation:**
 - [ ] Create data cleaning module: `src/data_processing/cleaning.py`
-- [ ] Follow comprehensive cleaning procedures from `.github/prompts/stages/data_cleaning.prompt.md`
   - [ ] **Detect and correct categorical inconsistencies**: Analyze all categorical columns for naming variations (abbreviations, typos, case differences) that refer to the same entity using intelligent pattern matching. Use conservative similarity thresholds (0.85+) to avoid incorrectly merging legitimate variations like "Disease A" vs "Disease B" or "Type 1" vs "Type 2". Generate and review categorical cleaning reports documenting all standardization mappings applied.
   - [ ] Create data validation functions: `src/data_processing/validators.py`
   - [ ] Save cleaned data to `data/3_interim/cleaned_data.parquet`
@@ -979,7 +960,6 @@ Implementation Steps section example:
 
 **14. Model Development (if predictive focus):**
 - [ ] Create modeling notebook: `notebooks/2_analysis/02_model_development.ipynb`
-- [ ] Refer to model training procedures from `.github/prompts/stages/model_training.prompt.md`
 
 **15. Model Evaluation:**
 - [ ] Evaluate models on validation set using appropriate metrics (RMSE, MAE, R², AUC, F1)
@@ -1017,7 +997,6 @@ Implementation Steps section example:
 - [ ] Save results metrics to `results/metrics/model_performance.json`
 
 **19. Dashboard Development (if applicable):**
-- [ ] Refer to visualization procedures from `.github/prompts/stages/visualization.prompt.md`
 
 **20. Documentation:**
 - [ ] Update data dictionary: `docs/data_dictionary/features.md`

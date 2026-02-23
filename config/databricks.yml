@@ -1,0 +1,6 @@
+# Databricks cluster configuration
+runtime: 13.3.x
+python_version: 3.9
+workspace_path: /Workspace/Users/moh-analytics/
+data_storage: /dbfs/mnt/moh-data/
+adaptive_query_execution: true

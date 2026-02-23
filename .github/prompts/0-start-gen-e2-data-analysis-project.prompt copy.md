@@ -128,8 +128,8 @@ Below is the base folder structure:
    - Ensure the data dictionary is easily navigable and linked from the main documentation index (docs/index.md)
 
 4. **Data Connection Scripts**:
-   - refer to `stages/data_extraction.prompt.md` for detailed requirements on data extraction and connection scripts.
    - Create connection scripts in `src/data_processing/` for external data sources (e.g., Kaggle, AWS S3, Azure Blob Storage, APIs). Each script should include authentication handling, connection setup, error handling, and logging. Use environment variables from `.env` for credentials and API keys. Include retry logic for network failures and implement rate limiting for API calls. Document connection parameters and authentication methods in comments. Add connection testing functions to validate credentials before data extraction. Consider creating a base connection class that other connectors can inherit from for consistency.
+   - Run the extraction scripts to download data from external sources and place the extracted files in `data/1_raw/` folder. Ensure raw data files remain immutable and are never modified in place. Log all extraction activities including timestamps, file sizes, and data quality checks.
 
 5. **Code Quality**:
    - Suggest tools for code quality checks, such as linters and formatters.

@@ -1,7 +1,7 @@
 ---
 name: 'Data Validation and Quality Assurance'
 description: 'Standards for data quality checks, validation rules, and quality reporting'
-applyTo: 'src/data_processing/*validator*.py, src/data_processing/*quality*.py, src/data_processing/*profiler*.py, data/3_interim/**, logs/etl/**, tests/data/**, notebooks/1_exploratory/*profile*.ipynb, notebooks/1_exploratory/*quality*.ipynb'
+applyTo: 'src/data_processing/*validator*.py, src/data_processing/*quality*.py, src/data_processing/*profiler*.py, data/3_interim/**, logs/etl/**, tests/data/**, notebooks/1_exploratory/*profile*.ipynb, notebooks/1_exploratory/*quality*.ipynb, docs/objectives/user_stories/**/*validate*.md'
 ---
 
 ## Purpose

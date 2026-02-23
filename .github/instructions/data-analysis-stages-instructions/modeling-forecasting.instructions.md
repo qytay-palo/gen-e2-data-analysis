@@ -1,7 +1,7 @@
 ---
 name: 'Modeling and Forecasting Standards'
 description: 'Best practices for building, training, evaluating, and deploying predictive models'
-applyTo: 'src/models/**, notebooks/2_analysis/*model*.ipynb, notebooks/2_analysis/*forecast*.ipynb, models/**, results/metrics/**'
+applyTo: 'src/models/**, notebooks/2_analysis/*model*.ipynb, notebooks/2_analysis/*forecast*.ipynb, models/**, results/metrics/**, docs/objectives/user_stories/**/*forecast*.md, docs/objectives/user_stories/**/*forecast*.md, docs/objectives/user_stories/**/*generate*.md'
 ---
 
 ## Purpose

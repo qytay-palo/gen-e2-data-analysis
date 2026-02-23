@@ -68,8 +68,8 @@ For each code block, document:
 
 **You CANNOT approve any implementation plan if:**
 - ❌ ANY code block has syntax errors
-- ❌ ANY import fails (package not available)
-- ❌ ANY code block produces runtime errors
+- ❌ ANY import fails (package not available OR project not installed)
+- ❌ ANY code block produces runtime errors (including `ModuleNotFoundError` for local imports)
 - ❌ ANY function is a stub (contains only `pass` or `NotImplementedError`)
 - ❌ ANY file path references non-existent files
 - ❌ ANY code block is not self-contained (missing context)
@@ -1521,6 +1521,80 @@ with engine.connect() as conn:
     result = conn.execute(query, {"patient_id": user_input})
 ```
 **Good practices:** Environment variables, credentials never hardcoded, parameterized queries, validation.
+
+---
+
+### ❌ BAD: Import Path Setup (Notebooks/Scripts)
+```python
+import sys
+# WRONG: Incorrect number of parent directories
+sys.path.append("../..")  # From notebooks/ this goes to problem-statement-XXX/, NOT project root!
+
+from src.data_processing.profiler import ProfilerClass  # Will fail with ModuleNotFoundError!
+```
+**Issues:** 
+- Incorrect calculation of parent directories to reach project root
+- Using hardcoded relative paths instead of dynamic calculation
+- Common mistake: from `src/problem-statement-001-seasonal-forecasting/notebooks/`, going up 2 levels (`../..`) reaches `src/`, not the project root
+- Should go up 3 levels to reach project root where `src/` module exists
+
+### ✓ GOOD: Import Path Setup (Notebooks/Scripts)
+```python
+import sys
+from pathlib import Path
+
+# Add project root to Python path
+# From: src/problem-statement-001-seasonal-forecasting/notebooks/
+# Need to go up 3 levels to reach project root where 'src/' exists
+notebook_dir = Path().resolve()  # Current directory where notebook runs
+project_root = notebook_dir.parent.parent.parent  # Go up 3 levels: notebooks -> problem-statement -> src -> root
+sys.path.insert(0, str(project_root))
+
+# Verify the path is correct
+print(f"Project root added to path: {project_root}")
+assert (project_root / 'src').exists(), "Cannot find src/ directory - path incorrect!"
+
+# Now can import from src module
+from src.data_processing.profiler import ProfilerClass
+from src.utils.helpers import load_config
+
+print("✅ All imports successful")
+```
+
+**Good practices:** 
+- Use `pathlib.Path` for cross-platform compatibility
+- Calculate path dynamically (not hardcoded absolute paths)
+- Add clear comments explaining directory levels
+- Use `sys.path.insert(0, ...)` to prioritize project modules
+- Verify path is correct with assertion before importing
+- Include diagnostic print statements
+
+**Path Calculation Reference by Location:**
+```python
+# From: src/problem-statement-XXX/notebooks/file.ipynb
+# To project root: notebook_dir.parent.parent.parent (3 levels up)
+# notebooks -> problem-statement-XXX -> src -> root
+
+# From: src/problem-statement-XXX/scripts/file.py  
+# To project root: script_dir.parent.parent.parent (3 levels up)
+# scripts -> problem-statement-XXX -> src -> root
+
+# From: notebooks/exploratory/file.ipynb (if at project root level)
+# To project root: notebook_dir.parent.parent (2 levels up)
+# exploratory -> notebooks -> root
+
+# Always verify by checking the resolved path
+print(f"Project root: {project_root}")
+print(f"Expected src dir: {project_root / 'src'}")
+assert (project_root / 'src').exists(), "Cannot find src/ directory - path incorrect!"
+```
+
+**Common Path Errors to Avoid:**
+- ❌ Using `../..` when you need `../../..` (off by one directory level)
+- ❌ Hardcoding absolute paths like `/Users/name/project/` (not portable)
+- ❌ Using `sys.path.append()` instead of `sys.path.insert(0, ...)` (priority issues)
+- ❌ Not verifying the path exists before importing (silent failures)
+- ❌ Importing without `src.` prefix (e.g., `from data_processing.profiler` instead of `from src.data_processing.profiler`)
 
 ---
 

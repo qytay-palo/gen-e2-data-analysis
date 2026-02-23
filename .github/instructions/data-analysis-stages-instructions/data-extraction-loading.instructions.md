@@ -1,7 +1,7 @@
 ---
 name: 'Data Extraction and Loading Standards'
 description: 'Best practices for extracting, loading, and managing raw data from various sources'
-applyTo: 'data/1_raw/**, data/2_external/**, src/data_processing/*loader*.py, src/data_processing/*connector*.py, src/data_processing/*extractor*.py, scripts/extract*.py, notebooks/1_exploratory/*extract*.ipynb, notebooks/1_exploratory/*load*.ipynb, sql/extractions/**'
+applyTo: 'data/1_raw/**, data/2_external/**, src/data_processing/*loader*.py, src/data_processing/*connector*.py, src/data_processing/*extractor*.py, scripts/extract*.py, notebooks/1_exploratory/*extract*.ipynb, notebooks/1_exploratory/*load*.ipynb, sql/extractions/**, docs/objectives/user_stories/**/*extract*.md, '
 ---
 
 ## Purpose
