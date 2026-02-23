@@ -123,8 +123,42 @@ print("Processing complete")  # Use logger.info() instead
 - Run tests with `pytest` before committing code
 - Target: >80% code coverage for critical modules
 
+## Multi-Agent Architecture
+
+This project uses a **multi-agent orchestration system** for data analysis workflows:
+
+### Agent System Components
+- **Configuration**: [`.agents/config.yml`](.agents/config.yml) - Pipeline orchestration settings
+- **Registry**: [`.agents/registry.yml`](.agents/registry.yml) - Agent capabilities and skill mappings
+- **Templates**: [`.agents/templates/`](.agents/templates/) - Agent-specific prompt templates
+- **Skills**: [`.agents/skills/`](.agents/skills/) - Domain-specific knowledge modules
+- **Orchestrator**: [`src/orchestration/pipeline_orchestrator.py`](src/orchestration/pipeline_orchestrator.py) - Pipeline execution engine
+
+### Specialized Agents
+1. **ExtractionAgent** - Data extraction and loading (Stages 0-2)
+2. **ProfilingAgent** - Data quality assessment (Stage 3)
+3. **CleaningAgent** - Data cleaning and preprocessing (Stage 4)
+4. **EDAAgent** - Exploratory data analysis (Stage 5)
+5. **ModelingAgent** - Statistical modeling and forecasting (Stage 7)
+6. **VisualizationAgent** - Publication-quality visualizations (Stage 9)
+7. **QualityAgent** - Code quality and testing (Stages 8, 10)
+8. **DocumentationAgent** - Technical documentation (Stage 9)
+
+### Handoff Protocol
+- Agents communicate via JSON handoff files in [`data/3_interim/agent_handoffs/`](data/3_interim/agent_handoffs/)
+- Each handoff includes: outputs, validation status, findings, and recommended next steps
+- See [handoff protocol documentation](data/3_interim/agent_handoffs/README.md) for schema details
+
+### When to Use Multi-Agent Approach
+- ✅ Complex problem statements requiring multiple analysis stages
+- ✅ When different stages need specialist expertise (e.g., forecasting vs visualization)
+- ✅ For parallel execution of independent tasks (e.g., multiple EDA analyses)
+- ❌ Simple one-off queries or single-stage tasks
+
 ## Quick Reference: Key Files
 
 - [TODO.md](TODO.md): Project task breakdown with ownership and status
 - [docs/project_context/](docs/project_context/): Project objectives and data source details
 - [.github/instructions/](.github/instructions/): Coding standards (refer to these for detailed conventions) and best practices
+- [.agents/config.yml](.agents/config.yml): Multi-agent orchestration configuration
+- [.agents/registry.yml](.agents/registry.yml): Agent capabilities and mappings

@@ -108,8 +108,68 @@ Suggest 3-5 specific analyses the user could run next:
 [numbered list of suggested follow-up analyses]
 ```
 
+## Output Persistence
+
+**REQUIRED**: When generating data exploration code, ALWAYS include code to save outputs to local directories:
+
+### Save Locations
+
+1. **Data Profile Tables**: `results/tables/problem-statement-{num}/data_profile_{timestamp}.csv`
+2. **Quality Reports**: `results/tables/problem-statement-{num}/quality_report_{timestamp}.md`
+3. **Visualizations**: `reports/figures/problem-statement-{num}/distribution_{column}_{timestamp}.png`
+4. **Metrics**: `results/metrics/problem-statement-{num}/quality_metrics_{timestamp}.json`
+
+### Implementation Template
+
+Include this pattern in all exploration code:
+
+```python
+from datetime import datetime
+from pathlib import Path
+
+# Define output directories
+FIGURES_DIR = Path('reports/figures/problem-statement-{num}')
+RESULTS_DIR = Path('results/tables/problem-statement-{num}')
+METRICS_DIR = Path('results/metrics/problem-statement-{num}')
+
+# Create directories
+for dir_path in [FIGURES_DIR, RESULTS_DIR, METRICS_DIR]:
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+# Generate timestamp
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+# After each visualization:
+fig_path = FIGURES_DIR / f'distribution_{column_name}_{timestamp}.png'
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+print(f"✅ Saved figure to: {fig_path}")
+plt.show()
+
+# After generating profile tables:
+profile_path = RESULTS_DIR / f'data_profile_{timestamp}.csv'
+profile_df.write_csv(profile_path)
+print(f"✅ Saved profile to: {profile_path}")
+
+# After calculating metrics:
+metrics_path = METRICS_DIR / f'quality_metrics_{timestamp}.json'
+with open(metrics_path, 'w') as f:
+    json.dump(metrics_dict, f, indent=2)
+print(f"✅ Saved metrics to: {metrics_path}")
+```
+
+### Verification Checklist
+
+Before completing exploration, verify:
+- ✅ All visualizations are saved to `reports/figures/problem-statement-{num}/`
+- ✅ All data profiles are saved to `results/tables/problem-statement-{num}/`
+- ✅ All quality metrics are saved to `results/metrics/problem-statement-{num}/`
+- ✅ All filenames include timestamps for versioning
+- ✅ Confirmation messages are printed for each saved file
+- ✅ Output directories exist and are properly structured
+
 ## Tips
 
 - For very large tables (100M+ rows), profiling queries use sampling by default -- mention if you need exact counts
 - If exploring a new dataset for the first time, this command gives you the lay of the land before writing specific queries
 - The quality flags are heuristic -- not every flag is a real problem, but each is worth a quick look
+- **Always save outputs to local directories** - visualizations and reports in memory are lost after session ends

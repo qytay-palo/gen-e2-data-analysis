@@ -1,0 +1,247 @@
+year,sector,specialist_category,count,profession,source_table,nurse_type,has_missing_values,count_outlier,outlier_flag,total,percentage
+2018,Inactive,,314,Pharmacist,workforce_pharmacists,,true,false,false,6814,4.608159671265042
+2008,Inactive,Specialist,193,Doctor,workforce_doctors,,true,false,false,4900,3.938775510204082
+2018,Private,,2241,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,16303,13.745936330736674
+2019,Public,Non-Specialist,5166,Doctor,workforce_doctors,,true,false,false,36725,14.066712049012933
+2015,Public,,18566,Nurse,workforce_nurses,Registered Nurses,true,true,true,33158,55.99252065866458
+2014,Public,,71,Nurse,workforce_nurses,Registered Midwives,true,false,false,31253,0.2271781908936742
+2009,Inactive,,3368,Nurse,workforce_nurses,Registered Nurses,true,false,false,5382,62.578966926793015
+2007,Inactive,na,469,Doctor,workforce_doctors,,true,false,false,4529,10.35548686244204
+2014,Private,,61,Nurse,workforce_nurses,Registered Midwives,true,false,false,13966,0.4367750250608621
+2006,Inactive,,2391,Nurse,workforce_nurses,Registered Nurses,true,false,false,3844,62.20083246618107
+2017,Public,,55,Nurse,workforce_nurses,Registered Midwives,true,false,false,35433,0.15522253266728755
+2018,Public,,4854,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,35990,13.487079744373437
+2006,Inactive,,130,Nurse,workforce_nurses,Registered Midwives,true,false,false,3844,3.3818938605619144
+2009,Private,Specialist,1082,Doctor,workforce_doctors,,true,false,false,10476,10.328369606720123
+2014,Inactive,,4334,Nurse,workforce_nurses,Registered Nurses,true,false,false,6695,64.73487677371172
+2017,Public,,5020,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,35433,14.167583890723337
+2013,Private,,61,Nurse,workforce_nurses,Registered Midwives,true,false,false,13608,0.44826572604350384
+2009,Public,Non-Specialist,2755,Doctor,workforce_doctors,,true,false,false,20915,13.172364331819269
+2011,Private,,5661,Nurse,workforce_nurses,Registered Nurses,true,false,false,12136,46.646341463414636
+2010,Public,,12994,Nurse,workforce_nurses,Registered Nurses,true,false,false,23505,55.28185492448415
+2014,Private,Non-Specialist,2379,Doctor,workforce_doctors,,true,false,false,13966,17.03422597737362
+2015,Private,Non-Specialist,2444,Doctor,workforce_doctors,,true,false,false,14919,16.381795026476308
+2008,Private,,80,Nurse,workforce_nurses,Registered Midwives,true,false,false,10133,0.789499654593901
+2010,Private,,1757,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,11206,15.679100481884706
+2010,Inactive,Non-Specialist,313,Doctor,workforce_doctors,,true,false,false,5473,5.718984103782203
+2013,Public,Specialist,2511,Doctor,workforce_doctors,,true,false,false,29450,8.526315789473685
+2014,Inactive,,94,Nurse,workforce_nurses,Registered Midwives,true,false,false,6695,1.40403286034354
+2015,Public,Non-Specialist,4857,Doctor,workforce_doctors,,true,false,false,33158,14.648048736353218
+2019,Public,,21373,Nurse,workforce_nurses,Registered Nurses,true,true,true,36725,58.19741320626276
+2018,Inactive,,40,Nurse,workforce_nurses,Registered Midwives,true,false,false,6814,0.587026709715292
+2006,Private,,59,Nurse,workforce_nurses,Registered Midwives,true,false,false,9907,0.5955385081255679
+2011,Public,,95,Nurse,workforce_nurses,Registered Midwives,true,false,false,25713,0.36946291759032396
+2013,Inactive,,1334,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,6346,21.021115663410022
+2012,Private,,6321,Nurse,workforce_nurses,Registered Nurses,true,false,false,12976,48.71300863131936
+2009,Private,,4831,Nurse,workforce_nurses,Registered Nurses,true,false,false,10476,46.11492936235204
+2008,Public,,10113,Nurse,workforce_nurses,Registered Nurses,true,false,false,18563,54.479340623821585
+2007,Inactive,,935,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,4529,20.644733936851402
+2016,Private,,47,Nurse,workforce_nurses,Registered Midwives,true,false,false,15212,0.3089666053115961
+2007,Private,,865,Pharmacist,workforce_pharmacists,,true,false,false,9981,8.666466285943292
+2016,Inactive,,4381,Nurse,workforce_nurses,Registered Nurses,true,false,false,6637,66.00873888805184
+2010,Private,,931,Pharmacist,workforce_pharmacists,,true,false,false,11206,8.308049259325362
+2017,Private,Non-Specialist,2579,Doctor,workforce_doctors,,true,false,false,15795,16.32795188350744
+2008,Inactive,,132,Nurse,workforce_nurses,Registered Midwives,true,false,false,4900,2.693877551020408
+2007,Private,,76,Nurse,workforce_nurses,Registered Midwives,true,false,false,9981,0.7614467488227633
+2017,Public,Non-Specialist,5050,Doctor,workforce_doctors,,true,false,false,35433,14.252250726723675
+2010,Private,Non-Specialist,2159,Doctor,workforce_doctors,,true,false,false,11206,19.266464394074603
+2010,Public,Non-Specialist,3184,Doctor,workforce_doctors,,true,false,false,23505,13.546054031057222
+2016,Private,Specialist,1485,Doctor,workforce_doctors,,true,false,false,15212,9.762029976334473
+2009,Private,,1561,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,10476,14.900725467735775
+2017,Private,,1344,Pharmacist,workforce_pharmacists,,true,false,false,15795,8.509021842355176
+2019,Private,,8943,Nurse,workforce_nurses,Registered Nurses,true,false,false,17063,52.41165094063177
+2007,Inactive,,134,Pharmacist,workforce_pharmacists,,true,false,false,4529,2.958710532126297
+2007,Public,,3110,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,16769,18.546126781561213
+2008,Inactive,,133,Pharmacist,workforce_pharmacists,,true,false,false,4900,2.7142857142857144
+2011,Inactive,,1229,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,5559,22.108292858427774
+2006,Public,,2956,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,15528,19.036579082946933
+2006,Private,,1484,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,9907,14.979307560310891
+2007,Public,,9068,Nurse,workforce_nurses,Registered Nurses,true,false,false,16769,54.07597352257141
+2015,Inactive,Specialist,266,Doctor,workforce_doctors,,true,false,false,6144,4.329427083333334
+2006,Public,,8495,Nurse,workforce_nurses,Registered Nurses,true,false,false,15528,54.70762493560021
+2016,Inactive,,1310,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,6637,19.73783335844508
+2008,Private,,1488,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,10133,14.68469357544656
+2010,Private,,5140,Nurse,workforce_nurses,Registered Nurses,true,false,false,11206,45.86828484740318
+2018,Private,,29,Nurse,workforce_nurses,Registered Midwives,true,false,false,16303,0.17788137152671288
+2015,Inactive,Non-Specialist,370,Doctor,workforce_doctors,,true,false,false,6144,6.022135416666666
+2014,Public,,17667,Nurse,workforce_nurses,Registered Nurses,true,true,true,31253,56.528973218571025
+2016,Public,,1367,Pharmacist,workforce_pharmacists,,true,false,false,34554,3.9561266423568906
+2006,Public,,449,Pharmacist,workforce_pharmacists,,true,false,false,15528,2.8915507470376096
+2010,Inactive,,125,Nurse,workforce_nurses,Registered Midwives,true,false,false,5473,2.2839393385711673
+2016,Private,Non-Specialist,2494,Doctor,workforce_doctors,,true,false,false,15212,16.394951354194056
+2014,Private,,6863,Nurse,workforce_nurses,Registered Nurses,true,false,false,13966,49.140770442503225
+2009,Public,,11534,Nurse,workforce_nurses,Registered Nurses,true,false,false,20915,55.14702366722448
+2012,Public,Non-Specialist,3789,Doctor,workforce_doctors,,true,false,false,28065,13.500801710315338
+2016,Inactive,,56,Nurse,workforce_nurses,Registered Midwives,true,false,false,6637,0.8437547084526141
+2006,Public,,123,Nurse,workforce_nurses,Registered Midwives,true,false,false,15528,0.7921174652241113
+2014,Private,,1174,Pharmacist,workforce_pharmacists,,true,false,false,13966,8.406129170843476
+2018,Public,Specialist,3741,Doctor,workforce_doctors,,true,false,false,35990,10.394554042789665
+2013,Inactive,Specialist,262,Doctor,workforce_doctors,,true,false,false,6346,4.128584935392373
+2019,Public,,43,Nurse,workforce_nurses,Registered Midwives,true,false,false,36725,0.11708645336963922
+2017,Inactive,,231,Pharmacist,workforce_pharmacists,,true,false,false,6645,3.4762979683972914
+2008,Private,Non-Specialist,2005,Doctor,workforce_doctors,,true,false,false,10133,19.786835093259647
+2017,Public,,1472,Pharmacist,workforce_pharmacists,,true,false,false,35433,4.1543194197499504
+2011,Private,,1979,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,12136,16.306855636123927
+2019,Public,,1616,Pharmacist,workforce_pharmacists,,true,false,false,36725,4.400272294077604
+2012,Inactive,,3734,Nurse,workforce_nurses,Registered Nurses,true,false,false,5863,63.68753198021491
+2012,Inactive,,108,Nurse,workforce_nurses,Registered Midwives,true,false,false,5863,1.8420603786457446
+2015,Private,,7356,Nurse,workforce_nurses,Registered Nurses,true,false,false,14919,49.306253770359945
+2010,Inactive,,3441,Nurse,workforce_nurses,Registered Nurses,true,false,false,5473,62.87228211218711
+2006,Private,na,2966,Doctor,workforce_doctors,,true,false,false,9907,29.938427374583625
+2014,Public,,5006,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,31253,16.017662304418774
+2011,Private,,69,Nurse,workforce_nurses,Registered Midwives,true,false,false,12136,0.5685563612392881
+2009,Public,,4043,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,20915,19.33062395409993
+2011,Public,,842,Pharmacist,workforce_pharmacists,,true,false,false,25713,3.2746081748531872
+2013,Inactive,Non-Specialist,352,Doctor,workforce_doctors,,true,false,false,6346,5.546801134572959
+2007,Inactive,,2959,Nurse,workforce_nurses,Registered Nurses,true,false,false,4529,65.33451092956503
+2011,Inactive,Specialist,241,Doctor,workforce_doctors,,true,false,false,5559,4.335312106493974
+2013,Inactive,,4102,Nurse,workforce_nurses,Registered Nurses,true,false,false,6346,64.63914276709738
+2009,Inactive,Non-Specialist,347,Doctor,workforce_doctors,,true,false,false,5382,6.447417316982534
+2008,Public,Specialist,1723,Doctor,workforce_doctors,,true,false,false,18563,9.281904864515433
+2017,Inactive,Non-Specialist,419,Doctor,workforce_doctors,,true,false,false,6645,6.305492851768246
+2019,Private,,31,Nurse,workforce_nurses,Registered Midwives,true,false,false,17063,0.18167965773896735
+2006,Inactive,na,460,Doctor,workforce_doctors,,true,false,false,3844,11.966701352757545
+2007,Private,,1559,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,9981,15.619677387035367
+2012,Inactive,,190,Pharmacist,workforce_pharmacists,,true,false,false,5863,3.2406617772471433
+2013,Private,,2049,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,13608,15.05731922398589
+2019,Private,Specialist,1682,Doctor,workforce_doctors,,true,false,false,17063,9.857586590869131
+2014,Public,Specialist,2829,Doctor,workforce_doctors,,true,false,false,31253,9.051931014622596
+2019,Private,,1444,Pharmacist,workforce_pharmacists,,true,false,false,17063,8.462755670163512
+2015,Inactive,,58,Nurse,workforce_nurses,Registered Midwives,true,false,false,6144,0.9440104166666666
+2015,Private,,51,Nurse,workforce_nurses,Registered Midwives,true,false,false,14919,0.34184596822843355
+2015,Public,Specialist,3052,Doctor,workforce_doctors,,true,false,false,33158,9.204415224078653
+2014,Private,Specialist,1411,Doctor,workforce_doctors,,true,false,false,13966,10.103107546899613
+2016,Private,,2322,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,15212,15.264265053904813
+2016,Private,,1248,Pharmacist,workforce_pharmacists,,true,false,false,15212,8.20404943465685
+2012,Inactive,Specialist,232,Doctor,workforce_doctors,,true,false,false,5863,3.9570185911649327
+2010,Private,Specialist,1151,Doctor,workforce_doctors,,true,false,false,11206,10.271283241120829
+2018,Inactive,,1299,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,6814,19.063692398004108
+2017,Inactive,,41,Nurse,workforce_nurses,Registered Midwives,true,false,false,6645,0.617005267118134
+2013,Inactive,,190,Pharmacist,workforce_pharmacists,,true,false,false,6346,2.9940119760479043
+2007,Public,na,3991,Doctor,workforce_doctors,,true,false,false,16769,23.79986880553402
+2016,Public,Non-Specialist,5059,Doctor,workforce_doctors,,true,false,false,34554,14.64085199976848
+2014,Inactive,Specialist,245,Doctor,workforce_doctors,,true,false,false,6695,3.6594473487677375
+2015,Public,,5305,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,33158,15.999155558236321
+2009,Inactive,Specialist,243,Doctor,workforce_doctors,,true,false,false,5382,4.51505016722408
+2013,Private,,1104,Pharmacist,workforce_pharmacists,,true,false,false,13608,8.112874779541446
+2013,Private,Specialist,1351,Doctor,workforce_doctors,,true,false,false,13608,9.927983539094651
+2013,Private,,6716,Nurse,workforce_nurses,Registered Nurses,true,false,false,13608,49.353321575543795
+2013,Public,,1082,Pharmacist,workforce_pharmacists,,true,false,false,29450,3.6740237691001694
+2017,Inactive,,4357,Nurse,workforce_nurses,Registered Nurses,true,false,false,6645,65.5680963130173
+2019,Inactive,,35,Nurse,workforce_nurses,Registered Midwives,true,false,false,6676,0.524266027561414
+2014,Public,,1179,Pharmacist,workforce_pharmacists,,true,false,false,31253,3.772437845966787
+2017,Public,Specialist,3523,Doctor,workforce_doctors,,true,false,false,35433,9.942708774306437
+2009,Private,,890,Pharmacist,workforce_pharmacists,,true,false,false,10476,8.49560901107293
+2011,Inactive,,193,Pharmacist,workforce_pharmacists,,true,false,false,5559,3.4718474545781612
+2018,Inactive,Specialist,309,Doctor,workforce_doctors,,true,false,false,6814,4.534781332550631
+2013,Public,,16738,Nurse,workforce_nurses,Registered Nurses,true,true,true,29450,56.835314091680814
+2012,Inactive,,1252,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,5863,21.354255500596963
+2014,Private,,2078,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,13966,14.878991837319203
+2006,Private,,832,Pharmacist,workforce_pharmacists,,true,false,false,9907,8.398102351872414
+2011,Public,,4661,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,25713,18.12701746198421
+2016,Inactive,,260,Pharmacist,workforce_pharmacists,,true,false,false,6637,3.9174325749585654
+2019,Inactive,Specialist,335,Doctor,workforce_doctors,,true,false,false,6676,5.017974835230677
+2016,Public,,62,Nurse,workforce_nurses,Registered Midwives,true,false,false,34554,0.17942929906812527
+2015,Private,,2377,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,14919,15.932703264293854
+2015,Inactive,,3972,Nurse,workforce_nurses,Registered Nurses,true,false,false,6144,64.6484375
+2012,Private,Specialist,1293,Doctor,workforce_doctors,,true,false,false,12976,9.96454993834772
+2011,Public,Non-Specialist,3456,Doctor,workforce_doctors,,true,false,false,25713,13.44067203360168
+2016,Public,Specialist,3299,Doctor,workforce_doctors,,true,false,false,34554,9.547375122995891
+2012,Public,,934,Pharmacist,workforce_pharmacists,,true,false,false,28065,3.3279885978977375
+2015,Public,,71,Nurse,workforce_nurses,Registered Midwives,true,false,false,33158,0.21412630436093852
+2007,Public,,116,Nurse,workforce_nurses,Registered Midwives,true,false,false,16769,0.6917526387977816
+2006,Inactive,,140,Pharmacist,workforce_pharmacists,,true,false,false,3844,3.6420395421436007
+2011,Public,,14494,Nurse,workforce_nurses,Registered Nurses,true,true,true,25713,56.36837397425427
+2009,Private,,71,Nurse,workforce_nurses,Registered Midwives,true,false,false,10476,0.6777395952653684
+2017,Private,,2301,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,15795,14.5679012345679
+2009,Public,,630,Pharmacist,workforce_pharmacists,,true,false,false,20915,3.012192206550323
+2010,Public,,94,Nurse,workforce_nurses,Registered Midwives,true,false,false,23505,0.3999149117209105
+2019,Inactive,,1190,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,6676,17.825044937088077
+2010,Private,,68,Nurse,workforce_nurses,Registered Midwives,true,false,false,11206,0.606817776191326
+2008,Public,,555,Pharmacist,workforce_pharmacists,,true,false,false,18563,2.9898184560685235
+2010,Public,,712,Pharmacist,workforce_pharmacists,,true,false,false,23505,3.029142735588173
+2013,Public,,79,Nurse,workforce_nurses,Registered Midwives,true,false,false,29450,0.26825127334465193
+2008,Inactive,,3112,Nurse,workforce_nurses,Registered Nurses,true,false,false,4900,63.51020408163265
+2007,Public,,484,Pharmacist,workforce_pharmacists,,true,false,false,16769,2.886278251535572
+2010,Public,,4525,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,23505,19.251223144011913
+2012,Inactive,Non-Specialist,347,Doctor,workforce_doctors,,true,false,false,5863,5.918471772130308
+2012,Private,,1048,Pharmacist,workforce_pharmacists,,true,false,false,12976,8.076448828606658
+2018,Private,,1367,Pharmacist,workforce_pharmacists,,true,false,false,16303,8.384959823345396
+2016,Public,,5149,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,34554,14.901313885512533
+2009,Inactive,,125,Nurse,workforce_nurses,Registered Midwives,true,false,false,5382,2.3225566703827574
+2019,Private,,2206,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,17063,12.928558870069743
+2011,Public,Specialist,2165,Doctor,workforce_doctors,,true,false,false,25713,8.41986543771633
+2008,Public,,3488,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,18563,18.79006626084146
+2019,Inactive,Non-Specialist,475,Doctor,workforce_doctors,,true,false,false,6676,7.115038945476333
+2019,Public,Specialist,3864,Doctor,workforce_doctors,,true,false,false,36725,10.5214431586113
+2018,Inactive,,4439,Nurse,workforce_nurses,Registered Nurses,true,false,false,6814,65.14528911065453
+2012,Private,,65,Nurse,workforce_nurses,Registered Midwives,true,false,false,12976,0.500924784217016
+2008,Inactive,,1030,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,4900,21.020408163265305
+2008,Inactive,Non-Specialist,300,Doctor,workforce_doctors,,true,false,false,4900,6.122448979591836
+2011,Inactive,,3443,Nurse,workforce_nurses,Registered Nurses,true,false,false,5559,61.93559992804462
+2011,Private,,978,Pharmacist,workforce_pharmacists,,true,false,false,12136,8.058668424522084
+2007,Inactive,,32,Nurse,workforce_nurses,Registered Midwives,true,false,false,4529,0.7065577390152351
+2010,Inactive,,1196,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,5473,21.852731591448933
+2009,Inactive,,1161,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,5382,21.57190635451505
+2015,Inactive,,1249,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,6144,20.328776041666664
+2016,Private,,7616,Nurse,workforce_nurses,Registered Nurses,true,false,false,15212,50.06573757559821
+2017,Private,,8002,Nurse,workforce_nurses,Registered Nurses,true,false,false,15795,50.661601772712885
+2009,Public,Specialist,1855,Doctor,workforce_doctors,,true,false,false,20915,8.86923260817595
+2006,Private,,4566,Nurse,workforce_nurses,Registered Nurses,true,false,false,9907,46.0886242051075
+2018,Private,Non-Specialist,2660,Doctor,workforce_doctors,,true,false,false,16303,16.316015457277803
+2012,Public,,4995,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,28065,17.797969000534476
+2015,Private,Specialist,1470,Doctor,workforce_doctors,,true,false,false,14919,9.853207319525438
+2008,Public,Non-Specialist,2574,Doctor,workforce_doctors,,true,false,false,18563,13.866293163820503
+2006,Public,na,3505,Doctor,workforce_doctors,,true,false,false,15528,22.572127769191138
+2018,Inactive,Non-Specialist,413,Doctor,workforce_doctors,,true,false,false,6814,6.06105077781039
+2018,Public,Non-Specialist,5078,Doctor,workforce_doctors,,true,false,false,35990,14.109474854126148
+2011,Inactive,Non-Specialist,335,Doctor,workforce_doctors,,true,false,false,5559,6.026263716495773
+2019,Public,,4663,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,36725,12.69707283866576
+2017,Private,,41,Nurse,workforce_nurses,Registered Midwives,true,false,false,15795,0.2595758151313707
+2008,Private,Specialist,1046,Doctor,workforce_doctors,,true,false,false,10133,10.322707983815258
+2017,Public,,20313,Nurse,workforce_nurses,Registered Nurses,true,true,true,35433,57.32791465582932
+2016,Public,,19618,Nurse,workforce_nurses,Registered Nurses,true,true,true,34554,56.774903050298086
+2008,Public,,110,Nurse,workforce_nurses,Registered Midwives,true,false,false,18563,0.5925766309325001
+2017,Inactive,,1310,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,6645,19.714070729872084
+2016,Inactive,Specialist,263,Doctor,workforce_doctors,,true,false,false,6637,3.9626337200542414
+2014,Inactive,,1444,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,6695,21.568334578043316
+2018,Public,,1535,Pharmacist,workforce_pharmacists,,true,false,false,35990,4.265073631564324
+2019,Inactive,,348,Pharmacist,workforce_pharmacists,,true,false,false,6676,5.212702216896345
+2009,Inactive,,138,Pharmacist,workforce_pharmacists,,true,false,false,5382,2.564102564102564
+2010,Inactive,,171,Pharmacist,workforce_pharmacists,,true,false,false,5473,3.124429015165357
+2008,Private,,858,Pharmacist,workforce_pharmacists,,true,false,false,10133,8.46738379551959
+2015,Inactive,,229,Pharmacist,workforce_pharmacists,,true,false,false,6144,3.7272135416666665
+2012,Public,,15916,Nurse,workforce_nurses,Registered Nurses,true,true,true,28065,56.71120612862997
+2015,Private,,1221,Pharmacist,workforce_pharmacists,,true,false,false,14919,8.184194651116027
+2014,Inactive,,210,Pharmacist,workforce_pharmacists,,true,false,false,6695,3.136669156086632
+2010,Public,Specialist,1996,Doctor,workforce_doctors,,true,false,false,23505,8.49181025313763
+2015,Public,,1307,Pharmacist,workforce_pharmacists,,true,false,false,33158,3.941733518306291
+2016,Inactive,Non-Specialist,367,Doctor,workforce_doctors,,true,false,false,6637,5.529606750037668
+2011,Private,Non-Specialist,2220,Doctor,workforce_doctors,,true,false,false,12136,18.29268292682927
+2011,Private,Specialist,1229,Doctor,workforce_doctors,,true,false,false,12136,10.126895187870797
+2007,Private,,4477,Nurse,workforce_nurses,Registered Nurses,true,false,false,9981,44.85522492736199
+2012,Public,Specialist,2342,Doctor,workforce_doctors,,true,false,false,28065,8.34491359344379
+2006,Inactive,,723,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,3844,18.80853277835588
+2019,Private,Non-Specialist,2757,Doctor,workforce_doctors,,true,false,false,17063,16.15776827052687
+2009,Public,,98,Nurse,workforce_nurses,Registered Midwives,true,false,false,20915,0.46856323213005024
+2019,Inactive,,4293,Nurse,workforce_nurses,Registered Nurses,true,false,false,6676,64.30497303774715
+2012,Private,Non-Specialist,2222,Doctor,workforce_doctors,,true,false,false,12976,17.12392108508015
+2013,Private,Non-Specialist,2327,Doctor,workforce_doctors,,true,false,false,13608,17.10023515579071
+2009,Private,Non-Specialist,2041,Doctor,workforce_doctors,,true,false,false,10476,19.48262695685376
+2008,Private,,4656,Nurse,workforce_nurses,Registered Nurses,true,false,false,10133,45.948879897365046
+2014,Inactive,Non-Specialist,368,Doctor,workforce_doctors,,true,false,false,6695,5.49663928304705
+2017,Inactive,Specialist,287,Doctor,workforce_doctors,,true,false,false,6645,4.319036869826937
+2013,Public,,4890,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,29450,16.6044142614601
+2018,Public,,48,Nurse,workforce_nurses,Registered Midwives,true,false,false,35990,0.1333703806612948
+2018,Private,Specialist,1565,Doctor,workforce_doctors,,true,false,false,16303,9.599460222045023
+2017,Private,Specialist,1528,Doctor,workforce_doctors,,true,false,false,15795,9.67394745172523
+2011,Inactive,,118,Nurse,workforce_nurses,Registered Midwives,true,false,false,5559,2.122683935959705
+2013,Public,Non-Specialist,4150,Doctor,workforce_doctors,,true,false,false,29450,14.091680814940577
+2014,Public,Non-Specialist,4501,Doctor,workforce_doctors,,true,false,false,31253,14.401817425527149
+2012,Private,,2027,Nurse,workforce_nurses,Enrolled Nurses,true,false,false,12976,15.6211467324291
+2010,Inactive,Specialist,227,Doctor,workforce_doctors,,true,false,false,5473,4.14763383884524
+2007,Private,na,3004,Doctor,workforce_doctors,,true,false,false,9981,30.09718465083659
+2018,Private,,8441,Nurse,workforce_nurses,Registered Nurses,true,false,false,16303,51.775746795068386
+2018,Public,,20734,Nurse,workforce_nurses,Registered Nurses,true,true,true,35990,57.61044734648514
+2013,Inactive,,106,Nurse,workforce_nurses,Registered Midwives,true,false,false,6346,1.6703435234793569
+2012,Public,,89,Nurse,workforce_nurses,Registered Midwives,true,false,false,28065,0.3171209691786923

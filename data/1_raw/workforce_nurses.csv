@@ -1,0 +1,127 @@
+year,type,sector,count
+2006,Registered Nurses,Public Sector,8495
+2006,Registered Nurses,Private Sector,4566
+2006,Registered Nurses,Not in Active Practice,2391
+2006,Enrolled Nurses,Public Sector,2956
+2006,Enrolled Nurses,Private Sector,1484
+2006,Enrolled Nurses,Not in Active Practice,723
+2006,Registered Midwives,Public Sector,123
+2006,Registered Midwives,Private Sector,59
+2006,Registered Midwives,Not in Active Practice,130
+2007,Registered Nurses,Public Sector,9068
+2007,Registered Nurses,Private Sector,4477
+2007,Registered Nurses,Not in Active Practice,2959
+2007,Enrolled Nurses,Public Sector,3110
+2007,Enrolled Nurses,Private Sector,1559
+2007,Enrolled Nurses,Not in Active Practice,935
+2007,Registered Midwives,Public Sector,116
+2007,Registered Midwives,Private Sector,76
+2007,Registered Midwives,Not in Active Practice,32
+2008,Registered Nurses,Public Sector,10113
+2008,Registered Nurses,Private Sector,4656
+2008,Registered Nurses,Not in Active Practice,3112
+2008,Enrolled Nurses,Public Sector,3488
+2008,Enrolled Nurses,Private Sector,1488
+2008,Enrolled Nurses,Not in Active Practice,1030
+2008,Registered Midwives,Public Sector,110
+2008,Registered Midwives,Private Sector,80
+2008,Registered Midwives,Not in Active Practice,132
+2009,Registered Nurses,Public Sector,11534
+2009,Registered Nurses,Private Sector,4831
+2009,Registered Nurses,Not in Active Practice,3368
+2009,Enrolled Nurses,Public Sector,4043
+2009,Enrolled Nurses,Private Sector,1561
+2009,Enrolled Nurses,Not in Active Practice,1161
+2009,Registered Midwives,Public Sector,98
+2009,Registered Midwives,Private Sector,71
+2009,Registered Midwives,Not in Active Practice,125
+2010,Registered Nurses,Public Sector,12994
+2010,Registered Nurses,Private Sector,5140
+2010,Registered Nurses,Not in Active Practice,3441
+2010,Enrolled Nurses,Public Sector,4525
+2010,Enrolled Nurses,Private Sector,1757
+2010,Enrolled Nurses,Not in Active Practice,1196
+2010,Registered Midwives,Public Sector,94
+2010,Registered Midwives,Private Sector,68
+2010,Registered Midwives,Not in Active Practice,125
+2011,Registered Nurses,Public Sector,14494
+2011,Registered Nurses,Private Sector,5661
+2011,Registered Nurses,Not in Active Practice,3443
+2011,Enrolled Nurses,Public Sector,4661
+2011,Enrolled Nurses,Private Sector,1979
+2011,Enrolled Nurses,Not in Active Practice,1229
+2011,Registered Midwives,Public Sector,95
+2011,Registered Midwives,Private Sector,69
+2011,Registered Midwives,Not in Active Practice,118
+2012,Registered Nurses,Public Sector,15916
+2012,Registered Nurses,Private Sector,6321
+2012,Registered Nurses,Not in Active Practice,3734
+2012,Enrolled Nurses,Public Sector,4995
+2012,Enrolled Nurses,Private Sector,2027
+2012,Enrolled Nurses,Not in Active Practice,1252
+2012,Registered Midwives,Public Sector,89
+2012,Registered Midwives,Private Sector,65
+2012,Registered Midwives,Not in Active Practice,108
+2013,Registered Nurses,Public Sector,16738
+2013,Registered Nurses,Private Sector,6716
+2013,Registered Nurses,Not in Active Practice,4102
+2013,Enrolled Nurses,Public Sector,4890
+2013,Enrolled Nurses,Private Sector,2049
+2013,Enrolled Nurses,Not in Active Practice,1334
+2013,Registered Midwives,Public Sector,79
+2013,Registered Midwives,Private Sector,61
+2013,Registered Midwives,Not in Active Practice,106
+2014,Registered Nurses,Public Sector,17667
+2014,Registered Nurses,Private Sector,6863
+2014,Registered Nurses,Not in Active Practice,4334
+2014,Enrolled Nurses,Public Sector,5006
+2014,Enrolled Nurses,Private Sector,2078
+2014,Enrolled Nurses,Not in Active Practice,1444
+2014,Registered Midwives,Public Sector,71
+2014,Registered Midwives,Private Sector,61
+2014,Registered Midwives,Not in Active Practice,94
+2015,Registered Nurses,Public Sector,18566
+2015,Registered Nurses,Private Sector,7356
+2015,Registered Nurses,Not in Active Practice,3972
+2015,Enrolled Nurses,Public Sector,5305
+2015,Enrolled Nurses,Private Sector,2377
+2015,Enrolled Nurses,Not in Active Practice,1249
+2015,Registered Midwives,Public Sector,71
+2015,Registered Midwives,Private Sector,51
+2015,Registered Midwives,Not in Active Practice,58
+2016,Registered Nurses,Public Sector,19618
+2016,Registered Nurses,Private Sector,7616
+2016,Registered Nurses,Not in Active Practice,4381
+2016,Enrolled Nurses,Public Sector,5149
+2016,Enrolled Nurses,Private Sector,2322
+2016,Enrolled Nurses,Not in Active Practice,1310
+2016,Registered Midwives,Public Sector,62
+2016,Registered Midwives,Private Sector,47
+2016,Registered Midwives,Not in Active Practice,56
+2017,Registered Nurses,Public Sector,20313
+2017,Registered Nurses,Private Sector,8002
+2017,Registered Nurses,Not in Active Practice,4357
+2017,Enrolled Nurses,Public Sector,5020
+2017,Enrolled Nurses,Private Sector,2301
+2017,Enrolled Nurses,Not in Active Practice,1310
+2017,Registered Midwives,Public Sector,55
+2017,Registered Midwives,Private Sector,41
+2017,Registered Midwives,Not in Active Practice,41
+2018,Registered Nurses,Public Sector,20734
+2018,Registered Nurses,Private Sector,8441
+2018,Registered Nurses,Not in Active Practice,4439
+2018,Enrolled Nurses,Public Sector,4854
+2018,Enrolled Nurses,Private Sector,2241
+2018,Enrolled Nurses,Not in Active Practice,1299
+2018,Registered Midwives,Public Sector,48
+2018,Registered Midwives,Private Sector,29
+2018,Registered Midwives,Not in Active Practice,40
+2019,Registered Nurses,Public Sector,21373
+2019,Registered Nurses,Private Sector,8943
+2019,Registered Nurses,Not in Active Practice,4293
+2019,Enrolled Nurses,Public Sector,4663
+2019,Enrolled Nurses,Private Sector,2206
+2019,Enrolled Nurses,Not in Active Practice,1190
+2019,Registered Midwives,Public Sector,43
+2019,Registered Midwives,Private Sector,31
+2019,Registered Midwives,Not in Active Practice,35

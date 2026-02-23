@@ -1,0 +1,10 @@
+{
+  "method": "pearson",
+  "correlation": 0.9649313690457457,
+  "p_value": 4.39252406591379e-13,
+  "significant": true,
+  "strength": "strong",
+  "direction": "positive",
+  "conclusion": "Strong positive correlation (r=0.965, p=0.0000) - statistically significant at \u03b1=0.05",
+  "sample_size": 22
+}

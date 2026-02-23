@@ -8,6 +8,41 @@ stage: Development
 
 Execute a detailed implementation plan accurately and verify its completion according to specifications for a end-to-end data analysis project.
 
+## 🚨 CRITICAL RULES - READ FIRST
+
+### Directory Structure (MANDATORY)
+
+**✅ CORRECT - All artifacts in ONE problem-statement directory:**
+```
+src/problem-statement-{num}-{descriptive-name}/
+├── notebooks/              # ALL notebooks for this problem statement
+│   ├── 01_extract.ipynb
+│   ├── 02_explore.ipynb
+│   └── 03_analyze.ipynb
+├── data_processing/        # Data extraction/cleaning code
+├── analysis/               # Analysis modules
+├── scripts/                # Executable scripts
+├── tests/                  # Unit and integration tests
+└── README.md              # Execution instructions
+```
+
+### Naming Convention (MANDATORY)
+
+**Format**: `src/problem-statement-{num}-{descriptive-name}/`
+- `{num}`: Zero-padded problem statement number (e.g., `001`, `002`)
+- `{descriptive-name}`: Kebab-case description (e.g., `workforce-capacity-mismatch`)
+
+**✅ Examples:**
+- `src/problem-statement-001-workforce-capacity-mismatch/`
+- `src/problem-statement-002-seasonal-disease-forecasting/`
+- `src/problem-statement-003-vaccination-coverage-analysis/`
+
+### Organization Rules
+
+1. **One Problem Statement = One Directory**: All user stories for the same problem statement share ONE directory
+2. **No Shared Notebooks Directory**: Do NOT create notebooks in `notebooks/1_exploratory/`, `notebooks/2_analysis/`, etc.
+3. **Problem-Statement Outputs**: Save outputs to subdirectories: `reports/figures/problem-statement-{num}/`, `results/tables/problem-statement-{num}/`
+
 ## Input Requirements
 
 The input will consist of:
@@ -18,15 +53,7 @@ The input will consist of:
 ## Output Requirements
 
 The output MUST include:
-- **Problem-Statement-Specific Directory Structure**: ALL implementation code MUST be placed in:
-   `src/problem-statement-{num}-{name}/`
-   
-   **CRITICAL**: This directory MUST be created BEFORE any code implementation begins.
-   
-   **Examples**:
-   - For Problem Statement 001: `src/problem-statement-001-seasonal-pattern-forecasting/`
-   - For Problem Statement 002: `src/problem-statement-002-disease-burden-prioritization/`
-   
+- **Problem-Statement-Specific Directory Structure**: Created per CRITICAL RULES above
 - Implementation of all required files and changes
 - Verification that specifications have been met
 - Completed Design Implementation Verification Checklist
@@ -44,10 +71,10 @@ If any part of the plan is unclear or missing information, clarification MUST be
 ## Implementation Requirements
 
 The implementation MUST:
-- **FIRST: Create the problem-statement-specific directory structure in `src/` BEFORE writing any code** (see Stage 1 for details)
+- **FIRST: Create the problem-statement-specific directory structure per CRITICAL RULES** (see top of document)
 - Follow the staged implementation approach outlined below
 - Adhere to file paths, code structures, and configurations specified in the plan
-- **ALL code files MUST be placed within `src/problem-statement-{num}-{name}/` directory**
+- **ALL code files, notebooks, and scripts MUST be placed within `src/problem-statement-{num}-{descriptive-name}/`**
 - Follow project coding standards and best practices
 - Create exact visual implementations matching design specifications
 - For any service or API integration step, you MUST implement the actual data fetching, error handling, and retries as described in the plan. Stubs or placeholders are NOT considered complete. If a function is only a stub, the implementation is NOT complete.
@@ -60,12 +87,9 @@ The implementation MUST:
     - Loading and exploring outputs from the execution (e.g., extracted data, profiles, results)
     - Visualizing key metrics and data quality indicators
     - Running validation checks and displaying results
-    - Providing a user-friendly interface to explore generated outputs
-  - **Example Structure**: For workforce capacity trends:
-    - Notebook: `src/problem-statement-001-workforce-capacity-trends/notebooks/explore_extraction_results.ipynb`
-    - Content: Load profiles, display data quality metrics, visualize extracted data distributions
-  - **Accessibility**: Notebooks MUST be self-contained and runnable independently after execution completes
-  - **Documentation**: Include markdown cells documenting each analysis step and interpretation of results
+    - Providing a user-friendly interface to explore results
+  - Notebooks MUST be self-contained and runnable independently
+  - Include markdown cells documenting each analysis step
 
 ### Code Implementation Fidelity
 
@@ -119,8 +143,8 @@ Use for all file operations throughout the project structure:
 - Managing schemas in `data/schemas/`
 
 **Code & Notebooks**:
-- Creating/editing notebooks in `notebooks/1_exploratory/`, `notebooks/2_analysis/`, `notebooks/3_feature_engineering/`
-- Managing source code in `src/` subdirectories
+- Creating/editing notebooks in `src/problem-statement-{num}-{name}/notebooks/`
+- Managing source code in `src/problem-statement-{num}-{name}/` subdirectories
 
 **Outputs & Results**:
 - Creating result directories in `results/tables/`, `results/metrics/`, `results/exports/`
@@ -270,13 +294,16 @@ The following stages represent a complete data analysis lifecycle and should be 
 - Analyze data distributions, missing values, and outliers
 - Identify data types, formats, and schema inconsistencies
 - Document data quality issues and anomalies
-- Create data profiling notebooks in `notebooks/1_exploratory/`
-- **Create exploration and results notebook in problem-statement directory** (`src/problem-statement-{num}-{name}/notebooks/`)
+- **Create exploration notebooks in `src/problem-statement-{num}-{name}/notebooks/`** (NOT in general `notebooks/` directory)
   - Load and visualize extracted data/profiles
   - Display key metrics and quality indicators
   - Demonstrate data validation results
   - Ensure users can easily view and explore outputs
-- Use **filesystem tools** to save profiling results to `results/tables/`
+  - **REQUIRED**: Include code to save ALL outputs (figures, tables, metrics) to local directories
+  - **REQUIRED**: Create output directories: `reports/figures/problem-statement-{num}/`, `results/tables/problem-statement-{num}/`, `results/metrics/problem-statement-{num}/`
+  - **REQUIRED**: Use timestamps in all output filenames
+  - **REQUIRED**: Print confirmation messages showing saved file paths
+- Use **filesystem tools** to save profiling results to `results/tables/problem-statement-{num}/`
 - Establish data quality metrics and thresholds
 
 #### Stage 4: Data Cleaning & Preprocessing
@@ -294,8 +321,19 @@ The following stages represent a complete data analysis lifecycle and should be 
 - Create visualizations to understand patterns and relationships
 - Identify key insights and anomalies
 - Explore temporal trends, correlations, and distributions
-- Create analysis notebooks in `notebooks/2_analysis/`
-- Use **filesystem tools** to save figures to `reports/figures/`
+- **Create analysis notebooks in `src/problem-statement-{num}-{name}/notebooks/`** (NOT in general `notebooks/` directory)
+- **REQUIRED**: Use **filesystem tools** to save ALL figures to `reports/figures/problem-statement-{num}/`
+  - Include timestamps in filenames: `{figure_name}_{timestamp}.png`
+  - Use 300 dpi minimum for publication quality
+  - Print confirmation messages showing saved paths
+- **REQUIRED**: Use **filesystem tools** to save ALL data summaries to `results/tables/problem-statement-{num}/`
+  - Save as CSV for tabular data, Markdown for reports
+  - Include timestamps in filenames
+  - Print confirmation messages showing saved paths
+- **REQUIRED**: Use **filesystem tools** to save ALL metrics to `results/metrics/problem-statement-{num}/`
+  - Save as CSV or JSON format
+  - Include timestamps in filenames
+  - Print confirmation messages showing saved paths
 - Document findings and preliminary insights
 
 #### Stage 6: Feature Engineering & Transformation
@@ -303,7 +341,7 @@ The following stages represent a complete data analysis lifecycle and should be 
 - Apply transformations (aggregations, encodings, scaling)
 - Create derived metrics and calculated fields
 - Validate feature quality and relevance
-- Create feature engineering notebooks in `notebooks/3_feature_engineering/`
+- **Create feature engineering notebooks in `src/problem-statement-{num}-{name}/notebooks/`** (NOT in general `notebooks/` directory)
 - Use **filesystem tools** to save processed data to `data/4_processed/`
 - Document feature definitions and calculation logic
 
@@ -333,11 +371,11 @@ The following stages represent a complete data analysis lifecycle and should be 
 - Use **filesystem tools** to save reports to `reports/`
 - Ensure all code is well-commented and reproducible
 - Document limitations and future improvement opportunities
-- **Update README files with code execution instructions** (see README Documentation Requirements below)
-- **Verify at least one notebook exists in problem-statement directory** for users to explore outputs
-  - Ensure notebook is properly documented with markdown cells explaining each step
+- **Update README files with code execution instructions**
+- **Verify notebooks exist in `src/problem-statement-{num}-{name}/notebooks/`** for users to explore outputs
+  - Ensure notebooks are properly documented with markdown cells explaining each step
   - Verify all outputs are visible and interactive
-  - Test notebook for readability and self-sufficiency
+  - Test notebooks for readability and self-sufficiency
 
 #### Stage 10: Delivery & Handoff
 - Package final deliverables (data, code, reports, dashboards)
@@ -757,7 +795,6 @@ If implementation or verification fails, the output MUST:
 - Suggest possible solutions or next steps
 
 ## Documentation Requirements
-5
 
 The final output MUST include:
 - Confirmation of completion if successful

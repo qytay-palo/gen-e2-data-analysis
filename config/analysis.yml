@@ -1,0 +1,46 @@
+# Analysis configuration parameters
+
+data:
+  target_diseases:
+    - Dengue Fever
+    - Hand, Foot and Mouth Disease (HFMD)
+    - Influenza
+  
+  date_range:
+    start: 2012-01-01
+    end: null  # null means use current date
+  
+  raw_data_path: data/1_raw/
+  processed_data_path: data/4_processed/
+  
+seasonality:
+  methods:
+    - STL decomposition
+    - Fourier analysis
+    - SARIMA
+  
+  forecast_horizon: 6  # months
+  
+  seasonal_strength_threshold: 0.6
+  
+disease_burden:
+  metrics:
+    - total_cases
+    - growth_rate
+    - outbreak_frequency
+    - severity_index
+  
+  ranking_weights:
+    total_cases: 0.4
+    growth_rate: 0.3
+    outbreak_frequency: 0.2
+    severity_index: 0.1
+
+logging:
+  level: INFO
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+  
+visualization:
+  theme: seaborn-v0_8-darkgrid
+  figure_size: [12, 6]
+  dpi: 300

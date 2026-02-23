@@ -1,8 +1,8 @@
-# MOH Infectious Disease Analysis - Documentation Index
+# Gen-E2 Data Analysis - Documentation Index
 
-**Welcome to the MOH Infectious Disease Analysis Project Documentation**
+**Welcome to the Gen-E2 Data Analysis Project Documentation**
 
-This index provides navigation to all project documentation. Documentation is organized by analysis phase and purpose.
+This project analyzes temporal patterns across infectious diseases in Singapore to identify seasonal trends and forecast outbreak periods. It also prioritizes resource allocation based on disease burden.
 
 ---
 
@@ -19,6 +19,11 @@ This index provides navigation to all project documentation. Documentation is or
 - **Analysis Methods**: See [Methodology](#methodology)
 - **Tech Stack**: See [Technical Context](#technical-context)
 - **Tasks & Progress**: See [../TODO.md](../TODO.md)
+
+### Technical Environment
+- **Platform**: HEALIX / Databricks
+- **Data Volume**: 434 KB
+- **Stakeholders**: Minister of Health, internal committee members
 
 ---
 

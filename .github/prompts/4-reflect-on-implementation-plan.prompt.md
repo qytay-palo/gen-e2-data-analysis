@@ -549,15 +549,40 @@ Before approving ANY implementation plan, you MUST validate code executability b
 - [ ] Document all import dependencies
 
 **Step 3: Validate File Paths**
+
+**⚠️ Never assume working directory** - Use explicit path construction from file location.
+
 - [ ] List ALL file paths referenced in code
-- [ ] Check existence of each data file/directory
-- [ ] Fix incorrect paths or create missing directories
-- [ ] Use relative paths from project root
+- [ ] Use `pathlib.Path` for cross-platform path construction
+- [ ] Calculate paths relative to file location (not assumed CWD)
+- [ ] Validate path existence before file operations
+- [ ] Test paths from the file's actual execution location
+
+**Recommended Pattern:**
+```python
+from pathlib import Path
+
+# Calculate project root from file location
+# Example: notebook in src/problem-statement-001/notebooks/
+notebook_dir = Path.cwd()  # Or Path(__file__).parent for scripts
+project_root = notebook_dir.parent.parent.parent  # Adjust depth as needed
+data_path = project_root / 'data' / '3_interim' / 'file.parquet'
+
+# Validate before using
+if not data_path.exists():
+    raise FileNotFoundError(f"Not found: {data_path}")
+```
+
+**Common Mistakes:**
+- ❌ `df = pl.read_csv('data/file.csv')` - assumes CWD is project root
+- ❌ Hardcoded absolute paths - not portable across machines
+- ✅ Use Path construction from file location with existence checks
 
 **Step 4: Execute Each Code Block**
 - [ ] Run each code segment using validation tools (see tool selection guide below)
-- [ ] Start with simple blocks (imports, data loading)
+- [ ] Start with simple blocks (imports, path validation, data loading)
 - [ ] Progress to complex blocks (transformations, analysis)
+- [ ] Verify path resolution works from file's actual location
 - [ ] Capture and review all outputs
 
 **Tool Selection Guide:**
@@ -912,31 +937,29 @@ import polars as pl
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
+from pathlib import Path
 print("All imports successful")
 """
 # → RUN using mcp_pylance_mcp_s_pylanceRunCodeSnippet
 # → VERIFY: No ImportError
 
-# STEP 2: Test data file existence
+# STEP 2: Test path resolution and data loading
 test_code = """
-import os
-data_path = 'data/1_raw/sample_data.csv'
-if os.path.exists(data_path):
-    print(f"✓ File exists: {data_path}")
-else:
-    raise FileNotFoundError(f"Missing: {data_path}")
-"""
-# → RUN and verify file exists
-
-# STEP 3: Test data loading
-test_code = """
+from pathlib import Path
 import polars as pl
-df = pl.read_csv('data/1_raw/sample_data.csv')
-print(f"Shape: {df.shape}")
-print(f"Columns: {df.columns}")
-print(df.head())
+
+# Calculate project root from file location
+notebook_dir = Path.cwd()
+project_root = notebook_dir.parent.parent.parent
+data_path = project_root / 'data' / '1_raw' / 'sample_data.csv'
+
+if not data_path.exists():
+    raise FileNotFoundError(f"Not found: {data_path}")
+
+df = pl.read_csv(data_path)
+print(f"✓ Loaded {df.shape[0]} rows from: {data_path}")
 """
-# → RUN and verify data loads correctly
+# → RUN and verify path resolves correctly + data loads
 # → VERIFY: DataFrame has expected structure
 
 # STEP 4: Test data transformation
@@ -1019,6 +1042,9 @@ print("✓ Visualization created successfully")
 - [ ] Module organization follows logical grouping
 - [ ] Imports are organized (standard lib, third-party, local)
 - [ ] No circular dependencies between modules
+- [ ] **Path handling uses `pathlib.Path` with explicit construction from file location**
+- [ ] **No hardcoded absolute paths or working directory assumptions**
+- [ ] **Paths calculated relative to script/notebook location, not assumed CWD**
 
 ### 6.2 Error Handling & Robustness
 **Ensure code handles failures gracefully:**
@@ -1521,80 +1547,6 @@ with engine.connect() as conn:
     result = conn.execute(query, {"patient_id": user_input})
 ```
 **Good practices:** Environment variables, credentials never hardcoded, parameterized queries, validation.
-
----
-
-### ❌ BAD: Import Path Setup (Notebooks/Scripts)
-```python
-import sys
-# WRONG: Incorrect number of parent directories
-sys.path.append("../..")  # From notebooks/ this goes to problem-statement-XXX/, NOT project root!
-
-from src.data_processing.profiler import ProfilerClass  # Will fail with ModuleNotFoundError!
-```
-**Issues:** 
-- Incorrect calculation of parent directories to reach project root
-- Using hardcoded relative paths instead of dynamic calculation
-- Common mistake: from `src/problem-statement-001-seasonal-forecasting/notebooks/`, going up 2 levels (`../..`) reaches `src/`, not the project root
-- Should go up 3 levels to reach project root where `src/` module exists
-
-### ✓ GOOD: Import Path Setup (Notebooks/Scripts)
-```python
-import sys
-from pathlib import Path
-
-# Add project root to Python path
-# From: src/problem-statement-001-seasonal-forecasting/notebooks/
-# Need to go up 3 levels to reach project root where 'src/' exists
-notebook_dir = Path().resolve()  # Current directory where notebook runs
-project_root = notebook_dir.parent.parent.parent  # Go up 3 levels: notebooks -> problem-statement -> src -> root
-sys.path.insert(0, str(project_root))
-
-# Verify the path is correct
-print(f"Project root added to path: {project_root}")
-assert (project_root / 'src').exists(), "Cannot find src/ directory - path incorrect!"
-
-# Now can import from src module
-from src.data_processing.profiler import ProfilerClass
-from src.utils.helpers import load_config
-
-print("✅ All imports successful")
-```
-
-**Good practices:** 
-- Use `pathlib.Path` for cross-platform compatibility
-- Calculate path dynamically (not hardcoded absolute paths)
-- Add clear comments explaining directory levels
-- Use `sys.path.insert(0, ...)` to prioritize project modules
-- Verify path is correct with assertion before importing
-- Include diagnostic print statements
-
-**Path Calculation Reference by Location:**
-```python
-# From: src/problem-statement-XXX/notebooks/file.ipynb
-# To project root: notebook_dir.parent.parent.parent (3 levels up)
-# notebooks -> problem-statement-XXX -> src -> root
-
-# From: src/problem-statement-XXX/scripts/file.py  
-# To project root: script_dir.parent.parent.parent (3 levels up)
-# scripts -> problem-statement-XXX -> src -> root
-
-# From: notebooks/exploratory/file.ipynb (if at project root level)
-# To project root: notebook_dir.parent.parent (2 levels up)
-# exploratory -> notebooks -> root
-
-# Always verify by checking the resolved path
-print(f"Project root: {project_root}")
-print(f"Expected src dir: {project_root / 'src'}")
-assert (project_root / 'src').exists(), "Cannot find src/ directory - path incorrect!"
-```
-
-**Common Path Errors to Avoid:**
-- ❌ Using `../..` when you need `../../..` (off by one directory level)
-- ❌ Hardcoding absolute paths like `/Users/name/project/` (not portable)
-- ❌ Using `sys.path.append()` instead of `sys.path.insert(0, ...)` (priority issues)
-- ❌ Not verifying the path exists before importing (silent failures)
-- ❌ Importing without `src.` prefix (e.g., `from data_processing.profiler` instead of `from src.data_processing.profiler`)
 
 ---
 

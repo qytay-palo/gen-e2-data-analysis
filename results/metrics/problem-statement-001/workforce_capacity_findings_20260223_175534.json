@@ -1,0 +1,137 @@
+{
+  "analysis_metadata": {
+    "date_generated": "2026-02-23T18:01:29.891839",
+    "analysis_period": "2009-2019",
+    "sectors_analyzed": [
+      "Private",
+      "Public"
+    ]
+  },
+  "workforce_to_bed_ratios": {
+    "summary_statistics": [
+      {
+        "sector": "Private",
+        "mean_ratio": 10.268738865191153,
+        "min_ratio": 6.672611464968153,
+        "max_ratio": 11.072992700729927,
+        "std_ratio": 1.2258563925064991
+      },
+      {
+        "sector": "Public",
+        "mean_ratio": 3.862009137178481,
+        "min_ratio": 3.2598192019950125,
+        "max_ratio": 4.10912675402992,
+        "std_ratio": 0.2828757092794389
+      }
+    ],
+    "interpretation": "Workforce-to-bed ratios indicate staffing intensity relative to bed capacity. Higher ratios suggest more staff per bed."
+  },
+  "doctor_to_nurse_ratios": {
+    "summary_statistics": [
+      {
+        "sector": "Private",
+        "mean_ratio": 0.43683419823645914,
+        "min_ratio": 0.39445429931845766,
+        "max_ratio": 0.49149214659685864,
+        "std_ratio": 0.039946619009073
+      },
+      {
+        "sector": "Public",
+        "mean_ratio": 0.31693300927018214,
+        "min_ratio": 0.29195238095238096,
+        "max_ratio": 0.3462556079604279,
+        "std_ratio": 0.02015273519547059
+      },
+      {
+        "sector": "Inactive",
+        "mean_ratio": 0.12081513367464425,
+        "min_ratio": 0.10439373297002724,
+        "max_ratio": 0.14679231605654222,
+        "std_ratio": 0.011799065602539
+      }
+    ],
+    "interpretation": "Doctor-to-nurse ratios indicate professional skill mix. International benchmarks suggest 1:2 to 1:4 (0.25-0.50)."
+  },
+  "mismatch_detection": {
+    "total_sectors_with_misalignment": 2,
+    "sectors_details": [
+      {
+        "sector": "Private",
+        "years_affected": [
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2017,
+          2019
+        ],
+        "total_years": 8,
+        "severity": "High",
+        "avg_mismatch": 4.88,
+        "max_mismatch": 37.22,
+        "cumulative_mismatch": 38.8
+      },
+      {
+        "sector": "Public",
+        "years_affected": [
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2016,
+          2017,
+          2018,
+          2019
+        ],
+        "total_years": 9,
+        "severity": "Medium",
+        "avg_mismatch": 2.16,
+        "max_mismatch": 8.61,
+        "cumulative_mismatch": 19.28
+      }
+    ],
+    "interpretation": "Misalignments indicate sustained periods where workforce and capacity growth rates diverge."
+  },
+  "cumulative_mismatch": {
+    "results": [
+      {
+        "sector": "Public",
+        "cumulative_mismatch": 19.27634273875198,
+        "years_analyzed": 10,
+        "avg_annual_mismatch": 1.927634273875198
+      },
+      {
+        "sector": "Private",
+        "cumulative_mismatch": 38.80487996923589,
+        "years_analyzed": 10,
+        "avg_annual_mismatch": 3.880487996923589
+      }
+    ],
+    "interpretation": "Cumulative mismatch over 2009-2019. Positive values indicate workforce grew faster than capacity; negative indicates the opposite."
+  },
+  "benchmark_comparison": {
+    "workforce_to_bed": {
+      "benchmark_range": "1.5-2.5 FTE per bed",
+      "singapore_performance": "See detailed tables and visualizations"
+    },
+    "doctor_to_nurse": {
+      "benchmark_range": "0.25-0.5 ratio",
+      "singapore_performance": "See detailed tables and visualizations"
+    }
+  },
+  "key_insights": [
+    "Public sector shows different staffing patterns compared to private sector",
+    "Sustained misalignments detected in specific sectors requiring attention",
+    "Doctor-to-nurse ratios vary significantly across sectors",
+    "Cumulative mismatch analysis reveals long-term trends in workforce-capacity balance"
+  ],
+  "recommendations": [
+    "Address sectors with sustained misalignments through targeted workforce planning",
+    "Monitor workforce-to-bed ratios to maintain international benchmark standards",
+    "Consider professional skill mix adjustments based on doctor-to-nurse ratio findings",
+    "Implement early warning systems for emerging workforce-capacity imbalances"
+  ]
+}

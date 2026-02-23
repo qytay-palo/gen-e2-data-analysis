@@ -1,0 +1,43 @@
+{
+  "analysis_date": "2026-02-23T17:09:54.435735",
+  "data_period": {
+    "workforce": "2006-2019",
+    "capacity": "2009-2020"
+  },
+  "fastest_growing_sector": {
+    "sector": "Public",
+    "avg_growth_rate": 6.90814249403948
+  },
+  "sector_growth_test": {
+    "test_used": "ANOVA",
+    "statistic": 1.3386348914679171,
+    "p_value": 0.27494158873523583,
+    "significant": "False",
+    "conclusion": "No significant difference in growth rates across sectors (p=0.2749 >= 0.05)",
+    "sectors_compared": [
+      "Inactive",
+      "Private",
+      "Public"
+    ],
+    "sample_sizes": [
+      13,
+      13,
+      13
+    ]
+  },
+  "workforce_capacity_correlation": {
+    "method": "pearson",
+    "correlation": 0.9649313690457457,
+    "p_value": 4.39252406591379e-13,
+    "significant": "True",
+    "strength": "strong",
+    "direction": "positive",
+    "conclusion": "Strong positive correlation (r=0.965, p=0.0000) - statistically significant at \u03b1=0.05",
+    "sample_size": 22
+  },
+  "outputs_generated": {
+    "figures": 6,
+    "tables": 6,
+    "metrics": 2
+  }
+}

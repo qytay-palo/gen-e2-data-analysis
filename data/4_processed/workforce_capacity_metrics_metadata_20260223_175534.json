@@ -1,0 +1,20 @@
+{
+  "analysis_date": "2026-02-23T18:01:25.418916",
+  "analysis_period": "2009-2019",
+  "source_files": {
+    "workforce": "/Users/qytay/Documents/GitHub/gen-e2-data-analysis/data/3_interim/workforce_clean.parquet",
+    "capacity": "/Users/qytay/Documents/GitHub/gen-e2-data-analysis/data/3_interim/capacity_clean.parquet"
+  },
+  "metrics_calculated": [
+    "workforce_to_bed_ratio",
+    "mismatch_index",
+    "benchmark_category",
+    "cumulative_mismatch"
+  ],
+  "output_files": {
+    "processed_parquet": "/Users/qytay/Documents/GitHub/gen-e2-data-analysis/data/4_processed/workforce_capacity_metrics_processed.parquet",
+    "processed_csv": "/Users/qytay/Documents/GitHub/gen-e2-data-analysis/data/4_processed/workforce_capacity_metrics_processed_20260223_175534.csv"
+  },
+  "row_count": 22,
+  "column_count": 6
+}

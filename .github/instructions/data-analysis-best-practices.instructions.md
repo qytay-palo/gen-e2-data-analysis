@@ -17,10 +17,16 @@ When assisting with data analysis tasks:
 4. **ALWAYS log using `logging` module**, never `print()` for production code
 5. **ALWAYS save intermediate results** to `data/3_interim/` during processing
 6. **ALWAYS save final results** to `data/4_processed/` with documentation
-7. **ALWAYS use descriptive variable names** (`disease_burden_metrics` not `dbm`)
-8. **ALWAYS handle exceptions** explicitly with informative error messages
-9. **ALWAYS document data transformations** with clear comments
-10. **ALWAYS generate data quality reports** after cleaning steps
+7. **ALWAYS save ALL outputs to local directories**:
+   - Figures → `reports/figures/problem-statement-{num}/`
+   - Tables → `results/tables/problem-statement-{num}/`
+   - Metrics → `results/metrics/problem-statement-{num}/`
+   - Include timestamps in filenames
+   - Print confirmation messages
+8. **ALWAYS use descriptive variable names** (`disease_burden_metrics` not `dbm`)
+9. **ALWAYS handle exceptions** explicitly with informative error messages
+10. **ALWAYS document data transformations** with clear comments
+11. **ALWAYS generate data quality reports** after cleaning steps
 
 ## 🗂️ Required Folder Structure
 
@@ -31,6 +37,21 @@ data/
 ├── 3_interim/       # ✅ WRITE: Intermediate processing checkpoints
 ├── 4_processed/     # ✅ WRITE: Final analysis-ready data with README
 └── schemas/         # Data schemas and metadata definitions
+results/
+├── tables/          # ✅ WRITE: Summary tables and data exports
+│   └── problem-statement-{num}/  # Organized by problem statement
+├── metrics/         # ✅ WRITE: KPIs and calculated metrics
+│   └── problem-statement-{num}/
+└── exports/         # ✅ WRITE: Stakeholder-ready outputs
+reports/
+├── figures/         # ✅ WRITE: Visualizations and charts
+│   └── problem-statement-{num}/  # Organized by problem statement
+├── dashboards/      # Interactive dashboards
+└── presentations/   # Presentation materials
+logs/
+├── etl/            # ETL and data processing logs
+├── errors/         # Error logs
+└── audit/          # Audit trail and lineage logs
 ```
 
 ## 📝 Logger Setup (Required)
@@ -350,13 +371,19 @@ def profile_dataset(df: pl.DataFrame, dataset_name: str) -> Dict:
 # Usage in notebook or script
 profile = profile_dataset(df_raw, 'disease_surveillance_raw')
 
-# Save profile report
-profile_path = Path('data/3_interim/data_profile_report.json')
-profile_path.parent.mkdir(parents=True, exist_ok=True)
+# Save profile report with timestamp
+from datetime import datetime
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+# Save to problem-statement-specific directory
+profile_dir = Path('results/tables/problem-statement-001')  # Adjust number as needed
+profile_dir.mkdir(parents=True, exist_ok=True)
+profile_path = profile_dir / f'data_profile_report_{timestamp}.json'
+
 with open(profile_path, 'w') as f:
     json.dump(profile, f, indent=2)
 
-logger.info(f"Data profile saved: {profile_path}")
+logger.info(f"✅ Data profile saved: {profile_path}")
 ```
 
 ### Schema Validation
@@ -384,12 +411,15 @@ except SchemaValidationError as e:
 - [ ] Explore relationships between variables (correlation matrix)
 - [ ] Identify temporal patterns if time-series data
 - [ ] Document unexpected findings
+- [ ] **Save all EDA outputs to local directories** (see Output Persistence Requirements below)
 
 ### Use Notebooks for Exploration
 - Keep exploratory notebooks in `notebooks/1_exploratory/`
 - Name with sequence numbers: `01_initial_data_profiling.ipynb`
 - Use markdown cells to document findings
 - Clear outputs before committing to version control
+- **CRITICAL**: Include output directory setup in first code cell
+- **CRITICAL**: Save all visualizations and summaries to local directories
 
 ```python
 # Notebook cell 1: Setup
@@ -397,9 +427,22 @@ import polars as pl
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
+from datetime import datetime
 
 %matplotlib inline
 sns.set_style('whitegrid')
+
+# Setup output directories (REQUIRED)
+PROBLEM_STATEMENT_NUM = '001'  # Adjust as needed
+FIGURES_DIR = Path(f'reports/figures/problem-statement-{PROBLEM_STATEMENT_NUM}')
+RESULTS_DIR = Path(f'results/tables/problem-statement-{PROBLEM_STATEMENT_NUM}')
+
+for dir_path in [FIGURES_DIR, RESULTS_DIR]:
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+print(f"✅ Output directories configured | Timestamp: {timestamp}")
 
 # Notebook cell 2: Document objective
 """
@@ -413,7 +456,20 @@ data/1_raw/weekly_disease_bulletin_2020-2023.csv
 1. What is the completeness of the data?
 2. Are there any temporal gaps?
 3. What is the distribution of case counts?
+
+## Outputs
+All results saved to:
+- Figures: reports/figures/problem-statement-001/
+- Tables: results/tables/problem-statement-001/
 """
+
+# Notebook cell 3: Example - Always save visualizations
+plt.figure(figsize=(12, 6))
+# ... create plot ...
+fig_path = FIGURES_DIR / f'descriptive_name_{timestamp}.png'
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+print(f"✅ Saved: {fig_path}")
+plt.show()
 ```
 
 ---
@@ -1010,7 +1066,10 @@ def run_sensitivity_analysis(
 ## 8. Interpretation & Visualization
 
 ### Create Publication-Quality Figures
-Save all figures to `results/figures/`:
+
+**CRITICAL**: ALL visualizations MUST be saved to local directories with timestamps.
+
+Save all figures to `reports/figures/problem-statement-{num}/`:
 
 ```python
 import polars as pl
@@ -1023,14 +1082,17 @@ logger = logging.getLogger(__name__)
 
 def create_disease_burden_heatmap(
     df: pl.DataFrame,
-    save_path: str = 'results/figures/disease_burden_heatmap.png'
+    problem_statement_num: str = '001',
+    save_name: str = 'disease_burden_heatmap'
 ) -> None:
     """Create heatmap of disease burden over time using pure Polars.
     
     Args:
         df: DataFrame with disease, time period, and burden metrics
-        save_path: Where to save figure
+        problem_statement_num: Problem statement number for directory organization
+        save_name: Base name for saved file (timestamp added automatically)
     """
+    from datetime import datetime
     logger.info("Creating disease burden heatmap")
     
     # Aggregate and pivot using Polars native pivot
@@ -1079,16 +1141,23 @@ def create_disease_burden_heatmap(
     
     plt.tight_layout()
     
-    # Save with high DPI
-    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    # Save with high DPI and timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    figures_dir = Path(f'reports/figures/problem-statement-{problem_statement_num}')
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    
+    save_path = figures_dir / f'{save_name}_{timestamp}.png'
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    logger.info(f"Figure saved: {save_path}")
+    logger.info(f"✅ Figure saved: {save_path}")
     
     plt.show()
 ```
 
 ### Save Summary Tables
-Store summary tables in `results/tables/`:
+
+**CRITICAL**: ALL summary tables MUST be saved to local directories with timestamps.
+
+Store summary tables in `results/tables/problem-statement-{num}/`:
 
 ```python
 import polars as pl
@@ -1099,17 +1168,20 @@ logger = logging.getLogger(__name__)
 
 def create_summary_table(
     df: pl.DataFrame,
-    save_path: str = 'results/tables/burden_metrics_summary.csv'
+    problem_statement_num: str = '001',
+    save_name: str = 'burden_metrics_summary'
 ) -> pl.DataFrame:
     """Create summary statistics table using Polars.
     
     Args:
         df: DataFrame with metrics
-        save_path: Where to save table
+        problem_statement_num: Problem statement number for directory organization
+        save_name: Base name for saved file (timestamp added automatically)
         
     Returns:
         Summary DataFrame
     """
+    from datetime import datetime
     logger.info("Creating summary statistics table")
     
     # Modern Polars aggregation syntax
@@ -1123,10 +1195,14 @@ def create_summary_table(
         pl.col('burden_score').max().alias('max_burden_score')
     ]).sort('total_cases', descending=True)
     
-    # Save
-    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    # Save with timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    tables_dir = Path(f'results/tables/problem-statement-{problem_statement_num}')
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    
+    save_path = tables_dir / f'{save_name}_{timestamp}.csv'
     summary.write_csv(save_path)
-    logger.info(f"Summary table saved: {save_path} ({summary.height} diseases)")
+    logger.info(f"✅ Summary table saved: {save_path} ({summary.height} diseases)")
     
     return summary
 ```
@@ -1495,6 +1571,11 @@ Document exact environment and data versions:
 - [ ] Summary tables generated
 - [ ] Analysis report written
 - [ ] Key decisions documented
+- [ ] **ALL figures saved to `reports/figures/problem-statement-{num}/` with timestamps**
+- [ ] **ALL tables saved to `results/tables/problem-statement-{num}/` with timestamps**
+- [ ] **ALL metrics saved to `results/metrics/problem-statement-{num}/` with timestamps**
+- [ ] **Confirmation messages printed for all saved outputs**
+- [ ] **Output directories created with proper structure**
 
 **Deployment**
 - [ ] Pipeline script created
@@ -1668,8 +1749,10 @@ When writing or reviewing data analysis code:
 - Handle exceptions: `try/except` with specific exception types
 - Document transformations in docstrings
 - Generate quality reports after cleaning
-- Create visualizations in `results/figures/`
-- Create summary tables in `results/tables/`
+- **Create ALL visualizations in `reports/figures/problem-statement-{num}/` with timestamps**
+- **Create ALL summary tables in `results/tables/problem-statement-{num}/` with timestamps**
+- **Create ALL metrics in `results/metrics/problem-statement-{num}/` with timestamps**
+- **Print confirmation messages showing saved file paths**
 
 ### ❌ NEVER Do:
 - Modify files in `data/1_raw/`
@@ -1682,15 +1765,24 @@ When writing or reviewing data analysis code:
 - Skip data validation steps
 - Ignore missing values without strategy
 - Overwrite processed data without versioning
-
-### 📊 Standard Analysis Pattern:
-```python
-import polars as pl
-from pathlib import Path
+from datetime import datetime
 import logging
+from pathlib import Path
+import json
 
 # 0. Setup logger (REQUIRED)
 logger = logging.getLogger(__name__)
+
+# 0.1 Setup output directories (REQUIRED)
+PROBLEM_STATEMENT_NUM = '001'  # Adjust as needed
+FIGURES_DIR = Path(f'reports/figures/problem-statement-{PROBLEM_STATEMENT_NUM}')
+RESULTS_DIR = Path(f'results/tables/problem-statement-{PROBLEM_STATEMENT_NUM}')
+METRICS_DIR = Path(f'results/metrics/problem-statement-{PROBLEM_STATEMENT_NUM}')
+
+for dir_path in [FIGURES_DIR, RESULTS_DIR, METRICS_DIR]:
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
 # 1. Load configuration (recommended)
 from src.utils.config import load_config
@@ -1707,11 +1799,36 @@ df_clean.write_csv('data/3_interim/surveillance_cleaned.csv')
 df_featured = engineer_features(df_clean)
 
 # 5. Calculate metrics with lineage tracking
-df_metrics = transform_with_lineage(\n    df_featured,\n    calculate_burden_metrics,\n    step_name=\"burden_calculation\",\n    config=config\n)
+df_metrics = transform_with_lineage(
+    df_featured,
+    calculate_burden_metrics,
+    step_name=\"burden_calculation\",
+    config=config
+)
 
 # 6. Optimize and save final dataset
 df_optimized = optimize_dataframe_memory(df_metrics)
 df_optimized.write_csv('data/4_processed/disease_burden_metrics.csv')
+
+# 7. Generate and SAVE outputs (REQUIRED)
+# Save visualizations
+create_visualizations(df_optimized, figures_dir=FIGURES_DIR, timestamp=timestamp)
+
+# Save summary tables
+summary_df = create_summary_table(df_optimized)
+summary_path = RESULTS_DIR / f'summary_statistics_{timestamp}.csv'
+summary_df.write_csv(summary_path)
+logger.info(f\"✅ Saved summary: {summary_path}\")
+
+# Save metrics
+metrics = calculate_quality_metrics(df_optimized)
+metrics_path = METRICS_DIR / f'quality_metrics_{timestamp}.json'
+with open(metrics_path, 'w') as f:
+    json.dump(metrics, f, indent=2)
+logger.info(f\"✅ Saved metrics: {metrics_path}\")
+
+logger.info(\"✅ Analysis pipeline completed successfully\")
+logger.info(f\"All outputs saved with timestamp: {timestamp}\")
 
 # 7. Generate outputs
 create_visualizations(df_optimized, save_path='results/figures/')

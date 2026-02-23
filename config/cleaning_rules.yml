@@ -1,0 +1,107 @@
+# Data Cleaning Rules Configuration
+# Generated from validated implementation plan (2026-02-23)
+# User Story 2: Data Cleaning and Standardization
+
+# Column rename mappings (ACTUAL from raw data validation)
+# NOTE: Most columns already in snake_case, minimal renaming needed
+workforce_column_mappings:
+  # Doctors: ['year', 'sector', 'specialist_non-specialist', 'count']
+  specialist_non-specialist: specialist_category  # Fix hyphen to underscore
+  # Nurses: ['year', 'type', 'sector', 'count']
+  type: nurse_type  # Rename for clarity
+  # Pharmacists: ['year', 'sector', 'count'] - no changes needed
+
+capacity_column_mappings:
+  # Hospital beds: ['year', 'institution_type', 'facility_type_a', 'public_private', 'no_of_facilities', 'no_beds']
+  public_private: sector  # Standardize to 'sector'
+  no_of_facilities: num_facilities
+  no_beds: num_beds
+  # Primary care: ['year', 'institution_type', 'sector', 'facility_type_b', 'no_of_facilities']
+  # Note: no_of_facilities renamed to num_facilities (handled in code per table)
+
+# Sector standardization (ACTUAL from raw data validation - 2026-02-23)
+sector_standardization:
+  # Workforce variations
+  Public: Public
+  "Public Sector": Public
+  Private: Private
+  "Private Sector": Private
+  # Hospital capacity variations
+  "Not-for-Profit": Not-for-Profit
+  # Workforce "Not in Active Practice" - DECISION: Tag as Inactive (exclude from analysis)
+  "Not In Active Practice": Inactive  # Tagged for filtering, not a true sector
+  "Not in Active Practice": Inactive  # Case variation
+
+# Valid categorical values
+valid_values:
+  sectors:
+    - Public
+    - Private
+    - Not-for-Profit
+    - Inactive  # Flagged for exclusion
+  professions:
+    - Doctor
+    - Nurse
+    - Pharmacist
+  nurse_types:
+    - Registered Nurses
+    - Enrolled Nurses
+    - Registered Midwives
+  specialist_categories:
+    - na
+    - Specialists
+    - Non-Specialists
+
+# Value constraints (VALIDATED from actual data - 2026-02-23)
+value_constraints:
+  workforce:
+    year_min: 2006
+    year_max: 2019
+    min_count: 0
+  capacity:
+    year_min: 2009
+    year_max: 2020
+    min_count: 0
+  outlier_threshold_stdev: 3.0
+
+# Quality thresholds (UPDATED based on actual data - 100% completeness)
+quality_thresholds:
+  max_null_percentage: 0.1  # LOWERED: Actual data has 0% nulls
+  max_outlier_percentage: 5.0  # Warning if >5% outliers
+  completeness_target: 100.0  # RAISED: Actual data is 100% complete
+  max_duplicate_percentage: 0.1  # Fail if >0.1% duplicates
+
+# Data type specifications
+data_types:
+  year: Int32  # Memory optimization
+  count: Int32  # All values << 2.1B limit
+  sector: Categorical
+  profession: Categorical
+  nurse_type: Categorical
+  specialist_category: Categorical
+  source_table: String
+  outlier_flag: Boolean
+  has_missing_values: Boolean
+
+# Cleaning strategies
+cleaning_strategies:
+  missing_values:
+    strategy: flag  # Flag rather than impute (actual data has 0% nulls)
+    log_warnings: true  # Log if any nulls detected (unexpected for this dataset)
+  duplicates:
+    strategy: remove_exact  # Remove exact duplicates, keep first occurrence
+    log_removed: true
+  outliers:
+    strategy: flag  # Flag but do not remove (may be real phenomena)
+    methods:
+      - zscore
+      - iqr
+    log_findings: true
+
+# Output specifications
+output_paths:
+  workforce_clean: data/3_interim/workforce_clean.parquet
+  capacity_clean: data/3_interim/capacity_clean.parquet
+  cleaning_log: logs/etl/data_cleaning_{timestamp}.log
+  quality_report: logs/etl/data_quality_report_{timestamp}.md
+  data_dictionary: data/3_interim/README.md

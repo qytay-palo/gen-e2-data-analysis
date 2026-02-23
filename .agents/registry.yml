@@ -1,0 +1,255 @@
+# Agent Registry
+# Maps agent roles to instruction files and capabilities
+# Last Updated: 2026-02-23
+
+agents:
+  ExtractionAgent:
+    id: extraction
+    version: "1.0.0"
+    description: Specializes in data extraction from various sources (Kaggle, MOH APIs, CSV files)
+    capabilities:
+      - kaggle_api_integration
+      - csv_file_handling
+      - data_schema_validation
+      - initial_data_validation
+    instruction_files:
+      primary: .github/instructions/data-analysis-stages-instructions/data-extraction-loading.instructions.md
+      secondary:
+        - .github/instructions/python-best-practices.instructions.md
+    skills:
+      - .agents/skills/kaggle-data-extraction/SKILL.md  # To be created
+    tools:
+      mcp: [filesystem, sqlite]
+      python_packages: [polars, kaggle, requests, pyyaml]
+    output_patterns:
+      - data/3_interim/extracted_*.csv
+      - logs/etl/extraction_*.log
+    
+  ProfilingAgent:
+    id: profiling
+    version: "1.0.0"
+    description: Performs comprehensive data quality assessment and profiling
+    capabilities:
+      - missing_value_analysis
+      - outlier_detection
+      - distribution_analysis
+      - schema_validation
+      - data_quality_scoring
+    instruction_files:
+      primary: .github/instructions/data-analysis-stages-instructions/exploratory-data-analysis.instructions.md
+      secondary:
+        - .github/instructions/python-best-practices.instructions.md
+    skills:
+      - .agents/skills/data-quality-assessment/SKILL.md  # To be created
+    tools:
+      mcp: [filesystem]
+      python_packages: [polars, great_expectations, ydata_profiling]
+    output_patterns:
+      - results/tables/problem-statement-*/data_quality_report.md
+      - results/metrics/problem-statement-*/quality_metrics.json
+    
+  CleaningAgent:
+    id: cleaning
+    version: "1.0.0"
+    description: Handles data cleaning, transformation, and preprocessing
+    capabilities:
+      - missing_value_imputation
+      - outlier_handling
+      - data_type_conversion
+      - standardization_normalization
+      - categorical_encoding
+    instruction_files:
+      primary: .github/instructions/data-analysis-best-practices.instructions.md
+      secondary:
+        - .github/instructions/python-best-practices.instructions.md
+    skills:
+      - .agents/skills/moh-data-standards/SKILL.md  # To be created
+    tools:
+      mcp: [filesystem]
+      python_packages: [polars, scikit-learn]
+    output_patterns:
+      - data/4_processed/cleaned_*.csv
+      - logs/etl/cleaning_*.log
+    
+  EDAAgent:
+    id: eda
+    version: "1.0.0"
+    description: Conducts exploratory data analysis with statistical rigor
+    capabilities:
+      - univariate_analysis
+      - bivariate_analysis
+      - temporal_pattern_detection
+      - correlation_analysis
+      - distribution_testing
+    instruction_files:
+      primary: .github/instructions/data-analysis-stages-instructions/exploratory-data-analysis.instructions.md
+      secondary:
+        - .github/instructions/python-best-practices.instructions.md
+    skills:
+      - .agents/skills/epidemiological-metrics/SKILL.md  # To be created
+    tools:
+      mcp: [filesystem]
+      python_packages: [polars, matplotlib, seaborn, scipy, statsmodels]
+    output_patterns:
+      - reports/figures/problem-statement-*/*.png
+      - results/tables/problem-statement-*/eda_summary.csv
+      - notebooks/1_exploratory/*.ipynb
+    
+  ModelingAgent:
+    id: modeling
+    version: "1.0.0"
+    description: Builds and evaluates statistical models and forecasting algorithms
+    capabilities:
+      - time_series_forecasting
+      - regression_modeling
+      - model_validation
+      - hyperparameter_tuning
+      - ensemble_methods
+    instruction_files:
+      primary: .github/instructions/data-analysis-stages-instructions/modeling-forecasting.instructions.md
+      secondary:
+        - .github/instructions/python-best-practices.instructions.md
+    skills:
+      - .agents/skills/seasonal-forecasting/SKILL.md  # To be created
+    tools:
+      mcp: [filesystem]
+      python_packages: [polars, scikit-learn, statsmodels, prophet, xgboost]
+    output_patterns:
+      - models/problem-statement-*/*.pkl
+      - results/metrics/problem-statement-*/model_performance.json
+      - notebooks/2_analysis/*.ipynb
+    
+  VisualizationAgent:
+    id: visualization
+    version: "1.0.0"
+    description: Creates publication-quality visualizations and reports
+    capabilities:
+      - publication_ready_charts
+      - interactive_dashboards
+      - report_generation
+      - figure_formatting
+      - color_scheme_optimization
+    instruction_files:
+      primary: .github/instructions/data-analysis-stages-instructions/visualization-reporting.instructions.md
+      secondary:
+        - .github/instructions/python-best-practices.instructions.md
+    skills:
+      - .agents/skills/moh-presentation-standards/SKILL.md  # To be created
+    tools:
+      mcp: [filesystem]
+      python_packages: [polars, matplotlib, seaborn, plotly]
+    output_patterns:
+      - reports/figures/problem-statement-*/final/*.png
+      - reports/problem-statement-*/final_report.md
+    
+  QualityAgent:
+    id: quality
+    version: "1.0.0"
+    description: Ensures code quality, testing coverage, and best practices compliance
+    capabilities:
+      - unit_test_generation
+      - integration_test_creation
+      - code_review
+      - linting
+      - coverage_analysis
+    instruction_files:
+      primary: .github/instructions/python-best-practices.instructions.md
+      secondary: []
+    skills: []
+    tools:
+      mcp: [filesystem]
+      python_packages: [pytest, pytest-cov, ruff, mypy]
+    output_patterns:
+      - tests/unit/problem-statement-*/*.py
+      - tests/integration/problem-statement-*/*.py
+      - logs/audit/quality_check_*.log
+    
+  DocumentationAgent:
+    id: documentation
+    version: "1.0.0"
+    description: Creates comprehensive technical documentation and user guides
+    capabilities:
+      - readme_generation
+      - methodology_documentation
+      - api_documentation
+      - markdown_formatting
+      - cross_referencing
+    instruction_files:
+      primary: .github/instructions/document-writing.instructions.md
+      secondary: []
+    skills: []
+    tools:
+      mcp: [filesystem]
+      python_packages: []
+    output_patterns:
+      - src/problem-statement-*/README.md
+      - docs/methodology/*.md
+      - src/problem-statement-*/IMPLEMENTATION_VERIFICATION.md
+
+# Agent Interaction Matrix
+# Defines which agents can communicate and share context
+interaction_matrix:
+  ExtractionAgent:
+    can_handoff_to: [ProfilingAgent]
+    shares_context_with: [QualityAgent, DocumentationAgent]
+  
+  ProfilingAgent:
+    can_handoff_to: [CleaningAgent]
+    shares_context_with: [QualityAgent, DocumentationAgent]
+  
+  CleaningAgent:
+    can_handoff_to: [EDAAgent]
+    shares_context_with: [ProfilingAgent, QualityAgent, DocumentationAgent]
+  
+  EDAAgent:
+    can_handoff_to: [ModelingAgent]
+    shares_context_with: [ModelingAgent, VisualizationAgent, DocumentationAgent]
+  
+  ModelingAgent:
+    can_handoff_to: [VisualizationAgent]
+    shares_context_with: [EDAAgent, QualityAgent, DocumentationAgent]
+  
+  VisualizationAgent:
+    can_handoff_to: [DocumentationAgent]
+    shares_context_with: [ModelingAgent, DocumentationAgent]
+  
+  QualityAgent:
+    can_handoff_to: []
+    shares_context_with: [all]  # Quality agent reviews all outputs
+  
+  DocumentationAgent:
+    can_handoff_to: []
+    shares_context_with: [all]  # Documentation agent documents all stages
+
+# Skills Library
+# Domain-specific knowledge modules that agents can reference
+skills_library:
+  - name: kaggle-data-extraction
+    path: .agents/skills/kaggle-data-extraction/SKILL.md
+    applies_to: [ExtractionAgent]
+    description: Kaggle API authentication, dataset search, and download procedures
+  
+  - name: data-quality-assessment
+    path: .agents/skills/data-quality-assessment/SKILL.md
+    applies_to: [ProfilingAgent, CleaningAgent]
+    description: MOH data quality standards and validation criteria
+  
+  - name: moh-data-standards
+    path: .agents/skills/moh-data-standards/SKILL.md
+    applies_to: [CleaningAgent, EDAAgent]
+    description: Singapore MOH data formatting and classification standards
+  
+  - name: epidemiological-metrics
+    path: .agents/skills/epidemiological-metrics/SKILL.md
+    applies_to: [EDAAgent, ModelingAgent]
+    description: Disease surveillance metrics, incidence rates, seasonality calculations
+  
+  - name: seasonal-forecasting
+    path: .agents/skills/seasonal-forecasting/SKILL.md
+    applies_to: [ModelingAgent]
+    description: Time series forecasting for seasonal disease patterns
+  
+  - name: moh-presentation-standards
+    path: .agents/skills/moh-presentation-standards/SKILL.md
+    applies_to: [VisualizationAgent, DocumentationAgent]
+    description: MOH reporting standards, color schemes, chart formatting guidelines

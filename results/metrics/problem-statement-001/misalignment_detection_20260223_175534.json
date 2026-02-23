@@ -1,0 +1,39 @@
+[
+  {
+    "sector": "Private",
+    "years_affected": [
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2017,
+      2019
+    ],
+    "total_years": 8,
+    "severity": "High",
+    "avg_mismatch": 4.88,
+    "max_mismatch": 37.22,
+    "cumulative_mismatch": 38.8
+  },
+  {
+    "sector": "Public",
+    "years_affected": [
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2016,
+      2017,
+      2018,
+      2019
+    ],
+    "total_years": 9,
+    "severity": "Medium",
+    "avg_mismatch": 2.16,
+    "max_mismatch": 8.61,
+    "cumulative_mismatch": 19.28
+  }
+]

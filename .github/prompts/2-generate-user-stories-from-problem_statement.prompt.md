@@ -111,7 +111,7 @@ Search the `/docs` directory structure for existing domain knowledge documentati
   - Academic publications and healthcare journals
   - Industry standard frameworks and guidelines
   - Relevant industry best practice documentation
-- **Prioritize trustable and latest sources** (published within the last 3-5 years where applicable) to ensure current best practices and up-to-date domain knowledge
+- **Prioritize trustable and latest sources** (published within the last 0-5 years where applicable) to ensure current best practices and up-to-date domain knowledge
 - Focus search on:
   - Industry-standard metrics, KPIs, and benchmarks
   - Common feature engineering patterns for the domain
@@ -129,7 +129,6 @@ Use clear, descriptive names that enable easy identification of content:
 - Examples: 
   - `stakeholder-healthcare-operations-manager-expertise.md`
   - `stakeholder-clinical-director-expertise.md`
-  - `stakeholder-health-policy-analyst-expertise.md`
 
 **Domain Terminology:**
 - `{domain}-terminology-glossary.md`
@@ -142,13 +141,11 @@ Use clear, descriptive names that enable easy identification of content:
 - Examples:
   - `polyclinic-utilization-metrics-kpis.md`
   - `patient-flow-metrics-kpis.md`
-  - `disease-surveillance-metrics-kpis.md`
 
 **Feature Engineering Guides:**
 - `{domain}-feature-engineering-guide.md`
 - Examples:
   - `patient-flow-feature-engineering-guide.md`
-  - `healthcare-capacity-feature-engineering-guide.md`
   - `disease-outbreak-feature-engineering-guide.md`
 
 #### f. File Content Structure for Domain Knowledge

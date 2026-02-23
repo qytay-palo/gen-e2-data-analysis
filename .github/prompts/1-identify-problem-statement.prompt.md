@@ -108,24 +108,6 @@ For this project, a problem statement is **end-to-end solvable** when:
 4. **Deliverable is Defined**: Clear output that stakeholders can use
 5. **Demonstrable**: Can be implemented and validated in a notebook or script
 
-**Minimum Viable Analysis (MVP) Approach**:
-
-Instead of defining the complete analytical flow upfront, focus on **incremental value delivery**:
-
-```
-Sprint 1: Data Discovery → Validate availability, assess quality, initial profiling
-Sprint 2: Exploratory Analysis → Generate initial insights, gather stakeholder feedback
-Sprint 3+: Refinement & Delivery → Deeper analysis based on learnings, iterate on delivery format
-```
-
-This allows the team to:
-- Adapt based on data quality findings
-- Pivot based on stakeholder feedback
-- Discover optimal analytical approaches through experimentation
-- Deliver value early while refining the solution
-
----
-
 ### STEP 2: Identify Problem Statement
 
 **MANDATORY**: Reference your **STEP 1.5 Data Reality Check** before proposing any problem statement.
@@ -270,7 +252,6 @@ Define **3-5 high-level objectives** that represent strategic analytical goals. 
 - Objective 2: Identify population segments with distinct care needs and service gaps
 - Objective 3: Enable targeted intervention strategies based on segment characteristics
 
-
 ---
 
 #### 3.5 Stakeholders and Value Proposition
@@ -319,7 +300,7 @@ When ideal data is NOT available, consider:
 - Note: The development team will determine specific methods and techniques during sprint planning
 
 **Platform Feasibility**: (Reference [tech_stack.md](../../../docs/project_context/tech_stack.md))
-- **Primary Platform**: Which platform from tech stack will be used? (Databricks, CDSW, HUE, local Python/R, STATA)
+- **Primary Platform**: Which platform from tech stack will be used? 
 - **Language**: Primary language(s) for this Problem Statement? (Python, R, SQL, Scala)
 - **Compute Requirements**: Local compute sufficient or distributed processing needed?
 - **Data Access Pattern**: Batch processing or interactive queries? Spark RDDs, SQL, or file-based?
@@ -428,28 +409,6 @@ Create `docs/objectives/problem_statements/README.md` with:
 ## Overview
 
 **Total Problem Statements**: [count]
-**Critical Priority**: [count]
-**Estimated Total Duration**: [weeks]
-
----
-
-## Problem Statement Roadmap (Prioritized)
-
-### Critical Priority (Start Immediately)
-
-1. **[PS-001: Title](ps-001-title.md)** ⭐ CRITICAL
-   - One-line description of the problem and value
-   - Complexity: [LEVEL]
-   - Dependencies: [None or problem statement IDs]
-
-### High Priority
-
-2. **[PS-002: Title](ps-002-title.md)** ⭐ HIGH
-   - One-line description of the problem and value
-   - Complexity: [LEVEL]
-   - Dependencies: [Problem Statement IDs]
-
-[Continue for all problem statements...]
 
 ---
 
@@ -465,22 +424,6 @@ Create `docs/objectives/problem_statements/README.md` with:
 
 ---
 
-## Recommended Sequencing
-
-### Immediate Focus (Critical Priority)
-- PS-001: [Brief rationale for priority]
-- PS-004: [Brief rationale for priority]
-
-### Next Phase (High Priority)
-- PS-002: [Brief rationale and any dependencies]
-- PS-003: [Brief rationale and any dependencies]
-
-[Continue grouping by priority and dependencies...]
-
-```
-
----
-
 ## Output Format
 
 ### File Structure
@@ -490,7 +433,7 @@ Create the following files in `docs/objectives/problem_statements/`:
 ```
 docs/objectives/problem_statements/
 ├── README.md                           # Problem statement index and roadmap
-├── ps-001-[descriptive-name].md        # First problem statement (highest priority)
+├── ps-001-[descriptive-name].md        # First problem statement 
 ├── ps-002-[descriptive-name].md        # Second problem statement
 ├── ps-003-[descriptive-name].md        # Third problem statement
 └── ...

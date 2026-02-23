@@ -1,0 +1,17 @@
+{
+  "test_used": "ANOVA",
+  "statistic": 1.3386348914679171,
+  "p_value": 0.27494158873523583,
+  "significant": false,
+  "conclusion": "No significant difference in growth rates across sectors (p=0.2749 >= 0.05)",
+  "sectors_compared": [
+    "Inactive",
+    "Private",
+    "Public"
+  ],
+  "sample_sizes": [
+    13,
+    13,
+    13
+  ]
+}

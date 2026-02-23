@@ -116,3 +116,92 @@ When a chart would communicate results more effectively than a table:
 - If you know the table names, mention them to speed up the process
 - For complex questions, Claude may break them into multiple queries
 - Results are always validated before presentation -- if something looks off, Claude will flag it
+
+## Output Persistence
+
+**REQUIRED**: All analysis outputs MUST be saved to local directories following the project structure.
+
+### Save Locations
+
+1. **Analysis Results Tables**: `results/tables/problem-statement-{num}/analysis_results_{timestamp}.csv`
+2. **Metrics and KPIs**: `results/metrics/problem-statement-{num}/metrics_{timestamp}.csv`
+3. **Analysis Reports**: `results/tables/problem-statement-{num}/analysis_report_{timestamp}.md`
+4. **Visualizations**: `reports/figures/problem-statement-{num}/analysis_{chart_type}_{timestamp}.png`
+
+### Implementation Template
+
+Include this pattern in all analysis code:
+
+```python
+from datetime import datetime
+from pathlib import Path
+import json
+
+# Define output directories
+RESULTS_DIR = Path('results/tables/problem-statement-{num}')
+METRICS_DIR = Path('results/metrics/problem-statement-{num}')
+FIGURES_DIR = Path('reports/figures/problem-statement-{num}')
+
+# Create directories
+for dir_path in [RESULTS_DIR, METRICS_DIR, FIGURES_DIR]:
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+# Generate timestamp
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+# Save analysis results
+results_path = RESULTS_DIR / f'analysis_results_{timestamp}.csv'
+results_df.write_csv(results_path)
+print(f"✅ Saved analysis results to: {results_path}")
+
+# Save metrics
+metrics_path = METRICS_DIR / f'metrics_{timestamp}.json'
+with open(metrics_path, 'w') as f:
+    json.dump(metrics_dict, f, indent=2)
+print(f"✅ Saved metrics to: {metrics_path}")
+
+# Save visualizations
+if creating_viz:
+    fig_path = FIGURES_DIR / f'analysis_trend_{timestamp}.png'
+    plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+    print(f"✅ Saved visualization to: {fig_path}")
+    plt.show()
+
+# Save analysis report (for formal reports)
+report_path = RESULTS_DIR / f'analysis_report_{timestamp}.md'
+with open(report_path, 'w') as f:
+    f.write(report_content)
+print(f"✅ Saved analysis report to: {report_path}")
+```
+
+### Output Verification
+
+After generating analysis code, verify:
+- ✅ All result DataFrames have corresponding `.write_csv()` or `.write_excel()` calls
+- ✅ All metrics are saved as JSON or CSV files
+- ✅ All visualizations include `plt.savefig()` calls
+- ✅ All file paths use the correct problem-statement directory structure
+- ✅ All output files include timestamps for versioning
+- ✅ Confirmation messages are printed showing saved file paths
+- ✅ Output directories are created with `mkdir(parents=True, exist_ok=True)`
+
+### User-Facing Output Messages
+
+Always provide clear feedback about saved outputs:
+
+```
+✅ Analysis complete!
+
+Results saved to:
+📊 Analysis Results:
+  - results/tables/problem-statement-001/analysis_results_20260223_141530.csv
+  
+📈 Metrics:
+  - results/metrics/problem-statement-001/metrics_20260223_141530.json
+  
+📉 Visualizations:
+  - reports/figures/problem-statement-001/analysis_trend_20260223_141530.png
+  
+📄 Report:
+  - results/tables/problem-statement-001/analysis_report_20260223_141530.md
+```

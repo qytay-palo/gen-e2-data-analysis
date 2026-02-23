@@ -229,3 +229,103 @@ When exploring an unfamiliar data environment:
 3. Identify raw/staging/mart layers
 4. Map the transformation chain from raw data to analytical tables
 5. Note where data is enriched, filtered, or aggregated
+
+## Output Persistence Requirements
+
+**CRITICAL**: All data exploration outputs MUST be saved to local directories following the project structure.
+
+### Required Output Locations
+
+1. **Figures and Visualizations**
+   - Directory: `reports/figures/problem-statement-{num}/`
+   - Format: PNG (300 dpi minimum) or PDF for publication quality
+   - Naming: `{descriptive_name}_{timestamp}.png`
+   - Example: `reports/figures/problem-statement-001/temporal_coverage_20260223_141530.png`
+
+2. **Data Profiles and Summary Tables**
+   - Directory: `results/tables/problem-statement-{num}/`
+   - Format: CSV for data tables, Markdown for reports
+   - Naming: `{profile_type}_{timestamp}.csv` or `{report_name}_{timestamp}.md`
+   - Example: `results/tables/problem-statement-001/data_quality_summary_20260223_141530.csv`
+
+3. **Analysis Results and Metrics**
+   - Directory: `results/metrics/problem-statement-{num}/`
+   - Format: CSV for metrics, JSON for structured results
+   - Naming: `{metric_name}_{timestamp}.{csv|json}`
+   - Example: `results/metrics/problem-statement-001/completeness_scores_20260223_141530.csv`
+
+4. **Exploration Logs**
+   - Directory: `logs/etl/`
+   - Format: Markdown or plain text
+   - Naming: `exploration_log_{timestamp}.md`
+   - Example: `logs/etl/exploration_log_20260223_141530.md`
+
+### Implementation Requirements for Notebooks and Scripts
+
+When generating exploration code, ALWAYS include:
+
+```python
+# 1. Import datetime for timestamps
+from datetime import datetime
+from pathlib import Path
+
+# 2. Define output directories
+FIGURES_DIR = Path('reports/figures/problem-statement-{num}')
+RESULTS_DIR = Path('results/tables/problem-statement-{num}')
+METRICS_DIR = Path('results/metrics/problem-statement-{num}')
+
+# 3. Create directories
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+METRICS_DIR.mkdir(parents=True, exist_ok=True)
+
+# 4. Generate timestamp
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+# 5. Save outputs with confirmation
+# For figures:
+fig_path = FIGURES_DIR / f'temporal_coverage_{timestamp}.png'
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+print(f"✅ Saved figure to: {fig_path}")
+
+# For data tables:
+data_path = RESULTS_DIR / f'quality_summary_{timestamp}.csv'
+df_summary.write_csv(data_path)
+print(f"✅ Saved data to: {data_path}")
+
+# For metrics:
+metrics_path = METRICS_DIR / f'completeness_scores_{timestamp}.csv'
+metrics_df.write_csv(metrics_path)
+print(f"✅ Saved metrics to: {metrics_path}")
+```
+
+### Output Verification
+
+After generating exploration code, verify:
+
+- ✅ All visualization cells include `plt.savefig()` calls
+- ✅ All summary DataFrames have corresponding `.write_csv()` or `.write_excel()` calls
+- ✅ All file paths use the correct problem-statement directory structure
+- ✅ All output files include timestamps for versioning
+- ✅ Confirmation messages are printed showing saved file paths
+- ✅ Output directories are created with `mkdir(parents=True, exist_ok=True)`
+
+### User-Facing Output Messages
+
+Always provide clear feedback about saved outputs:
+
+```
+✅ Data exploration complete!
+
+Outputs saved to:
+📊 Figures:
+  - reports/figures/problem-statement-001/temporal_coverage_20260223_141530.png
+  - reports/figures/problem-statement-001/sector_distribution_20260223_141530.png
+  
+📈 Data Summaries:
+  - results/tables/problem-statement-001/quality_summary_20260223_141530.csv
+  - results/tables/problem-statement-001/completeness_report_20260223_141530.csv
+  
+📋 Metrics:
+  - results/metrics/problem-statement-001/data_quality_metrics_20260223_141530.json
+```

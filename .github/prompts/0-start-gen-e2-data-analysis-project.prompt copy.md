@@ -30,6 +30,26 @@ Ask the following questions before proceeding:
 
 ## Actions Based on Answers
 
+0. **Create and Activate Virtual Environment**:
+   - Create a Python virtual environment using `uv`:
+     ```bash
+     uv venv .venv
+     ```
+   - Activate the virtual environment:
+     ```bash
+     source .venv/bin/activate  # macOS/Linux
+     # or
+     .venv\Scripts\activate     # Windows
+     ```
+   - Install `uv` if not already installed:
+     ```bash
+     pip install uv
+     ```
+   - Verify the environment is active by checking the Python executable:
+     ```bash
+     which python  # Should show path to .venv/bin/python
+     ```
+
 1. **Update Project Folder Structure**:
 Below is the base folder structure:
 ```
@@ -131,10 +151,7 @@ Below is the base folder structure:
    - Create connection scripts in `src/data_processing/` for external data sources (e.g., Kaggle, AWS S3, Azure Blob Storage, APIs). Each script should include authentication handling, connection setup, error handling, and logging. Use environment variables from `.env` for credentials and API keys. Include retry logic for network failures and implement rate limiting for API calls. Document connection parameters and authentication methods in comments. Add connection testing functions to validate credentials before data extraction. Consider creating a base connection class that other connectors can inherit from for consistency.
    - Run the extraction scripts to download data from external sources and place the extracted files in `data/1_raw/` folder. Ensure raw data files remain immutable and are never modified in place. Log all extraction activities including timestamps, file sizes, and data quality checks.
 
-5. **Code Quality**:
-   - Suggest tools for code quality checks, such as linters and formatters.
-
-6. **Create TODO.md**:
+5. **Create TODO.md**:
    - Create the `TODO.md` file and split it in a way that makes sense for this project.
    - Format:
      ```
@@ -146,25 +163,25 @@ Below is the base folder structure:
    - Include tasks outside of development, like DevOps tasks, security tasks, etc.
    - Add lines regarding reviewing all generated files (like Architecture or API doc) and updating them as needed.
 
-7. **Documentation**:
+6. **Documentation**:
    - If the project is API-First or has an API, suggest a swagger file `docs/apidoc.yaml` .
 
-8. **Tools and Dependencies**:
+7. **Tools and Dependencies**:
    - Suggest tools that could be useful for this project, like a specific database, etc.
    - Create all necessary files for the project, like the .gitignore, the .gitattributes, etc.
    - Depending on the selected language, create the necessary files for it (like a requirements.txt for python).
    - If a virtual environment is needed, suggest it and create it. Load all dependencies needed for the project.
 
-9. **Version Control**:
+8. **Version Control**:
    - Ensure to initialize a Git repository and create an initial commit.
 
-10. **Testing**:
+9. **Testing**:
    - Set up testing frameworks and write initial test cases.
 
-11. **Environment Configuration**:
+10. **Environment Configuration**:
    - Provide guidelines for handling environment variables and secrets (e.g., using .env files).
 
-12. **Code Quality**:
+11. **Code Quality**:
    - Suggest tools for code quality checks, such as linters and formatters.
 
 ---

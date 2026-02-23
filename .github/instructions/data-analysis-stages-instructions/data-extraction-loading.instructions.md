@@ -544,6 +544,389 @@ def validate_extraction(
     logger.info(f"Extraction validation passed: {len(df)} rows, {len(df.columns)} columns")
 ```
 
+## Dynamic Data Extraction Workflow
+
+Before starting any extraction work, use this workflow to check for existing data and configurations:
+
+### 1. Check Existing Data Status
+
+```python
+from pathlib import Path
+import yaml
+from loguru import logger
+from datetime import datetime
+
+def check_extraction_status(project_root: str = '.') -> dict:
+    """Check current data extraction status and existing configurations.
+    
+    Returns:
+        Dictionary with status information about existing data and configs
+    """
+    project_path = Path(project_root)
+    status = {
+        'raw_data_exists': False,
+        'raw_data_files': [],
+        'extraction_config_exists': False,
+        'extraction_config_path': None,
+        'extraction_scripts': [],
+        'recommended_action': None
+    }
+    
+    # Check for raw data
+    raw_data_path = project_path / 'data' / '1_raw'
+    if raw_data_path.exists():
+        raw_files = list(raw_data_path.glob('*'))
+        raw_files = [f for f in raw_files if f.is_file() and not f.name.startswith('.')]
+        status['raw_data_exists'] = len(raw_files) > 0
+        status['raw_data_files'] = [f.name for f in raw_files]
+    
+    # Check for extraction configuration
+    possible_configs = [
+        project_path / 'config' / 'extraction.yml',
+        project_path / 'config' / 'analysis.yml',
+        project_path / 'config' / 'databricks.yml'
+    ]
+    
+    for config_path in possible_configs:
+        if config_path.exists():
+            status['extraction_config_exists'] = True
+            status['extraction_config_path'] = str(config_path)
+            logger.info(f"Found configuration: {config_path}")
+            break
+    
+    # Check for extraction scripts
+    scripts_path = project_path / 'scripts'
+    if scripts_path.exists():
+        extraction_scripts = list(scripts_path.glob('*extract*.py')) + \
+                           list(scripts_path.glob('*etl*.py'))
+        status['extraction_scripts'] = [s.name for s in extraction_scripts]
+    
+    # Check SQL extraction queries
+    sql_path = project_path / 'sql' / 'extractions'
+    if sql_path.exists():
+        sql_scripts = list(sql_path.glob('*.sql'))
+        status['sql_extraction_queries'] = [s.name for s in sql_scripts]
+    
+    # Determine recommended action
+    if status['raw_data_exists']:
+        status['recommended_action'] = 'use_existing'
+        logger.info(f"Found {len(status['raw_data_files'])} existing raw data files")
+    elif status['extraction_config_exists']:
+        status['recommended_action'] = 'run_extraction'
+        logger.info("No raw data found, but extraction config exists - run extraction")
+    else:
+        status['recommended_action'] = 'create_config'
+        logger.warning("No raw data or extraction config found - setup needed")
+    
+    return status
+
+# Usage
+status = check_extraction_status()
+print(f"Raw data exists: {status['raw_data_exists']}")
+print(f"Config available: {status['extraction_config_exists']}")
+print(f"Recommended action: {status['recommended_action']}")
+```
+
+### 2. Dynamic Data Extraction Based on Status
+
+```python
+def execute_dynamic_extraction(
+    project_root: str = '.',
+    force_reextract: bool = False
+) -> None:
+    """Dynamically execute data extraction based on project status.
+    
+    Args:
+        project_root: Root directory of the project
+        force_reextract: Force re-extraction even if data exists
+    """
+    from pathlib import Path
+    import yaml
+    import polars as pl
+    
+    # Check current status
+    status = check_extraction_status(project_root)
+    project_path = Path(project_root)
+    
+    # Decision logic
+    if status['raw_data_exists'] and not force_reextract:
+        logger.info("Raw data already exists - skipping extraction")
+        logger.info(f"Existing files: {', '.join(status['raw_data_files'])}")
+        return
+    
+    # Load configuration (prioritize extraction.yml, fallback to analysis.yml)
+    config = None
+    config_paths = [
+        project_path / 'config' / 'extraction.yml',
+        project_path / 'config' / 'analysis.yml'
+    ]
+    
+    for config_path in config_paths:
+        if config_path.exists():
+            logger.info(f"Loading configuration from: {config_path}")
+            with open(config_path) as f:
+                config = yaml.safe_load(f)
+            break
+    
+    if not config:
+        raise FileNotFoundError(
+            "No extraction configuration found. Create config/extraction.yml or config/analysis.yml"
+        )
+    
+    # Extract data based on configuration
+    # This is a template - customize based on your data sources
+    
+    # Example 1: If config specifies raw data path
+    if 'data' in config and 'raw_data_path' in config['data']:
+        raw_path = project_path / config['data']['raw_data_path']
+        raw_path.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Raw data directory ready: {raw_path}")
+    
+    # Example 2: If config specifies data sources
+    if 'sources' in config:
+        for source_name, source_config in config['sources'].items():
+            logger.info(f"Extracting from source: {source_name}")
+            extract_from_source(source_config, raw_path)
+    
+    # Example 3: If using SQL extractions
+    if status.get('sql_extraction_queries'):
+        for sql_file in status['sql_extraction_queries']:
+            logger.info(f"Executing SQL extraction: {sql_file}")
+            execute_sql_extraction(
+                sql_file=project_path / 'sql' / 'extractions' / sql_file,
+                config=config
+            )
+    
+    # Example 4: If using extraction scripts
+    if status['extraction_scripts']:
+        import subprocess
+        for script in status['extraction_scripts']:
+            script_path = project_path / 'scripts' / script
+            logger.info(f"Running extraction script: {script}")
+            subprocess.run(['python', str(script_path)], check=True)
+    
+    logger.info("Dynamic extraction completed")
+
+def extract_from_source(source_config: dict, output_dir: Path) -> None:
+    """Extract data from a configured source.
+    
+    Args:
+        source_config: Source configuration dictionary
+        output_dir: Output directory for raw data
+    """
+    source_type = source_config.get('type', 'file')
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    if source_type == 'file':
+        # File-based extraction
+        source_path = source_config['path']
+        df = pl.read_csv(source_path)
+        
+        output_file = output_dir / f"{source_config.get('name', 'data')}_{timestamp}.csv"
+        df.write_csv(output_file)
+        logger.info(f"Extracted {len(df)} rows to {output_file}")
+        
+    elif source_type == 'api':
+        # API-based extraction
+        from src.data_processing.api_connector import APIDataExtractor
+        
+        extractor = APIDataExtractor(
+            base_url=source_config['base_url'],
+            api_key=source_config.get('api_key')
+        )
+        
+        df = extractor.extract_endpoint(
+            endpoint=source_config['endpoint'],
+            params=source_config.get('params', {})
+        )
+        
+        output_file = output_dir / f"{source_config.get('name', 'api_data')}_{timestamp}.csv"
+        df.write_csv(output_file)
+        logger.info(f"Extracted {len(df)} rows to {output_file}")
+        
+    elif source_type == 'database':
+        # Database extraction
+        connection_string = source_config.get('connection_string')
+        query = source_config.get('query')
+        
+        df = pl.read_database(query, connection_string)
+        
+        output_file = output_dir / f"{source_config.get('name', 'db_data')}_{timestamp}.csv"
+        df.write_csv(output_file)
+        logger.info(f"Extracted {len(df)} rows to {output_file}")
+    
+    # Save metadata
+    metadata = {
+        'source': source_config.get('name', 'unknown'),
+        'extraction_timestamp': datetime.now().isoformat(),
+        'row_count': len(df),
+        'column_count': len(df.columns),
+        'columns': df.columns,
+        'source_config': source_config
+    }
+    
+    meta_file = output_file.with_suffix('.yml')
+    with open(meta_file, 'w') as f:
+        yaml.dump(metadata, f, default_flow_style=False)
+```
+
+### 3. Configuration Template for Extraction
+
+If no extraction config exists, create `config/extraction.yml` with this template:
+
+```yaml
+# Data extraction configuration
+version: '1.0.0'
+last_updated: '2026-02-23'
+
+# Data sources configuration
+sources:
+  disease_surveillance:
+    type: 'file'  # or 'api', 'database'
+    name: 'disease_surveillance_data'
+    path: 'path/to/source/data.csv'  # or URL for API
+    description: 'Weekly disease surveillance data'
+    
+  # Example API source
+  # weather_data:
+  #   type: 'api'
+  #   name: 'weather_api_data'
+  #   base_url: 'https://api.weather.com/v1'
+  #   endpoint: '/daily-weather'
+  #   api_key: ${WEATHER_API_KEY}
+  #   params:
+  #     start_date: '2020-01-01'
+  #     end_date: '2024-12-31'
+  
+  # Example database source
+  # patient_records:
+  #   type: 'database'
+  #   name: 'patient_data'
+  #   connection_string: ${DB_CONNECTION_STRING}
+  #   query: 'SELECT * FROM patients WHERE updated_at >= :start_date'
+  #   params:
+  #     start_date: '2020-01-01'
+
+# Output configuration
+output:
+  raw_data_dir: 'data/1_raw'
+  external_data_dir: 'data/2_external'
+  metadata_format: 'yaml'
+  include_timestamp: true
+  
+# Extraction parameters
+extraction:
+  date_range:
+    start_date: '2020-01-01'
+    end_date: null  # null means current date
+  
+  batch_size: 10000  # For large extractions
+  retry_attempts: 3
+  timeout_seconds: 300
+
+# Data validation
+validation:
+  min_rows: 1
+  required_columns: []
+  check_duplicates: true
+  check_nulls: true
+```
+
+### 4. Complete Extraction Workflow Script
+
+Save as `scripts/extract_data.py`:
+
+```python
+#!/usr/bin/env python3
+"""
+Dynamic data extraction script.
+Automatically detects and uses existing configurations.
+"""
+import sys
+from pathlib import Path
+import argparse
+
+# Add src to path
+sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
+
+from utils.logger import setup_logger
+from loguru import logger
+
+# Import the dynamic extraction functions defined above
+# (In practice, these would be in src/data_processing/extraction.py)
+
+def main():
+    """Main extraction execution."""
+    parser = argparse.ArgumentParser(description='Extract data dynamically')
+    parser.add_argument(
+        '--force',
+        action='store_true',
+        help='Force re-extraction even if data exists'
+    )
+    parser.add_argument(
+        '--check-only',
+        action='store_true',
+        help='Only check status, do not extract'
+    )
+    args = parser.parse_args()
+    
+    setup_logger("data_extraction", "logs/etl")
+    
+    logger.info("Starting dynamic data extraction workflow")
+    
+    # Check current status
+    status = check_extraction_status()
+    
+    logger.info(f"Raw data exists: {status['raw_data_exists']}")
+    logger.info(f"Configuration available: {status['extraction_config_exists']}")
+    logger.info(f"Recommended action: {status['recommended_action']}")
+    
+    if status['raw_data_files']:
+        logger.info(f"Existing raw files: {', '.join(status['raw_data_files'])}")
+    
+    if args.check_only:
+        logger.info("Check-only mode - exiting without extraction")
+        return
+    
+    # Execute extraction
+    try:
+        execute_dynamic_extraction(force_reextract=args.force)
+        logger.info("Data extraction completed successfully")
+    except Exception as e:
+        logger.error(f"Extraction failed: {e}")
+        raise
+
+if __name__ == "__main__":
+    main()
+```
+
+### 5. Usage Examples
+
+```bash
+# Check if data exists without extracting
+python scripts/extract_data.py --check-only
+
+# Extract data (skips if data already exists)
+python scripts/extract_data.py
+
+# Force re-extraction even if data exists
+python scripts/extract_data.py --force
+
+# Use with uv
+uv run python scripts/extract_data.py
+```
+
+### 6. Integration with Existing Project
+
+The dynamic workflow automatically:
+- ✅ Detects existing data in `data/1_raw/`
+- ✅ Finds and uses existing configs (`config/analysis.yml`, `config/databricks.yml`)
+- ✅ Locates extraction scripts in `scripts/`
+- ✅ Discovers SQL queries in `sql/extractions/`
+- ✅ Creates necessary directories if missing
+- ✅ Saves metadata with timestamps
+- ✅ Logs all operations
+
 ## Summary
 
 Key takeaways for data extraction:
@@ -553,3 +936,5 @@ Key takeaways for data extraction:
 4. **Log extensively** - track what was extracted, when, and from where
 5. **Handle errors gracefully** - implement retries and informative error messages
 6. **Validate immediately** - check row counts and column schemas after extraction
+7. **Check before extracting** - use dynamic workflow to avoid duplicate work
+8. **Leverage existing configs** - reuse project configurations when available

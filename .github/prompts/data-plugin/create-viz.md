@@ -126,10 +126,38 @@ plt.show()
 
 ### 6. Save and Present
 
-1. Save the chart as a PNG file with descriptive name
-2. Display the chart to the user
-3. Provide the code used so they can modify it
-4. Suggest variations (different chart type, different grouping, zoomed time range)
+**REQUIRED**: All visualizations MUST be saved to the appropriate project directory structure:
+
+```python
+from datetime import datetime
+from pathlib import Path
+
+# Define output directory (adjust problem statement number)
+FIGURES_DIR = Path('reports/figures/problem-statement-{num}')
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+
+# Generate timestamp for versioning
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+# Save with descriptive name and timestamp
+fig_path = FIGURES_DIR / f'{descriptive_name}_{timestamp}.png'
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+print(f"✅ Saved visualization to: {fig_path}")
+plt.show()
+```
+
+**Save Requirements:**
+1. Directory: `reports/figures/problem-statement-{num}/` (create if doesn't exist)
+2. Format: PNG at 300 dpi minimum for publication quality
+3. Filename: `{descriptive_name}_{timestamp}.png`
+4. Confirmation: Print message showing saved file path
+5. Display: Show the chart to the user after saving
+
+**After saving:**
+1. Display the chart to the user
+2. Provide the code used so they can modify it
+3. Suggest variations (different chart type, different grouping, zoomed time range)
+4. Confirm file location for future reference
 
 ## Examples
 
@@ -145,9 +173,20 @@ plt.show()
 /create-viz Query the orders table and create a heatmap of order volume by day-of-week and hour
 ```
 
+## Output Verification
+
+After generating visualizations, verify:
+- ✅ Figure saved to `reports/figures/problem-statement-{num}/`
+- ✅ Filename includes descriptive name and timestamp
+- ✅ File saved at 300 dpi for publication quality
+- ✅ Confirmation message printed with file path
+- ✅ Output directory exists (created if needed)
+
 ## Tips
 
 - If you want interactive charts (hover, zoom, filter), mention "interactive" and Claude will use plotly
+- **All visualizations are automatically saved** to the project structure for future reference and sharing
+- Saved figures can be used directly in reports, presentations, and dashboards
 - Specify "presentation" if you need larger fonts and higher contrast
 - You can request multiple charts at once (e.g., "create a 2x2 grid of charts showing...")
 - Charts are saved to your current directory as PNG files
