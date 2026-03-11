@@ -1,0 +1,30 @@
+name: Data Quality Checks
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'data/**'
+      - 'src/data_processing/**'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  data-validation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install uv
+        uv pip install --system -r requirements.txt
+    
+    - name: Run data validation tests
+      run: |
+        pytest tests/data/

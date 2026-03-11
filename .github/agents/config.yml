@@ -1,0 +1,261 @@
+# Multi-Agent Orchestration Configuration
+# Last Updated: 2026-02-23
+
+orchestrator:
+  pipeline_type: sequential  # Options: sequential, parallel, adaptive
+  verification_mode: strict  # Enforce validation gates between stages
+  max_retries: 3
+  timeout_minutes: 30
+  
+  mcp_tools:
+    - filesystem
+    - sqlite
+  
+  logging:
+    level: INFO
+    location: logs/orchestration/
+    format: "%(asctime)s - %(agent)s - %(stage)s - %(message)s"
+
+# Agent Definitions
+agents:
+  extraction:
+    name: ExtractionAgent
+    role: Data extraction and loading specialist
+    prompt_template: .agents/templates/extraction_agent.md
+    instructions:
+      - .github/instructions/data-analysis-stages-instructions/data-extraction-loading.instructions.md
+      - .github/instructions/python-best-practices.instructions.md
+    scope:
+      stages: [0, 1, 2]  # Environment Setup → Data Collection
+      phase: wave-1
+    outputs:
+      code: src/problem-statement-{num}/wave-1/01_extract_data.py
+      data: data/3_interim/extracted_data_{timestamp}.csv
+      logs: logs/etl/extraction_{timestamp}.log
+    validation:
+      - file_exists: data/3_interim/extracted_data_{timestamp}.csv
+      - row_count_min: 100
+      - schema_validation: required
+    
+  profiling:
+    name: ProfilingAgent
+    role: Data quality assessment specialist
+    prompt_template: .agents/templates/profiling_agent.md
+    instructions:
+      - .github/instructions/data-analysis-stages-instructions/exploratory-data-analysis.instructions.md
+      - .github/instructions/python-best-practices.instructions.md
+    scope:
+      stages: [3]  # Data Profiling
+      phase: wave-1
+    depends_on:
+      - extraction
+    inputs:
+      data: data/3_interim/extracted_data_{timestamp}.csv
+    outputs:
+      code: src/problem-statement-{num}/wave-1/02_profile_data.py
+      report: results/tables/problem-statement-{num}/data_quality_report.md
+      metrics: results/metrics/problem-statement-{num}/quality_metrics.json
+    validation:
+      - file_exists: results/tables/problem-statement-{num}/data_quality_report.md
+      - metrics_complete: required
+    
+  cleaning:
+    name: CleaningAgent
+    role: Data cleaning and preprocessing specialist
+    prompt_template: .agents/templates/cleaning_agent.md
+    instructions:
+      - .github/instructions/data-analysis-best-practices.instructions.md
+      - .github/instructions/python-best-practices.instructions.md
+    scope:
+      stages: [4]  # Data Cleaning
+      phase: wave-1
+    depends_on:
+      - profiling
+    inputs:
+      data: data/3_interim/extracted_data_{timestamp}.csv
+      quality_report: results/tables/problem-statement-{num}/data_quality_report.md
+    outputs:
+      code: src/problem-statement-{num}/wave-1/03_clean_data.py
+      data: data/4_processed/cleaned_data.csv
+      logs: logs/etl/cleaning_{timestamp}.log
+    validation:
+      - file_exists: data/4_processed/cleaned_data.csv
+      - no_critical_quality_issues: required
+    
+  eda:
+    name: EDAAgent
+    role: Exploratory data analysis specialist
+    prompt_template: .agents/templates/eda_agent.md
+    instructions:
+      - .github/instructions/data-analysis-stages-instructions/exploratory-data-analysis.instructions.md
+      - .github/instructions/python-best-practices.instructions.md
+    scope:
+      stages: [5]  # EDA
+      phase: wave-2
+    depends_on:
+      - cleaning
+    inputs:
+      data: data/4_processed/cleaned_data.csv
+    outputs:
+      code: src/problem-statement-{num}/wave-2/04_exploratory_analysis.py
+      figures: reports/figures/problem-statement-{num}/
+      summary: results/tables/problem-statement-{num}/eda_summary.csv
+      notebook: notebooks/1_exploratory/problem-statement-{num}_eda.ipynb
+    validation:
+      - figures_generated_min: 5
+      - summary_stats_complete: required
+    
+  modeling:
+    name: ModelingAgent
+    role: Statistical modeling and forecasting specialist
+    prompt_template: .agents/templates/modeling_agent.md
+    instructions:
+      - .github/instructions/data-analysis-stages-instructions/modeling-forecasting.instructions.md
+      - .github/instructions/python-best-practices.instructions.md
+    scope:
+      stages: [7]  # Analysis & Modeling
+      phase: wave-3
+    depends_on:
+      - eda
+    inputs:
+      data: data/4_processed/cleaned_data.csv
+      eda_summary: results/tables/problem-statement-{num}/eda_summary.csv
+    outputs:
+      code: src/problem-statement-{num}/wave-3/05_modeling.py
+      models: models/problem-statement-{num}/
+      metrics: results/metrics/problem-statement-{num}/model_performance.json
+      notebook: notebooks/2_analysis/problem-statement-{num}_modeling.ipynb
+    validation:
+      - model_artifacts_exist: required
+      - performance_metrics_documented: required
+    
+  visualization:
+    name: VisualizationAgent
+    role: Publication-quality visualization specialist
+    prompt_template: .agents/templates/visualization_agent.md
+    instructions:
+      - .github/instructions/data-analysis-stages-instructions/visualization-reporting.instructions.md
+      - .github/instructions/python-best-practices.instructions.md
+    scope:
+      stages: [9]  # Documentation & Reporting
+      phase: wave-4
+    depends_on:
+      - modeling
+    inputs:
+      tables: results/tables/problem-statement-{num}/
+      metrics: results/metrics/problem-statement-{num}/
+    outputs:
+      code: src/problem-statement-{num}/wave-4/06_visualizations.py
+      figures: reports/figures/problem-statement-{num}/final/
+      report: reports/problem-statement-{num}/final_report.md
+    validation:
+      - publication_ready_figures: required
+      - report_completeness: required
+    
+  quality:
+    name: QualityAgent
+    role: Code quality and testing specialist
+    prompt_template: .agents/templates/quality_agent.md
+    instructions:
+      - .github/instructions/python-best-practices.instructions.md
+    scope:
+      stages: [8, 10]  # Validation, Deployment
+      phase: continuous
+    depends_on:
+      - extraction
+      - profiling
+      - cleaning
+      - eda
+      - modeling
+      - visualization
+    inputs:
+      code: src/problem-statement-{num}/
+    outputs:
+      tests: tests/unit/problem-statement-{num}/
+      integration_tests: tests/integration/problem-statement-{num}/
+      audit_log: logs/audit/quality_check_{timestamp}.log
+    validation:
+      - test_coverage_min: 80
+      - no_critical_errors: required
+    
+  documentation:
+    name: DocumentationAgent
+    role: Technical documentation specialist
+    prompt_template: .agents/templates/documentation_agent.md
+    instructions:
+      - .github/instructions/document-writing.instructions.md
+    scope:
+      stages: [9]  # Documentation
+      phase: wave-4
+    depends_on:
+      - visualization
+    inputs:
+      code: src/problem-statement-{num}/
+      results: results/
+      reports: reports/problem-statement-{num}/
+    outputs:
+      readme: src/problem-statement-{num}/README.md
+      methodology: docs/methodology/problem-statement-{num}_methodology.md
+      implementation_verification: src/problem-statement-{num}/IMPLEMENTATION_VERIFICATION.md
+    validation:
+      - documentation_completeness: required
+
+# Handoff Protocol Configuration
+handoff_protocol:
+  format: json
+  location: data/3_interim/agent_handoffs/
+  verification_required: true
+  schema:
+    required_fields:
+      - agent_name
+      - timestamp
+      - stage
+      - outputs
+      - validation_status
+      - findings
+      - recommended_next_step
+  retention_days: 30
+
+# Parallel Execution Rules (when pipeline_type: parallel)
+parallel_execution:
+  eda_parallel_tasks:
+    - univariate_analysis
+    - bivariate_analysis
+    - temporal_patterns
+    - geospatial_analysis
+  
+  modeling_parallel_tasks:
+    - baseline_model
+    - advanced_model
+    - sensitivity_analysis
+
+# Adaptive Workflow Rules (when pipeline_type: adaptive)
+adaptive_rules:
+  quality_gates:
+    missing_values_threshold: 0.20  # Trigger cleaning if > 20%
+    outlier_threshold: 0.05  # Trigger investigation if > 5%
+    correlation_threshold: 0.80  # Flag multicollinearity
+  
+  branching_logic:
+    - condition: "missing_values > 0.20"
+      action: inject_cleaning_agent
+      priority: high
+    
+    - condition: "data_quality_score < 0.70"
+      action: re_run_profiling
+      priority: critical
+    
+    - condition: "model_performance < baseline"
+      action: trigger_feature_engineering
+      priority: medium
+
+# Error Handling
+error_handling:
+  retry_strategy: exponential_backoff
+  fallback_agents:
+    modeling: baseline_model_only
+    visualization: simplified_charts
+  notification:
+    on_failure: true
+    channels:
+      - logs/errors/orchestration_errors.log

@@ -1,0 +1,127 @@
+# Databricks Platform Configuration
+# Settings specific to HEALIX/Databricks deployment
+
+databricks:
+  # Workspace settings
+  workspace:
+    url: "${DATABRICKS_HOST}"
+    token: "${DATABRICKS_TOKEN}"
+    org_id: ""  # Optional: Databricks organization ID
+  
+  # Cluster configuration
+  cluster:
+    id: "${DATABRICKS_CLUSTER_ID}"
+    
+    # New cluster specs (for job creation)
+    specs:
+      spark_version: "13.3.x-scala2.12"  # Databricks Runtime 13.3 LTS
+      node_type_id: "i3.xlarge"
+      driver_node_type_id: "i3.xlarge"
+      num_workers: 2
+      autoscale:
+        min_workers: 1
+        max_workers: 4
+      
+      # Spark configuration
+      spark_conf:
+        "spark.databricks.adaptive.enabled": "true"
+        "spark.databricks.delta.preview.enabled": "true"
+        "spark.sql.adaptive.enabled": "true"
+        "spark.sql.adaptive.coalescePartitions.enabled": "true"
+      
+      # Custom libraries (if needed)
+      libraries: []
+      
+      # Cluster log configuration
+      cluster_log_conf:
+        dbfs:
+          destination: "dbfs:/cluster-logs"
+  
+  # Storage settings
+  storage:
+    # DBFS mount points
+    mount_path: "/dbfs/mnt/moh-data/"
+    
+    # Data lake paths
+    raw_data: "/mnt/moh-data/raw/"
+    processed_data: "/mnt/moh-data/processed/"
+    models: "/mnt/moh-data/models/"
+    
+    # Delta Lake settings
+    delta:
+      enabled: true
+      optimize_write: true
+      auto_compact: true
+      retention_hours: 168  # 7 days
+  
+  # Workspace paths
+  paths:
+    workspace_root: "/Workspace/Users/moh-analytics/"
+    notebooks: "/Workspace/Users/moh-analytics/notebooks/"
+    scripts: "/Workspace/Users/moh-analytics/scripts/"
+    
+  # Jobs configuration (for scheduled runs)
+  jobs:
+    max_concurrent_runs: 1
+    timeout_seconds: 7200  # 2 hours
+    max_retries: 2
+    retry_on_timeout: true
+    
+    # Email notifications
+    email_notifications:
+      on_start: []
+      on_success: []
+      on_failure: []
+  
+  # Databricks Connect settings (for local development)
+  connect:
+    host: "${DATABRICKS_HOST}"
+    token: "${DATABRICKS_TOKEN}"
+    cluster_id: "${DATABRICKS_CLUSTER_ID}"
+    org_id: ""
+    port: 15001
+  
+  # Secrets management (using Databricks Secrets)
+  secrets:
+    scope: "moh-analytics-scope"
+    
+    # Key names in the secret scope
+    keys:
+      db_password: "database-password"
+      api_key: "external-api-key"
+      aws_access_key: "aws-access-key"
+      aws_secret_key: "aws-secret-key"
+
+# Spark-specific settings
+spark:
+  # Driver settings
+  driver:
+    memory: "8g"
+    maxResultSize: "4g"
+  
+  # Executor settings
+  executor:
+    memory: "8g"
+    cores: 4
+  
+  # SQL settings
+  sql:
+    shuffle:
+      partitions: 200
+    
+  # Performance tuning
+  default:
+    parallelism: 200
+  
+  # Serialization
+  serializer: "org.apache.spark.serializer.KryoSerializer"
+
+# Python environment settings for Databricks
+python:
+  version: "3.9"  # Databricks Runtime 13.3 uses Python 3.9
+  
+  # Additional packages to install on cluster
+  additional_packages:
+    - "polars>=0.20.0"
+    - "loguru>=0.7.0"
+    - "great-expectations>=0.17.0"

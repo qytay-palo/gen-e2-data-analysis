@@ -1,0 +1,388 @@
+# Gen-E2 Singapore Health Trends Analysis - Git Ignore File
+# Python + Data Science + Databricks project
+
+# ============================================================================
+# Python
+# ============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+/.venv
+.venv/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ============================================================================
+# Data Files (Keep raw data, ignore processed/interim unless specified)
+# ============================================================================
+# Large data files
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# EXCEPTION: Keep small reference/config data files
+!config/**/*.csv
+!config/**/*.xlsx
+!shared/data/schemas/**/*.csv
+
+# EXCEPTION: Keep data dictionaries and documentation
+!docs/**/*.csv
+!docs/**/*.xlsx
+
+# Processed and interim data (regenerate from raw)
+data/3_interim/**/*
+data/4_processed/**/*
+shared/data/3_interim/**/*
+shared/data/4_processed/**/*
+problem-statements/*/data/3_interim/**/*
+problem-statements/*/data/4_processed/**/*
+
+# Keep README files in data directories
+!data/**/*README*.md
+!shared/data/**/*README*.md
+!problem-statements/*/data/**/*README*.md
+
+# ============================================================================
+# Machine Learning Models
+# ============================================================================
+# Trained models
+*.model
+*.h5
+*.keras
+*.pt
+*.pth
+*.ckpt
+*.joblib
+models/**/*.pkl
+problem-statements/*/models/**/*
+
+# Keep model configuration files
+!models/**/*.json
+!models/**/*.yaml
+!models/**/*.yml
+!problem-statements/*/models/**/*.json
+!problem-statements/*/models/**/*.yaml
+
+# ============================================================================
+# Logs
+# ============================================================================
+logs/
+*.log
+*.out
+*.err
+
+# Keep empty log directories with README
+!logs/README.md
+!logs/**/README.md
+
+# ============================================================================
+# Databricks & Spark
+# ============================================================================
+# Databricks CLI config
+.databrickscfg
+
+# Spark
+metastore_db/
+derby.log
+*.class
+
+# PySpark temp files
+.spark-warehouse/
+
+# ============================================================================
+# Credentials & Secrets
+# ============================================================================
+# API Keys and credentials
+*.key
+*.pem
+*.p12
+credentials.json
+secrets.yaml
+secrets.yml
+.kaggle/kaggle.json
+.env
+
+# Keep example/template files
+!.env.example
+!config/**/*.example
+
+# ============================================================================
+# IDE & Editor Files
+# ============================================================================
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+\#*\#
+.\#*
+
+# ============================================================================
+# OS Files
+# ============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ============================================================================
+# Reports & Outputs (Keep templates, ignore generated)
+# ============================================================================
+# Generated reports
+reports/**/*.pdf
+reports/**/*.pptx
+results/**/*.pdf
+results/**/*.pptx
+problem-statements/*/reports/**/*.pdf
+problem-statements/*/reports/**/*.pptx
+
+# Keep templates and examples
+!reports/**/template*.pdf
+!reports/**/example*.pptx
+
+# Generated figures (can be regenerated)
+reports/figures/**/*.png
+reports/figures/**/*.jpg
+reports/figures/**/*.svg
+problem-statements/*/reports/figures/**/*.png
+problem-statements/*/reports/figures/**/*.jpg
+
+# Keep example figures
+!reports/figures/example*.png
+!reports/figures/template*.png
+
+# ============================================================================
+# Temporary Files
+# ============================================================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# ============================================================================
+# Archive Files
+# ============================================================================
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# Keep documentation archives if any
+!docs/**/*.zip
+
+# ============================================================================
+# Agent Handoffs (Keep structure, ignore runtime data)
+# ============================================================================
+data/3_interim/agent_handoffs/**/*.json
+!data/3_interim/agent_handoffs/README.md
+!data/3_interim/agent_handoffs/**/*example*.json
+
+# ============================================================================
+# SQL Dumps & Database Files
+# ============================================================================
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+
+# Keep schema definitions and migration files
+!sql/**/*.sql
+!shared/sql/**/*.sql
+
+# ============================================================================
+# GitHub Specific (if using GitHub Actions)
+# ============================================================================
+# Workflow logs
+.github/workflows/*.log
+
+# ============================================================================
+# Custom Project Specific
+# ============================================================================
+# Add any project-specific ignores below
+
+# Kaggle downloaded datasets (except documented ones)
+shared/data/1_raw/**/*
+!shared/data/1_raw/README.md
+!shared/data/1_raw/**/*_documentation*.md
+
+# Keep small sample/test data
+!shared/data/1_raw/samples/**/*
+!shared/data/1_raw/test/**/*
+
+# ============================================================================
+# Notes
+# ============================================================================
+# 1. Raw data in shared/data/1_raw/ is ignored by default (too large for git)
+# 2. Document data sources in docs/data_dictionary/
+# 3. Use Git LFS for large files that must be tracked
+# 4. Keep .env.example to show required environment variables
+# 5. Never commit credentials or API keys
