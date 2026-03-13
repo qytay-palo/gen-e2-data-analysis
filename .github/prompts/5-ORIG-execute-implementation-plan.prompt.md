@@ -12,8 +12,8 @@ Execute a detailed implementation plan accurately and verify its completion acco
 
 | Term | Definition | Example |
 |------|------------|---------|
-| **Problem Statement (PS)** | Top-level analysis objective | PS-001: Workforce Capacity Mismatch |
-| **User Story (US)** | Deliverable subset of a problem statement | US-001 within PS-001 |
+| **Problem Statement (PS)** | Top-level analysis objective | problem-statement-001: Workforce Capacity Mismatch |
+| **User Story (US)** | Deliverable subset of a problem statement | US-001 within problem-statement-001 |
 | **Subagent** | Specialist AI agent invoked via `#runSubagent` | ExtractionAgent, Code Reviewer Agent |
 | **Handoff File** | JSON file agents use to pass validated outputs | `extraction_to_profiling_20260306.json` |
 ---
@@ -24,7 +24,7 @@ Execute a detailed implementation plan accurately and verify its completion acco
 
 **✅ CORRECT - All artifacts in ONE problem-statement directory:**
 ```
-problem-statement/ps-{num}-{name}/
+problem-statement/ps-{num}-{descriptive-name}/
 ├── notebooks/              # ALL notebooks for this PS
 ├── src/                    # Problem-specific code
 │   ├── data_processing/    # ETL and cleaning code
@@ -52,8 +52,8 @@ Use for ALL file operations:
 
 ```
 Read data:     "Use filesystem tools to read shared/data/1_raw/input.csv"
-Create dir:    "Use filesystem tools to create directory problem-statement/ps-{num}-{name}/results/"
-Write file:    "Use filesystem tools to save results to problem-statement/ps-{num}-{name}/results/tables/output.csv"
+Create dir:    "Use filesystem tools to create directory problem-statement/ps-001-{name}/results/"
+Write file:    "Use filesystem tools to save results to problem-statement/ps-001-{name}/results/tables/output.csv"
 List files:    "Use filesystem tools to list files in problem-statement/ps-001-{name}/"
 ```
 
@@ -70,13 +70,13 @@ Create table:  "Use SQLite tools to create summary table"
 
 ### 2. Continuous Code Quality Analysis (MANDATORY)
 
-**🚨 CRITICAL REQUIREMENT**: You MUST execute quality review subagents before this task can be marked as complete. Quality checks are NOT optional and NOT end-of-implementation tasks. Failure to execute these subagents means the implementation is INCOMPLETE.
+**🚨 CRITICAL REQUIREMENT**: You MUST execute quality review and Jupyter Notebook Execution Agent before this task can be marked as complete. Quality checks are NOT optional and NOT end-of-implementation tasks. Failure to execute these subagents means the implementation is INCOMPLETE.
 
 **EXECUTION WORKFLOW (MANDATORY):**
 
 ```
 For EACH implementation stage:
-1. Implement the code/module → 2. IMMEDIATELY delegate quality review → 3. Fix issues found → 4. Proceed to next stage
+1. Implement the code/module → 2. IMMEDIATELY delegate quality review and jupyter notebook execution → 3. Fix issues found → 4. Proceed to next stage
 ```
 
 **WHEN TO EXECUTE SUBAGENTS (NON-NEGOTIABLE):**
@@ -100,11 +100,11 @@ Execute these subagents in **DURING** implementation. Each subagent call is REQU
   prompt: `CRITICAL: Validate directory structure and prevent duplicate directories BEFORE creating any files.
 
 Problem Statement Number: {num}
-Expected Directory: problem-statement/ps-{num}-{name}/
+Expected Directory: problem-statement/ps-{num}-{descriptive-name}/
 
 Tasks:
 1. **Check for Duplicate Directories**:
-   - Search for ANY existing directories matching pattern: problem-statement/ps-*{num}*-{name}/
+   - Search for ANY existing directories matching pattern: problem-statement/ps-*{num}*
    - List ALL matches with exact paths
    - Flag if MULTIPLE directories exist for same problem statement
    - Example duplicates to detect:
@@ -117,7 +117,7 @@ Tasks:
    - Examples:
      ✅ problem-statement/ps-001-workforce-capacity/
      ✅(underscores)
-     ❌ src/ps-001/ (abbreviated)
+     ❌ problem-statement/ps-001/ (abbreviated)
 
 3. **Decision Logic**:
    - If NO directory exists → Proceed with creation using correct naming
@@ -139,12 +139,12 @@ Return:
   description: "Validate import paths match directory structure",
   prompt: `CRITICAL: Verify all import statements match actual directory structure.
 
-Problem Statement Directory: problem-statement/ps-{num}-{name}/
+Problem Statement Directory: problem-statement/ps-{num}-{descriptive-name}/
 
 Tasks:
 1. **Validate Import Paths Against Actual Filesystem**: For each import, resolve the path relative to the importing file's location, verify the module EXISTS on filesystem, check naming consistency (hyphens vs underscores), and flag mismatches
 
-2. **Validate Relative Imports Don't Cross Boundaries**: Files should import from their own problem-statement directory; flag if problem-statement-001 imports from problem-statement-002 (should use shared src/utils/)
+2. **Validate Relative Imports Don't Cross Boundaries**: Files should import from their own problem-statement directory; flag if ps-001 imports from ps-002 (should use shared/src/ for shared code)
 
 Return:
 - Import_Validation_Status: "ALL_VALID" | "MISMATCHES_FOUND"
@@ -152,17 +152,60 @@ Return:
 })
 ```
 
-**c. Code Review Agent (REQUIRED):**
+**c. Jupyter Notebook Execution Agent (REQUIRED - Execute AFTER creating/updating notebooks):**
+```javascript
+#runSubagent({
+  description: "Execute all Jupyter notebooks and fix errors for Problem Statement {num}",
+  prompt: `Read and execute the Jupyter Notebook Execution protocol from .github/prompts/6-test-execuetion-code.prompt.md
+
+Context:
+- Problem Statement: {num}
+- Target Directory: problem-statement/ps-{num}-{descriptive-name}/
+- Notebooks Location: problem-statement/ps-{num}-{descriptive-name}/notebooks/
+- **MISSION**: Zero cell execution errors across all notebooks
+
+Instructions:
+1. Read the complete testing protocol from .github/prompts/6-test-execuetion-code.prompt.md
+2. Follow ALL phases in the "Testing Protocol" section:
+   - Phase 1: Discovery (find all notebooks)
+   - Phase 2: Pre-Execution Validation (imports, dependencies, environment)
+   - Phase 3: Execution (jupyter nbconvert --execute)
+   - Phase 4: Error Handling (diagnose and fix ALL errors)
+   - Phase 5: Output Verification (cells, files, visualizations)
+   - Phase 6: Documentation Updates (prerequisites, error prevention)
+3. Apply the "Error Resolution & Code Adjustments" protocol for ALL errors encountered
+4. Iterate until ZERO errors across all notebooks
+5. Generate comprehensive report as specified in the prompt
+
+**CRITICAL REQUIREMENTS:**
+- ✅ ALL notebooks must execute from start to finish with ZERO errors
+- ✅ ALL cells must have outputs (no empty execution_count)
+- ✅ ALL expected files must be generated and validated
+- ✅ Import cells positioned correctly (first executable cell)
+- ✅ Prerequisites documented in markdown cells
+- ✅ Error prevention checks added to notebooks
+
+**FAILURE CONDITION:**
+If ANY notebook cannot be fixed to execute successfully:
+1. Report persistent error in detail
+2. Mark status as "EXECUTION_FAILED"
+3. Block further implementation
+4. Escalate to primary agent
+
+Reference: See .github/prompts/6-test-execuetion-code.prompt.md for complete testing protocol and error resolution strategies.`
+})
+```
+
+**d. Code Review Agent (REQUIRED):**
 ```javascript
 #runSubagent({
   description: "Comprehensive code review for Problem Statement {num}",
   prompt: `Execute a comprehensive code quality review and fix ALL identified issues.
 
 Context:
-- Target Directory: src/problem-statement-{num}-{descriptive-name}/
+- Target Directory: problem-statement/ps-{num}-{descriptive-name}/
 - Review ALL Python files (.py) AND ALL Jupyter notebooks (.ipynb)
 - Fix issues immediately - do not just report them
-- **🚨 NEVER DELETE FILES**: Improve corrupt/broken files rather than removing them (fix syntax errors, repair corrupted notebooks, update broken code)
 - **CRITICAL**: Any errors detected during code execution MUST BE FIXED before proceeding
 
 **Tasks:**
@@ -174,14 +217,7 @@ Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
    - Verify zero ImportError, TypeError, AttributeError, FileNotFoundError
    - Fix ALL errors immediately before proceeding
    
-2. **Execute ALL Jupyter Notebooks Completely (MANDATORY):**
-   - **VERIFY IMPORTS FIRST**: Before execution, confirm all notebooks have library imports as the FIRST executable cell (after title/header markdown) - notebooks with imports at the end will fail
-   - **Execute ENTIRE notebook end-to-end**: USING jupyter nbconvert --to notebook --execute <notebook>.ipynb --inplace
-   - **Find ALL notebooks**: Search src/problem-statement-{num}-{descriptive-name}/**/*.ipynb 
-   - **Verify zero cell execution errors** in every notebook
-   - **Check outputs**: Ensure all visualizations, tables, and results are generated
-   - **Fix ALL notebook errors immediately** before proceeding
-   - **DO NOT SKIP THIS STEP** - notebooks are not optional
+
 
 3. **Verify All Outputs Created (MANDATORY):**
    - Check that all expected output files exist (from both scripts AND notebooks)
@@ -193,22 +229,12 @@ Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
 **After execution verification passes, proceed with additional tasks:**
 
 4. **Code Formatting (Python Files AND Notebooks - MANDATORY):**
-   - Format Python files: `ruff format src/problem-statement-{num}-{descriptive-name}/ --check`
-   - **Format Jupyter notebooks**: `ruff format src/problem-statement-{num}-{descriptive-name}/**/*.ipynb --check`
+   - Format Python files: `ruff format problem-statement/ps-{num}-{descriptive-name}/ --check`
+   - **Format Jupyter notebooks**: `ruff format problem-statement/ps-{num}-{descriptive-name}/**/*.ipynb --check`
    - Auto-format both file types if needed
    - **DO NOT SKIP notebook formatting**
 
-5. **Data-Driven Code Validation (MANDATORY - EXECUTE CODE TO VERIFY):**
-   - **CRITICAL**: Code review MUST execute all code to verify column/key references against actual data
-   - **For DataFrames**: Execute code that loads data, then inspect `df.columns` to verify every column referenced in subsequent code actually exists
-   - **For Dictionaries/JSON**: Execute code that loads data, then inspect actual keys with `.keys()` or print structure to verify every key path referenced in subsequent code exists
-   - **Validation Process**:
-     1. Execute data loading code
-     2. Fix mismatches IMMEDIATELY - update code to use actual names
-     3. Re-execute to verify fixes work
-   - **NO ASSUMPTIONS**: Never assume data structure matches expectations - always verify with actual execution
-
-6. **Parallel Code Review Perspectives:** Run these subagents in parallel:
+5. **Parallel Code Review Perspectives:** Run these subagents in parallel:
    - **Data structure validator (CRITICAL)**: Execute all data loading code, inspect actual columns/keys/dtypes, verify every subsequent reference matches reality exactly (case-sensitive). Flag any KeyError, ColumnNotFoundError, or assumptions about data structure
    - Correctness reviewer: logic errors, edge cases, type issues
    - Code quality reviewer: readability, naming, duplication
@@ -235,6 +261,7 @@ You MUST take these actions immediately after receiving subagent findings:
 
 Before marking implementation complete, you MUST document:
 - ✅ List of all subagent executions with timestamps
+- ✅ Jupyter Notebook Execution Agent report (all notebooks passing with zero errors)
 - ✅ Summary of findings from each subagent report
 - ✅ Actions taken to address critical/high priority issues
 - ✅ Confirmation that all security vulnerabilities are fixed
@@ -244,7 +271,7 @@ Before marking implementation complete, you MUST document:
 
 ### 3. Naming Convention (MANDATORY)
 
-**Format**: `problem-statement/ps-{num}-{name}/`
+**Format**: `problem-statement/ps-{num}-{descriptive-name}/`
 - `{num}`: Zero-padded problem statement number (e.g., `001`, `002`)
 - `{descriptive-name}`: Kebab-case description (e.g., `workforce-capacity-mismatch`)
 
@@ -294,7 +321,7 @@ If any part of the plan is unclear or missing information, clarification MUST be
 grep_search("dashboard", isRegexp=false, includePattern="dashboards/**")
 
 // Check for similar analysis modules (search in both shared and problem-specific)
-grep_search("forecasting|prediction", isRegexp=true, includePattern="{shared/src,problem-statement/ps-{num}-{name}/**/analysis/**")
+grep_search("forecasting|prediction", isRegexp=true, includePattern="{shared/src,problem-statement/ps-*}/**/analysis/**")
 
 // Check for data processing patterns
 semantic_search("data cleaning workflow for disease surveillance")
@@ -336,7 +363,7 @@ When extending existing implementations:
 
 1. **Maintain consistency**: Same naming, code style, error handling, logging
 2. **Preserve functionality**: DO NOT modify existing functions unless fixing bugs
-3. **Use shared configs**: Read from existing `shared/config/*.yml` or `problem-statement/ps-{num}-{name}/config/*.yml`, add entries if needed
+3. **Use shared configs**: Read from existing `shared/config/*.yml` or `problem-statement/ps-{num}/config/*.yml`, add entries if needed
 4. **Update documentation**: Update README with new features added
 
 **Verification Checklist (see §8.2):**
@@ -353,20 +380,13 @@ The implementation MUST:
 - **FIRST: Create the problem-statement-specific directory structure per CRITICAL RULES** (see top of document)
 - Follow the staged implementation approach outlined below
 - Adhere to file paths, code structures, and configurations specified in the plan
-- **ALL code files, notebooks, and scripts MUST be placed within `problem-statement/ps-{num}-{name}/`**
+- **ALL code files, notebooks, and scripts MUST be placed within `problem-statement/ps-{num}-{descriptive-name}/`**
 - Follow project coding standards and best practices
-- For any service or API integration step, you MUST implement the actual data fetching, error handling, and retries as described in the plan. Stubs or placeholders are NOT considered complete. If a function is only a stub, the implementation is NOT complete.
 - **Leverage MCP (Model Context Protocol) tools for all file and data operations as specified below**
 - **Implement ALL code blocks provided in the implementation plan verbatim (see Code Implementation Fidelity below)**
 - **Update README files to document the code running flow and execution instructions (see README Documentation Requirements below)**
 - **Create at least one Jupyter notebook for each execution** to facilitate user viewing of outputs and results
   - **Notebook Location**: Place notebooks in `problem-statement/ps-{num}-{name}/notebooks/` directory
-  - **Notebook Purpose**: Notebooks should demonstrate:
-    - Loading and exploring outputs from the execution (e.g., extracted data, profiles, results)
-    - Visualizing key metrics and data quality indicators
-    - Running validation checks and displaying results
-    - Providing a user-friendly interface to explore results
-  - Notebooks MUST be self-contained and runnable independently
   - **CRITICAL Dependency Requirements**:
     - **BEFORE creating notebooks**: Execute all prerequisite scripts/code to generate required data
     - **Document dependencies**: Include markdown cell at top listing all prerequisite scripts
@@ -374,6 +394,7 @@ The implementation MUST:
     - **Verify data exists**: Check that all expected input files exist before running notebook cells
     - **Check file existence explicitly**: Use `Path(file).exists()` before reading files to provide clear error messages instead of letting exceptions occur
   - Include markdown cells documenting each analysis step
+  - **🚨 CRITICAL NOTEBOOK FORMATTING RULE**: When creating Jupyter notebooks, NEVER use literal `\n` characters in cell source code.
 
 ### Code Implementation Fidelity
 
@@ -431,8 +452,8 @@ Use the `#runSubagent` tool to delegate specific stages to specialist agents. Ea
   "stage": 3,
   "validation_status": "passed",
   "outputs": {
-    "report": "problem-statement/ps-{num}-{name}/results/tables/data_quality_report.md",
-    "metrics": "problem-statement/ps-{num}-{name}/results/metrics/quality_metrics.json"
+    "report": "problem-statement/ps-001-{name}/results/tables/data_quality_report.md",
+    "metrics": "problem-statement/ps-001-{name}/results/metrics/quality_metrics.json"
   },
   "findings": {
     "overall_quality_score": 87.5,
@@ -575,14 +596,14 @@ Each README MUST include the following sections based on code running flow:
 | File | Location | Format | Required Fields |
 |------|----------|--------|----------------|
 | Raw disease data | `shared/data/1_raw/disease_data.csv` | CSV | date, disease, case_count, region |
-| Configuration | `shared/config/base.yml` or `problem-statement/ps-{num}-{name}/config/config.yml` | YAML | target_diseases, date_range |
+| Configuration | `shared/config/base.yml` or `problem-statement/ps-{num}/config/config.yml` | YAML | target_diseases, date_range |
 
 ### Outputs
 | File | Location | Format | Description |
 |------|----------|--------|-------------|
-| Cleaned data | `problem-statement/ps-{num}-{name}/data/4_processed/cleaned_data.csv` | CSV | Standardized disease cases |
-| Quality report | `problem-statement/ps-{num}-{name}/results/tables/data_quality_report.md` | Markdown | Data profiling results |
-| Visualizations | `problem-statement/ps-{num}-{name}/reports/figures/seasonal_patterns.png` | PNG | Time series plots |
+| Cleaned data | `problem-statement/ps-{num}/data/4_processed/cleaned_data.csv` | CSV | Standardized disease cases |
+| Quality report | `problem-statement/ps-{num}/results/tables/data_quality_report.md` | Markdown | Data profiling results |
+| Visualizations | `problem-statement/ps-{num}/reports/figures/seasonal_patterns.png` | PNG | Time series plots |
 ```
 
 #### 4. Environment Setup
@@ -601,7 +622,7 @@ uv pip install -r requirements.txt
 ### 2. Configuration
 ```bash
 # Copy example config and customize (for problem-specific config)
-cp problem-statement/ps-{num}-{name}/config/config.example.yml problem-statement/ps-{num}-{name}/config/config.yml
+cp problem-statement/ps-{num}/config/config.example.yml problem-statement/ps-{num}/config/config.yml
 
 # Edit config to set:
 # - target_diseases: ["Dengue", "HFMD", "COVID-19"]
@@ -652,13 +673,13 @@ jupyter notebook problem-statement/ps-001-{name}/notebooks/2_analysis/seasonal_a
 **Solution**: Install packages using `uv pip install -r requirements.txt`
 
 **Issue**: FileNotFoundError: shared/data/1_raw/disease_data.csv
-**Solution**: Run data extraction first: `python problem-statement/ps-{num}-{name}/scripts/01_extract_data.py`
+**Solution**: Run data extraction first: `python problem-statement/ps-{num}/src/scripts/01_extract_data.py`
 
 ### Logs
 Check execution logs for detailed error information:
-- ETL logs: `problem-statement/ps-{num}-{name}/logs/etl/`
-- Error logs: `problem-statement/ps-{num}-{name}/logs/errors/`
-- Audit logs: `problem-statement/ps-{num}-{name}/logs/audit/`
+- ETL logs: `problem-statement/ps-{num}/logs/etl/`
+- Error logs: `problem-statement/ps-{num}/logs/errors/`
+- Audit logs: `problem-statement/ps-{num}/logs/audit/`
 ```
 
 #### 7. Performance Considerations
