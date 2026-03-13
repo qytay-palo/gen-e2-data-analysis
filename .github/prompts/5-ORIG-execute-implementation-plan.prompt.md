@@ -65,6 +65,53 @@ Query:         "Query using SQLite tools: SELECT * FROM patients WHERE year >= 2
 Create table:  "Use SQLite tools to create summary table"
 ```
 
+### Context7 MCP (REQUIRED for Library/Framework Usage)
+Use for fetching **current documentation** instead of relying on training data:
+
+**🚨 CRITICAL RULE**: When implementing code that uses libraries, frameworks, or APIs, you MUST use Context7 to fetch current documentation. This ensures API accuracy, correct syntax, and version compatibility.
+
+**WHEN TO USE Context7 (MANDATORY):**
+
+| Scenario | Action | Example |
+|----------|--------|----------|
+| **Writing data processing code** | Fetch Polars/pandas docs | `resolve-library-id` → "polars" → `query-docs` "lazy evaluation scan_csv" |
+| **Implementing forecasting models** | Fetch statsmodels/prophet docs | `resolve-library-id` → "statsmodels" → `query-docs` "ARIMA model fit predict" |
+| **Building dashboards** | Fetch Plotly Dash docs | `resolve-library-id` → "plotly" → `query-docs` "Dash app layout callbacks" |
+| **Using ML libraries** | Fetch scikit-learn docs | `resolve-library-id` → "scikit-learn" → `query-docs` "train_test_split cross validation" |
+| **Databricks integration** | Fetch Databricks docs | `resolve-library-id` → "databricks" → `query-docs` "scheduled jobs DBFS" |
+| **API integrations** | Fetch API docs | `resolve-library-id` → "requests" → `query-docs` "session retry timeout" |
+
+**WHEN NOT TO USE Context7:**
+- Writing specifications/documentation (no code implementation)
+- High-level architecture planning
+- Business logic that doesn't depend on external libraries
+- Simple Python standard library usage (pathlib, datetime, logging)
+
+**Context7 Workflow:**
+
+```bash
+# Step 1: Identify the library/framework
+Library: "polars" (for data processing)
+
+# Step 2: Resolve library ID
+resolve-library-id({library: "polars", question: "How to use lazy evaluation with scan_csv?"})
+# Returns: [{id: "polars", name: "Polars", version: "0.20.0"}]
+
+# Step 3: Query specific documentation
+query-docs({libraryId: "polars", question: "scan_csv lazy evaluation collect filter"})
+# Returns: Current API syntax, examples, best practices
+
+# Step 4: Implement using fetched documentation
+# Use exact syntax from docs (not training data)
+```
+
+**Verification After Context7 Usage:**
+- ✅ API method signatures match current documentation
+- ✅ Parameter names and types are accurate
+- ✅ Deprecated methods avoided
+- ✅ Best practices from docs followed
+- ✅ Version-specific features used correctly
+
 **🔗 Details**: See [MCP Tools Reference Guide](.github/guides/mcp-tools-reference.md)
 
 
@@ -216,8 +263,17 @@ Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
    - Execute every .py file in scripts/ directory in correct order
    - Verify zero ImportError, TypeError, AttributeError, FileNotFoundError
    - Fix ALL errors immediately before proceeding
-   
 
+2. **Context7 Documentation Validation (MANDATORY - NEW):**
+   - For EVERY library/framework import, verify against current documentation using Context7
+   - Use `resolve-library-id` + `query-docs` to fetch current API syntax
+   - Check for:
+     * Deprecated methods (replace with current alternatives)
+     * Incorrect parameter names/types (fix to match current docs)
+     * Missing required parameters (add with correct defaults)
+     * Version-incompatible features (update or remove)
+   - Document which libraries were validated and any fixes applied
+   - **DO NOT SKIP**: This prevents runtime errors from outdated API usage
 
 3. **Verify All Outputs Created (MANDATORY):**
    - Check that all expected output files exist (from both scripts AND notebooks)
@@ -345,7 +401,7 @@ Ask these questions to determine if feature should extend existing implementatio
 # Existing: dashboards/workforce_capacity_dashboard.py
 # New Feature: Pharmacist analysis (RELATED to workforce)
 # Action: Add new page
-dashboards/pages/3_💊_Pharmacist_Analysis.py
+dashboards/pages/03_💊_Pharmacist_Analysis.py
 ```
 
 **Pattern 2: Module Extension (Add Functions)**
@@ -363,7 +419,7 @@ When extending existing implementations:
 
 1. **Maintain consistency**: Same naming, code style, error handling, logging
 2. **Preserve functionality**: DO NOT modify existing functions unless fixing bugs
-3. **Use shared configs**: Read from existing `shared/config/*.yml` or `problem-statement/ps-{num}/config/*.yml`, add entries if needed
+3. **Use shared configs**: Read from existing `shared/config/*.yml` or `problem-statement/ps-{num}-{name}/config/*.yml`, add entries if needed
 4. **Update documentation**: Update README with new features added
 
 **Verification Checklist (see §8.2):**
@@ -385,16 +441,24 @@ The implementation MUST:
 - **Leverage MCP (Model Context Protocol) tools for all file and data operations as specified below**
 - **Implement ALL code blocks provided in the implementation plan verbatim (see Code Implementation Fidelity below)**
 - **Update README files to document the code running flow and execution instructions (see README Documentation Requirements below)**
-- **Create at least one Jupyter notebook for each execution** to facilitate user viewing of outputs and results
-  - **Notebook Location**: Place notebooks in `problem-statement/ps-{num}-{name}/notebooks/` directory
-  - **CRITICAL Dependency Requirements**:
-    - **BEFORE creating notebooks**: Execute all prerequisite scripts/code to generate required data
-    - **Document dependencies**: Include markdown cell at top listing all prerequisite scripts
-    - **Test execution flow**: Run all dependencies → then run notebook → verify outputs
-    - **Verify data exists**: Check that all expected input files exist before running notebook cells
-    - **Check file existence explicitly**: Use `Path(file).exists()` before reading files to provide clear error messages instead of letting exceptions occur
-  - Include markdown cells documenting each analysis step
-  - **🚨 CRITICAL NOTEBOOK FORMATTING RULE**: When creating Jupyter notebooks, NEVER use literal `\n` characters in cell source code.
+- **🚨 CRITICAL JUPYTER NOTEBOOK RULE**: **DO NOT create Jupyter notebooks unless explicitly required by the implementation plan**
+  - **RATIONALE**: Jupyter notebook creation is complex and error-prone (JSON formatting, cell structure complications)
+  - **DEFAULT**: Provide executable Python scripts instead (`.py` files in `src/scripts/`)
+  - **Only create notebooks if**:
+    - Implementation plan explicitly requires interactive analysis
+    - User specifically requests notebook format
+    - Plan provides complete notebook JSON structure
+  - **If notebooks ARE required**:
+    - **Notebook Location**: Place notebooks in `problem-statement/ps-{num}-{name}/notebooks/` directory
+    - **CRITICAL Dependency Requirements**:
+      - **BEFORE creating notebooks**: Execute all prerequisite scripts/code to generate required data
+      - **Document dependencies**: Include markdown cell at top listing all prerequisite scripts
+      - **Test execution flow**: Run all dependencies → then run notebook → verify outputs
+      - **Verify data exists**: Check that all expected input files exist before running notebook cells
+      - **Check file existence explicitly**: Use `Path(file).exists()` before reading files to provide clear error messages instead of letting exceptions occur
+    - Include markdown cells documenting each analysis step
+    - **NEVER use literal `\n` characters in cell source code**
+  - **Documentation**: If notebook creation fails or is skipped, update README to remove notebook references and provide script-only instructions
 
 ### Code Implementation Fidelity
 
@@ -596,14 +660,14 @@ Each README MUST include the following sections based on code running flow:
 | File | Location | Format | Required Fields |
 |------|----------|--------|----------------|
 | Raw disease data | `shared/data/1_raw/disease_data.csv` | CSV | date, disease, case_count, region |
-| Configuration | `shared/config/base.yml` or `problem-statement/ps-{num}/config/config.yml` | YAML | target_diseases, date_range |
+| Configuration | `shared/config/base.yml` or `problem-statement/ps-{num}-{name}/config/config.yml` | YAML | target_diseases, date_range |
 
 ### Outputs
 | File | Location | Format | Description |
 |------|----------|--------|-------------|
-| Cleaned data | `problem-statement/ps-{num}/data/4_processed/cleaned_data.csv` | CSV | Standardized disease cases |
-| Quality report | `problem-statement/ps-{num}/results/tables/data_quality_report.md` | Markdown | Data profiling results |
-| Visualizations | `problem-statement/ps-{num}/reports/figures/seasonal_patterns.png` | PNG | Time series plots |
+| Cleaned data | `problem-statement/ps-{num}-{name}/data/4_processed/cleaned_data.csv` | CSV | Standardized disease cases |
+| Quality report | `problem-statement/ps-{num}-{name}/results/tables/data_quality_report.md` | Markdown | Data profiling results |
+| Visualizations | `problem-statement/ps-{num}-{name}/reports/figures/seasonal_patterns.png` | PNG | Time series plots |
 ```
 
 #### 4. Environment Setup
@@ -622,7 +686,7 @@ uv pip install -r requirements.txt
 ### 2. Configuration
 ```bash
 # Copy example config and customize (for problem-specific config)
-cp problem-statement/ps-{num}/config/config.example.yml problem-statement/ps-{num}/config/config.yml
+cp problem-statement/ps-{num}-{name}/config/config.example.yml problem-statement/ps-{num}-{name}/config/config.yml
 
 # Edit config to set:
 # - target_diseases: ["Dengue", "HFMD", "COVID-19"]
@@ -673,13 +737,13 @@ jupyter notebook problem-statement/ps-001-{name}/notebooks/2_analysis/seasonal_a
 **Solution**: Install packages using `uv pip install -r requirements.txt`
 
 **Issue**: FileNotFoundError: shared/data/1_raw/disease_data.csv
-**Solution**: Run data extraction first: `python problem-statement/ps-{num}/src/scripts/01_extract_data.py`
+**Solution**: Run data extraction first: `python problem-statement/ps-{num}-{name}/src/scripts/01_extract_data.py`
 
 ### Logs
 Check execution logs for detailed error information:
-- ETL logs: `problem-statement/ps-{num}/logs/etl/`
-- Error logs: `problem-statement/ps-{num}/logs/errors/`
-- Audit logs: `problem-statement/ps-{num}/logs/audit/`
+- ETL logs: `problem-statement/ps-{num}-{name}/logs/etl/`
+- Error logs: `problem-statement/ps-{num}-{name}/logs/errors/`
+- Audit logs: `problem-statement/ps-{num}-{name}/logs/audit/`
 ```
 
 #### 7. Performance Considerations
