@@ -12,8 +12,8 @@ Execute a detailed implementation plan accurately and verify its completion acco
 
 | Term | Definition | Example |
 |------|------------|---------|
-| **Problem Statement (PS)** | Top-level analysis objective | problem-statement-001: Workforce Capacity Mismatch |
-| **User Story (US)** | Deliverable subset of a problem statement | US-001 within problem-statement-001 |
+| **Problem Statement (PS)** | Top-level analysis objective | problem-statement-001-Workforce Capacity Mismatch |
+| **User Story (US)** | Deliverable subset of a problem statement | 001-{user-story-name} within problem-statement-001-Workforce Capacity Mismatch |
 | **Subagent** | Specialist AI agent invoked via `#runSubagent` | ExtractionAgent, Code Reviewer Agent |
 | **Handoff File** | JSON file agents use to pass validated outputs | `extraction_to_profiling_20260306.json` |
 ---
@@ -24,7 +24,7 @@ Execute a detailed implementation plan accurately and verify its completion acco
 
 **✅ CORRECT - All artifacts in ONE problem-statement directory:**
 ```
-problem-statement/ps-{num}-{descriptive-name}/
+problem-statements/ps-{num}-{descriptive-name}/
 ├── notebooks/              # ALL notebooks for this PS
 ├── src/                    # Problem-specific code
 │   ├── data_processing/    # ETL and cleaning code
@@ -112,9 +112,6 @@ query-docs({libraryId: "polars", question: "scan_csv lazy evaluation collect fil
 - ✅ Best practices from docs followed
 - ✅ Version-specific features used correctly
 
-**🔗 Details**: See [MCP Tools Reference Guide](.github/guides/mcp-tools-reference.md)
-
-
 ### 2. Continuous Code Quality Analysis (MANDATORY)
 
 **🚨 CRITICAL REQUIREMENT**: You MUST execute quality review and Jupyter Notebook Execution Agent before this task can be marked as complete. Quality checks are NOT optional and NOT end-of-implementation tasks. Failure to execute these subagents means the implementation is INCOMPLETE.
@@ -139,6 +136,24 @@ For EACH implementation stage:
 **MANDATORY SUBAGENT EXECUTIONS:**
 
 Execute these subagents in **DURING** implementation. Each subagent call is REQUIRED:
+
+---
+
+**🧠 CRITICAL: Import Path Memory - Prevent Import Errors**
+
+**Import Rules (MEMORIZE):**
+1. **Problem-statement code imports**: `from src.{module}.{file} import {function}`
+2. **Shared code imports**: `from shared.src.{module}.{file} import {function}`
+3. **Notebooks**: Same import paths as scripts (add parent dir to sys.path if needed)
+
+**Execution Context (WHERE code runs from):**
+- ✅ **Scripts**: ALWAYS run from workspace root: `python problem-statement/ps-001-workforce/src/scripts/run.py`
+- ✅ **File paths in code**: Use workspace-relative paths: `shared/data/1_raw/input.csv`
+- ❌ **Never**: `cd` into problem-statement directory before running (breaks imports)
+
+**Before writing ANY import statement**: Verify target file exists at expected path, use hyphens in directories NOT underscores, imports use dots (.) to separate modules.
+
+---
 
 **a. Directory Structure Validation Agent (REQUIRED - Execute FIRST, BEFORE any code creation):**
 ```javascript
@@ -260,11 +275,30 @@ Context:
 Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
 
 1. **Run ALL Python Scripts (MANDATORY):**
-   - Execute every .py file in scripts/ directory in correct order
-   - Verify zero ImportError, TypeError, AttributeError, FileNotFoundError
+   - List ALL .py files in the problem-statement directory (src/scripts/, src/data_processing/, src/analysis/, etc.)
+   - Determine correct execution order based on dependencies
+   - Execute EVERY .py file one by one
+   - Check exit code for each script (must be 0)
+   - Verify zero ImportError, TypeError, AttributeError, FileNotFoundError, KeyError, ValueError
+   - **STOP IMMEDIATELY if any script fails** - do not proceed to next script
    - Fix ALL errors immediately before proceeding
+   - Re-run failed script to confirm fix
+   - Document execution results: script path, exit code, execution time, outputs generated
 
-2. **Context7 Documentation Validation (MANDATORY - NEW):**
+2. **Execute ALL Jupyter Notebooks (MANDATORY):**
+   - List ALL .ipynb files in problem-statement/ps-{num}-{descriptive-name}/notebooks/
+   - For EACH notebook:
+     * Check that all prerequisite scripts have been run (data files exist)
+     * Execute notebook
+     * Verify exit code is 0
+     * Check that ALL cells executed successfully (no exception outputs)
+     * Verify all expected outputs are generated (figures, CSV files, etc.)
+   - **STOP IMMEDIATELY if any notebook cell fails**
+   - Fix ALL errors (missing imports, file paths, data issues)
+   - Re-run notebook to confirm fix
+   - Document execution results: notebook path, cell count, execution time, outputs generated
+
+3. **Context7 Documentation Validation (MANDATORY - NEW):**
    - For EVERY library/framework import, verify against current documentation using Context7
    - Use `resolve-library-id` + `query-docs` to fetch current API syntax
    - Check for:
@@ -275,22 +309,26 @@ Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
    - Document which libraries were validated and any fixes applied
    - **DO NOT SKIP**: This prevents runtime errors from outdated API usage
 
-3. **Verify All Outputs Created (MANDATORY):**
+4. **Verify All Outputs Created (MANDATORY):**
    - Check that all expected output files exist (from both scripts AND notebooks)
-   - Verify file contents are valid (not empty, correct format)
+   - Verify file contents are valid (not empty, correct format, correct schema)
+   - Verify file sizes are reasonable (not 0 bytes, not suspiciously small)
+   - Open CSV/JSON files and inspect first few rows/records
    - Fix missing outputs immediately
+   - Re-run code if outputs are missing or invalid
 
 **IF ANY ERRORS FOUND: STOP - FIX - RE-RUN - VERIFY ZERO ERRORS**
+**DO NOT PROCEED TO REMAINING TASKS UNTIL ALL CODE EXECUTES SUCCESSFULLY**
 
-**After execution verification passes, proceed with additional tasks:**
+**After execution verification passes (ALL code runs with zero errors), proceed with additional tasks:**
 
-4. **Code Formatting (Python Files AND Notebooks - MANDATORY):**
+5. **Code Formatting (Python Files AND Notebooks - MANDATORY):**
    - Format Python files: `ruff format problem-statement/ps-{num}-{descriptive-name}/ --check`
    - **Format Jupyter notebooks**: `ruff format problem-statement/ps-{num}-{descriptive-name}/**/*.ipynb --check`
    - Auto-format both file types if needed
    - **DO NOT SKIP notebook formatting**
 
-5. **Parallel Code Review Perspectives:** Run these subagents in parallel:
+6. **Parallel Code Review Perspectives:** Run these subagents in parallel:
    - **Data structure validator (CRITICAL)**: Execute all data loading code, inspect actual columns/keys/dtypes, verify every subsequent reference matches reality exactly (case-sensitive). Flag any KeyError, ColumnNotFoundError, or assumptions about data structure
    - Correctness reviewer: logic errors, edge cases, type issues
    - Code quality reviewer: readability, naming, duplication
@@ -441,24 +479,16 @@ The implementation MUST:
 - **Leverage MCP (Model Context Protocol) tools for all file and data operations as specified below**
 - **Implement ALL code blocks provided in the implementation plan verbatim (see Code Implementation Fidelity below)**
 - **Update README files to document the code running flow and execution instructions (see README Documentation Requirements below)**
-- **🚨 CRITICAL JUPYTER NOTEBOOK RULE**: **DO NOT create Jupyter notebooks unless explicitly required by the implementation plan**
-  - **RATIONALE**: Jupyter notebook creation is complex and error-prone (JSON formatting, cell structure complications)
-  - **DEFAULT**: Provide executable Python scripts instead (`.py` files in `src/scripts/`)
-  - **Only create notebooks if**:
-    - Implementation plan explicitly requires interactive analysis
-    - User specifically requests notebook format
-    - Plan provides complete notebook JSON structure
-  - **If notebooks ARE required**:
-    - **Notebook Location**: Place notebooks in `problem-statement/ps-{num}-{name}/notebooks/` directory
-    - **CRITICAL Dependency Requirements**:
-      - **BEFORE creating notebooks**: Execute all prerequisite scripts/code to generate required data
-      - **Document dependencies**: Include markdown cell at top listing all prerequisite scripts
-      - **Test execution flow**: Run all dependencies → then run notebook → verify outputs
-      - **Verify data exists**: Check that all expected input files exist before running notebook cells
-      - **Check file existence explicitly**: Use `Path(file).exists()` before reading files to provide clear error messages instead of letting exceptions occur
-    - Include markdown cells documenting each analysis step
-    - **NEVER use literal `\n` characters in cell source code**
-  - **Documentation**: If notebook creation fails or is skipped, update README to remove notebook references and provide script-only instructions
+- **Create at least one Jupyter notebook for each execution** to facilitate user viewing of outputs and results
+  - **Notebook Location**: Place notebooks in `problem-statement/ps-{num}-{name}/notebooks/` directory
+  - **CRITICAL Dependency Requirements**:
+    - **BEFORE creating notebooks**: Execute all prerequisite scripts/code to generate required data
+    - **Document dependencies**: Include markdown cell at top listing all prerequisite scripts
+    - **Test execution flow**: Run all dependencies → then run notebook → verify outputs
+    - **Verify data exists**: Check that all expected input files exist before running notebook cells
+    - **Check file existence explicitly**: Use `Path(file).exists()` before reading files to provide clear error messages instead of letting exceptions occur
+  - Include markdown cells documenting each analysis step
+  - **🚨 CRITICAL NOTEBOOK FORMATTING RULE**: When creating Jupyter notebooks, NEVER use literal `\n` characters in cell source code.
 
 ### Code Implementation Fidelity
 
@@ -488,94 +518,69 @@ The implementation MUST:
 5. All error handling, retry logic, and validation checks are present
 6. All logging and metadata tracking code is functional
 
-**How to Invoke Specialist Agents:**
+## 7. Multi-Agent Orchestration for Data Analysis Lifecycle
 
-Use the `#runSubagent` tool to delegate specific stages to specialist agents. Each agent reads its template from `.agents/` and follows the instructions there.
+**Reference**: [Agent Configuration](.github/agents/config.yml) | [Agent Registry](.github/agents/registry.yml) | [Agent Documentation](.github/agents/README.md)
 
-**Sequential Pipeline (With Handoffs):**
-```javascript
-// Step 1: Extract
-#runSubagent({...}) → extraction_handoff.json
+### 7.2 How to Invoke Specialist Agents
 
-// Step 2: Profile (reads extraction handoff)
-#runSubagent({
-  prompt: `Execute ProfilingAgent with input from: shared/data/3_interim/agent_handoffs/extraction_handoff.json`
-}) → profiling_handoff.json
+Use the `#runSubagent` tool to delegate specific lifecycle stages to specialist agents. Each agent:
+- Reads its template from `.github/agents/{agent}.agent.md`
+- Follows instructions in `.github/instructions/data-analysis-stages-instructions/`
+- **MUST read its responsible segment** from this implementation plan for context
+- Generates code, outputs, and handoff files according to specifications
 
-// Step 3: Clean (reads profiling handoff)
-#runSubagent({...}) → cleaned data + cleaning_handoff.json
+**Handoff Validation Requirements:**
+
+Before proceeding to the next stage, the **receiving agent** MUST:
+1. **Verify handoff file exists** at expected location
+2. **Check validation_status** is "passed" (if "failed", escalate and halt)
+3. **Validate all output files** listed in handoff exist and are readable
+4. **Verify data integrity** (row counts, column names, data types match expectations)
+5. **Review critical_issues** - if any exist, address before proceeding
+6. **Read recommended actions** and incorporate into implementation
+
+**Example - CleaningAgent Reading Handoff from ProfilingAgent:**
+
+```python
+# In CleaningAgent implementation
+import json
+from pathlib import Path
+
+handoff_path = Path("shared/data/3_interim/agent_handoffs/profiling_to_cleaning_20260316_150000.json")
+
+# 1. Verify handoff exists
+if not handoff_path.exists():
+    raise FileNotFoundError(f"Handoff file from ProfilingAgent not found: {handoff_path}")
+
+# 2. Load and validate
+with open(handoff_path) as f:
+    handoff = json.load(f)
+
+if handoff["validation_status"] != "passed":
+    raise ValueError(f"ProfilingAgent validation failed. Review findings: {handoff['findings']}")
+
+# 3. Extract cleaning actions from previous stage
+recommended_actions = handoff["recommended_cleaning_actions"]
+# ['impute_missing_values_specialty_using_mode', 'handle_outliers_workforce_count_using_winsorization', ...]
+
+# 4. Implement cleaning logic based on recommendations
+for action in recommended_actions:
+    if "impute_missing" in action:
+        # Implement imputation logic
+        pass
+    elif "handle_outliers" in action:
+        # Implement outlier handling logic
+        pass
 ```
+**Key Principles:**
+- ✅ **Input Validation**: Each agent validates inputs before proceeding
+- ✅ **Context-Aware**: Agents read previous findings and adapt implementation
+- ✅ **Output Verification**: All code must execute successfully before handoff
+- ✅ **Quality Gates**: Subagent reviews are MANDATORY before proceeding
+- ✅ **Traceability**: Handoff files create audit trail of entire pipeline
 
-### §5.4 Handoff Protocol
-
-**Handoff File Format:**
-```json
-{
-  "agent_name": "ProfilingAgent",
-  "timestamp": "20260306_141530",
-  "stage": 3,
-  "validation_status": "passed",
-  "outputs": {
-    "report": "problem-statement/ps-001-{name}/results/tables/data_quality_report.md",
-    "metrics": "problem-statement/ps-001-{name}/results/metrics/quality_metrics.json"
-  },
-  "findings": {
-    "overall_quality_score": 87.5,
-    "recommended_cleaning_actions": ["impute_missing_values", "handle_outliers"]
-  },
-  "recommended_next_step": "cleaning"
-}
-```
-
-**Location**: `shared/data/3_interim/agent_handoffs/`
-
-See [`.agents/README.md`](.agents/README.md) for complete documentation.
-
-
-**Agent Invocation Template:**
-
-When invoking any agent with `#runSubagent`, use this pattern:
-
-```
-#runSubagent(
-  description: "{AgentName} for Problem Statement {num}",
-  prompt: "Read and execute the {AgentName} template from .agents/{agent}_agent.md
-  
-  Context:
-  - Problem Statement: {num}
-  - Problem Title: {title}
-  - Previous Handoff: {path_to_handoff_file} (if applicable)
-  - Input Data: {path_to_input_data}
-  - Additional Context: {any_specific_requirements}
-  
-  Instructions:
-  1. Read the agent template completely
-  2. Follow all steps in the template's 'Your Responsibilities' section
-  3. Use the specified instruction files from the template
-  4. Apply domain skills from .agents/skills/ as referenced
-  5. Generate all required outputs as specified
-  6. Create handoff file with validation status and findings
-  7. Return path to handoff file and summary of work completed
-  "
-)
-```
-
-See [`.agents/README.md`](.agents/README.md) for detailed documentation.
-
-**Adaptive Implementation Workflow:**
-
-```
-1. Review implementation plan stage
-2. Identify knowledge gaps or uncertainties
-3. Select appropriate data plugin command to gather context
-4. Execute command and analyze results
-5. Adjust implementation approach based on findings
-6. Generate code with informed decisions
-7. Validate outputs using `/validate`
-8. Proceed to next stage
-```
-
-This approach ensures that code generation is **data-driven and context-aware**, reducing rework and improving implementation quality.
+This orchestration approach ensures **reproducible, high-quality, end-to-end data analysis implementations**.
 
 ## Verification Requirements
 
@@ -602,9 +607,7 @@ After implementation, the following verifications MUST be completed:
    - [ ] Security vulnerabilities addressed (credentials, SQL injection, etc.)
    - [ ] Duplicate code refactored (3+ occurrences)
    - [ ] Medium/low priority improvements documented in TODO.md
-   - [ ] Final quality report shows >80% functions with type hints
-   - [ ] Final quality report shows >80% functions with docstrings
-   - [ ] Final quality report shows consistent error handling patterns
+   - [ ] Final quality report shows >80% functions with type hints, docstrings and consistent error handling patterns
    ```
 
 3. **Design Implementation Verification**
@@ -619,150 +622,7 @@ After implementation, the following verifications MUST be completed:
 
 After implementing code, README files MUST be updated to reflect the actual code running flow and execution instructions. This ensures that future users (including stakeholders, team members, and the AI agent itself) can understand and execute the code correctly.
 
-### README Update Locations
-
-Update README files at appropriate levels based on the scope of implementation:
-
-1. **Problem Statement Level**: `problem-statement/ps-{num}-{name}/README.md`
-   - Overall execution flow for the entire problem statement
-   - High-level orchestration of analysis stages
-   - Dependencies between user stories/waves
-   - Environment setup requirements
-
-2. **Module Level**: Individual module docstrings and inline comments
-   - Function-level execution details
-   - Parameter descriptions and examples
-   - Edge cases and error handling
-
-### Required README Sections
-
-Each README MUST include the following sections based on code running flow:
-
-#### 1. Quick Start
-```markdown
-## Quick Start
-
-#### 2. Execution Flow
-
-**Critical Execution Rules**:
-- **BLOCKER**: Step N cannot start until Step N-1 completes successfully
-- **MANDATORY SEQUENCE**: Extract → Profile → Clean → Analyze/Model → Visualize
-- **PARALLEL ALLOWED**: Analysis and modeling can run in parallel after cleaning completes
-- **NOTEBOOKS**: Can only run after their input data files exist (check file paths first)
-- **NEVER SKIP STAGES**: Each stage validates data for the next; skipping causes downstream failures
-
-
-#### 3. Input/Output Specifications
-```markdown
-## Input/Output Specifications
-
-### Inputs
-| File | Location | Format | Required Fields |
-|------|----------|--------|----------------|
-| Raw disease data | `shared/data/1_raw/disease_data.csv` | CSV | date, disease, case_count, region |
-| Configuration | `shared/config/base.yml` or `problem-statement/ps-{num}-{name}/config/config.yml` | YAML | target_diseases, date_range |
-
-### Outputs
-| File | Location | Format | Description |
-|------|----------|--------|-------------|
-| Cleaned data | `problem-statement/ps-{num}-{name}/data/4_processed/cleaned_data.csv` | CSV | Standardized disease cases |
-| Quality report | `problem-statement/ps-{num}-{name}/results/tables/data_quality_report.md` | Markdown | Data profiling results |
-| Visualizations | `problem-statement/ps-{num}-{name}/reports/figures/seasonal_patterns.png` | PNG | Time series plots |
-```
-
-#### 4. Environment Setup
-```markdown
-## Environment Setup
-
-### 1. Python Environment
-```bash
-# Activate virtual environment
-source .venv/bin/activate
-
-# Install dependencies (use uv, not pip)
-uv pip install -r requirements.txt
-```
-
-### 2. Configuration
-```bash
-# Copy example config and customize (for problem-specific config)
-cp problem-statement/ps-{num}-{name}/config/config.example.yml problem-statement/ps-{num}-{name}/config/config.yml
-
-# Edit config to set:
-# - target_diseases: ["Dengue", "HFMD", "COVID-19"]
-# - date_range: {start: "2012-01-01", end: "2023-12-31"}
-```
-
-### 3. API Keys (if applicable)
-```bash
-# Set required API keys as environment variables
-export API_KEY="your_api_key"
-export API_SECRET="your_api_secret"
-
-# For persistent configuration, add to ~/.zshrc or ~/.bashrc
-echo 'export API_KEY="your_api_key"' >> ~/.zshrc
-echo 'export API_SECRET="your_api_secret"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-#### 5. Execution Modes
-```markdown
-## Execution Modes
-
-### Development Mode
-Run individual scripts for testing and debugging:
-```bash
-python problem-statement/ps-001-{name}/wave-1/02_profile_data.py --debug --sample-size 1000
-```
-
-### Production Mode
-Run complete pipeline with all data:
-```bash
-python problem-statement/ps-001-{name}/run_all.py --mode production
-```
-
-### Notebook Mode
-Interactive exploration:
-```bash
-jupyter notebook problem-statement/ps-001-{name}/notebooks/2_analysis/seasonal_analysis.ipynb
-```
-
-#### 6. Troubleshooting
-```markdown
-## Troubleshooting
-
-### Common Issues
-
-**Issue**: ImportError: No module named 'polars'
-**Solution**: Install packages using `uv pip install -r requirements.txt`
-
-**Issue**: FileNotFoundError: shared/data/1_raw/disease_data.csv
-**Solution**: Run data extraction first: `python problem-statement/ps-{num}-{name}/src/scripts/01_extract_data.py`
-
-### Logs
-Check execution logs for detailed error information:
-- ETL logs: `problem-statement/ps-{num}-{name}/logs/etl/`
-- Error logs: `problem-statement/ps-{num}-{name}/logs/errors/`
-- Audit logs: `problem-statement/ps-{num}-{name}/logs/audit/`
-```
-
-#### 7. Performance Considerations
-```markdown
-## Performance Considerations
-
-### Data Size Recommendations
-- **Small datasets** (< 100MB): Run on local machine
-- **Medium datasets** (100MB - 1GB): Use lazy evaluation with Polars
-- **Large datasets** (> 1GB): Consider Databricks cluster execution
-
-### Optimization Tips
-1. Use `pl.scan_csv()` instead of `pl.read_csv()` for lazy loading
-2. Filter data early in the pipeline to reduce memory usage
-3. Use `Categorical` dtype for disease names to save memory
-4. Enable Polars' parallel processing for aggregations
-```
-
-### README Update Process
+## README Update Process
 
 When updating README files, follow this process:
 
@@ -774,7 +634,7 @@ When updating README files, follow this process:
 6. **Verify Instructions**: Test README instructions on a fresh environment to ensure accuracy
 7. **Test Notebook Prerequisites**: Verify notebooks fail gracefully if dependencies haven't run
 
-### README Update Verification
+## README Update Verification
 
 After updating README files, verify:
 
