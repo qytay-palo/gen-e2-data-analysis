@@ -51,10 +51,10 @@ problem-statements/ps-{num}-{descriptive-name}/
 Use for ALL file operations:
 
 ```
-Read data:     "Use filesystem tools to read shared/data/1_raw/input.csv"
-Create dir:    "Use filesystem tools to create directory problem-statement/ps-001-{name}/results/"
-Write file:    "Use filesystem tools to save results to problem-statement/ps-001-{name}/results/tables/output.csv"
-List files:    "Use filesystem tools to list files in problem-statement/ps-001-{name}/"
+Read data:     "Use filesystem tools to read ../shared/data/1_raw/input.csv"
+Create dir:    "Use filesystem tools to create directory ../problem-statements/ps-001-{name}/results/"
+Write file:    "Use filesystem tools to save results to ../problem-statements/ps-001-{name}/results/tables/output.csv"
+List files:    "Use filesystem tools to list files in ../problem-statements/ps-001-{name}/"
 ```
 
 ### SQLite Tools (when applicable)
@@ -112,6 +112,18 @@ query-docs({libraryId: "polars", question: "scan_csv lazy evaluation collect fil
 - ✅ Best practices from docs followed
 - ✅ Version-specific features used correctly
 
+**🚨 CRITICAL: Jupyter Notebook Requirement**
+
+Every user story implementation MUST include at least one Jupyter notebook:
+- ✅ ONE notebook minimum per user story (can have multiple if needed)
+- ✅ Named following convention: `{user-story-num}_{descriptive_name}.ipynb`
+- ✅ Located in `problem-statement/ps-{num}-{name}/notebooks/`
+- ✅ Executes from start to finish with ZERO errors
+- ✅ Generates all expected outputs (visualizations, tables, results)
+- ✅ Includes markdown cells documenting each step
+- ✅ Documents prerequisite scripts/data requirements in first markdown cell
+- ✅ **ALL prerequisite scripts executed and data dependencies verified to exist BEFORE marking work complete**
+
 ### 2. Continuous Code Quality Analysis (MANDATORY)
 
 **🚨 CRITICAL REQUIREMENT**: You MUST execute quality review and Jupyter Notebook Execution Agent before this task can be marked as complete. Quality checks are NOT optional and NOT end-of-implementation tasks. Failure to execute these subagents means the implementation is INCOMPLETE.
@@ -132,10 +144,11 @@ For EACH implementation stage:
 | **After completing 2-3 modules** | Dead Code Elimination | Clean up unused code before it accumulates |
 | **After completing 2-3 modules** | Import Path Validation | Verify all imports match actual directory structure |
 | **Before marking work complete** | Code Reviewer Agent Comprehensive Review | Final validation of all code quality standards |
+| **Multi-Agent Orchestration for Data Analysis Lifecycle** | Specialized agent (refer to section 7) | During Implementation of multiple user stories in parallel, execute coordination subagent to manage handoffs and integration |
 
 **MANDATORY SUBAGENT EXECUTIONS:**
 
-Execute these subagents in **DURING** implementation. Each subagent call is REQUIRED:
+Execute these subagents in during implementation. Each subagent call is REQUIRED:
 
 ---
 
@@ -144,11 +157,11 @@ Execute these subagents in **DURING** implementation. Each subagent call is REQU
 **Import Rules (MEMORIZE):**
 1. **Problem-statement code imports**: `from src.{module}.{file} import {function}`
 2. **Shared code imports**: `from shared.src.{module}.{file} import {function}`
-3. **Notebooks**: Same import paths as scripts (add parent dir to sys.path if needed)
+3. **Notebooks**: Same import paths as scripts (must locate and add correct paths to sys.path)
 
 **Execution Context (WHERE code runs from):**
 - ✅ **Scripts**: ALWAYS run from workspace root: `python problem-statement/ps-001-workforce/src/scripts/run.py`
-- ✅ **File paths in code**: Use workspace-relative paths: `shared/data/1_raw/input.csv`
+- ✅ **File paths in code**: Use workspace-relative paths: `/data/1_raw/input.csv`
 - ❌ **Never**: `cd` into problem-statement directory before running (breaks imports)
 
 **Before writing ANY import statement**: Verify target file exists at expected path, use hyphens in directories NOT underscores, imports use dots (.) to separate modules.
@@ -226,6 +239,13 @@ Context:
 - Notebooks Location: problem-statement/ps-{num}-{descriptive-name}/notebooks/
 - **MISSION**: Zero cell execution errors across all notebooks
 
+🚨 CRITICAL: NEVER DELETE NOTEBOOK FILES
+- DO NOT use rm, delete, or remove commands on .ipynb files
+- FIX errors in-place by editing cells
+- If notebook has duplicate cells, DELETE cells (not the file)
+- If notebook has import errors, FIX imports (not delete the file)
+- Only escalate if error genuinely cannot be fixed after multiple attempts
+
 Instructions:
 1. Read the complete testing protocol from .github/prompts/6-test-execuetion-code.prompt.md
 2. Follow ALL phases in the "Testing Protocol" section:
@@ -246,6 +266,8 @@ Instructions:
 - ✅ Import cells positioned correctly (first executable cell)
 - ✅ Prerequisites documented in markdown cells
 - ✅ Error prevention checks added to notebooks
+- ✅ **NO literal escape sequences** (`\n`, `\t`) in markdown cells (use actual line breaks instead)
+- ✅ Verify notebook renders correctly when reopened in VS Code
 
 **FAILURE CONDITION:**
 If ANY notebook cannot be fixed to execute successfully:
@@ -356,6 +378,7 @@ You MUST take these actions immediately after receiving subagent findings:
 Before marking implementation complete, you MUST document:
 - ✅ List of all subagent executions with timestamps
 - ✅ Jupyter Notebook Execution Agent report (all notebooks passing with zero errors)
+- ✅ **All prerequisite scripts executed and data dependencies verified to exist**
 - ✅ Summary of findings from each subagent report
 - ✅ Actions taken to address critical/high priority issues
 - ✅ Confirmation that all security vulnerabilities are fixed
@@ -383,8 +406,32 @@ Before marking implementation complete, you MUST document:
 
 The input will consist of:
 - A detailed implementation plan (typically in Markdown format)
-- User story and acceptance criteria
+- User story/stories and acceptance criteria
+  - **Single User Story**: Implementation plan for one deliverable
+  - **Multiple User Stories**: Implementation plans for multiple deliverables (may require parallel execution and coordination)
 - Design specifications and requirements
+- **For Parallel Execution**: Agent assignment strategy and coordination requirements
+
+## 🚨 MANDATORY PRE-IMPLEMENTATION CHECK: Orchestration Strategy Selection
+
+**BEFORE writing ANY code, you MUST:**
+
+1. **Count User Stories**: Analyze the input to determine how many user stories need implementation
+2. **Determine Orchestration Strategy**: Follow Section 7.1 Decision Framework
+3. **Execute Strategy**: Invoke specialist agents OR implement directly based on decision
+
+**Decision Logic (MANDATORY):**
+
+```
+IF number_of_user_stories >= 2:
+    THEN use Multi-Agent Orchestration (Section 7)
+    ACTION: Invoke specialist agents (ModelingAgent, ValidationAgent, etc.)
+    DO NOT: Implement directly yourself
+    
+ELSE:
+    THEN use Sequential Multi-Stage Orchestration (Section 7.2)
+    ACTION: Chain specialist agents with handoffs
+```
 
 ## Output Requirements
 
@@ -393,6 +440,11 @@ The output MUST include:
 - Implementation of all required files and changes
 - Verification that specifications have been met
 - Completed Design Implementation Verification Checklist
+- **For Parallel Execution (Multiple User Stories)**:
+  - Agent handoff files showing coordination and code sharing
+  - Consolidation report identifying shared utilities extracted
+  - Multi-user-story quality review results (see §7.3)
+  - Cross-user-story integration test results
 
 ## Review Requirements
 
@@ -474,7 +526,6 @@ The implementation MUST:
 - **FIRST: Create the problem-statement-specific directory structure per CRITICAL RULES** (see top of document)
 - Follow the staged implementation approach outlined below
 - Adhere to file paths, code structures, and configurations specified in the plan
-- **ALL code files, notebooks, and scripts MUST be placed within `problem-statement/ps-{num}-{descriptive-name}/`**
 - Follow project coding standards and best practices
 - **Leverage MCP (Model Context Protocol) tools for all file and data operations as specified below**
 - **Implement ALL code blocks provided in the implementation plan verbatim (see Code Implementation Fidelity below)**
@@ -522,7 +573,79 @@ The implementation MUST:
 
 **Reference**: [Agent Configuration](.github/agents/config.yml) | [Agent Registry](.github/agents/registry.yml) | [Agent Documentation](.github/agents/README.md)
 
-### 7.2 How to Invoke Specialist Agents
+### 7.1 Orchestration Strategy Decision Framework
+
+**Purpose**: Choose the appropriate agent orchestration strategy based on implementation requirements.
+
+**Available Orchestration Approaches:**
+
+| Approach | Use Case | Execution Model | Quality Gates |
+|----------|----------|-----------------|---------------|
+| **Sequential Single-Stage** | One user story, linear workflow | Execute one specialist agent at a time | Quality checks after each stage |
+| **Sequential Multi-Stage** | One user story, complex pipeline | Chain specialist agents with handoffs | Quality checks at pipeline milestones |
+| **Parallel Multi-User Story** | Multiple independent user stories | Multiple agents work simultaneously | Consolidated quality review at end |
+
+**Decision Matrix:**
+
+```
+START: How many user stories need implementation?
+
+├─ ONE User Story
+│  ├─ Simple implementation (1-2 stages)?
+│  │  └─ Use: Sequential Single-Stage
+│  │     • Example: Data extraction only
+│  │     • Pattern: ExtractionAgent → Code Review → Done
+│  │
+│  └─ Complex pipeline (3+ stages)?
+│     └─ Use: Sequential Multi-Stage (Section 7.2)
+│        • Example: Full ETL → EDA → Modeling → Dashboard
+│        • Pattern: ExtractionAgent → ProfilingAgent → CleaningAgent → EDAAgent → ModelingAgent
+│        • Quality: After each 2-3 stages
+│
+└─ MULTIPLE User Stories
+   ├─ Are they independent or minimally coupled?
+   │  └─ YES → Use: Parallel Multi-User Story
+   │     • Agents work simultaneously on different user stories
+   │     • Share code via handoff files
+   │     • Consolidated quality review after all complete
+   │
+   └─ Are they tightly coupled/dependent?
+      └─ NO → Use: Sequential Multi-Stage
+         • Implement dependencies first
+         • Then implement dependent user stories
+         • Treat as single complex pipeline
+```
+
+**Key Selection Criteria:**
+
+| Criterion | Sequential | Parallel |
+|-----------|-----------|----------|
+| **Number of User Stories** | 1 | > 1 |
+| **Dependencies** | Linear/Sequential | Independent/Minimal |
+| **Specialist Expertise** | Same domain (e.g., all modeling) | Different domains (extraction + visualization + modeling) |
+| **Time Priority** | Can wait for sequential completion | Need fast delivery |
+| **Code Sharing** | Within same problem statement | Across different problem statements/user stories |
+| **Quality Review** | After each 2-3 stages | After ALL agents complete |
+
+**Critical Differences:**
+
+| Aspect | Sequential | Parallel |
+|--------|-----------|----------|
+| **Handoff Files** | Agent-to-agent pipeline handoffs | Agent-to-coordination-space broadcasts |
+| **Code Sharing** | Via pipeline stages | Via shared handoff directory monitoring |
+| **Review Timing** | Every 2-3 stages | Only after ALL agents complete |
+| **Failure Impact** | Blocks next stage only | Blocks final quality review only |
+| **Consolidation** | Not needed (single pipeline) | **MANDATORY** (merge shared utilities) |
+
+**When to Switch Strategies:**
+
+Start with one approach and switch if:
+- **Sequential → Parallel**: User requests additional user stories mid-implementation
+  - Action: Convert completed work to parallel format, assign new agents to new user stories
+- **Parallel → Sequential**: Discover tight coupling between "independent" user stories
+  - Action: Merge into single pipeline, resequence stages based on dependencies
+
+### 7.2 How to Invoke Specialist Agents (Sequential Multi-Stage)
 
 Use the `#runSubagent` tool to delegate specific lifecycle stages to specialist agents. Each agent:
 - Reads its template from `.github/agents/{agent}.agent.md`
@@ -547,7 +670,7 @@ Before proceeding to the next stage, the **receiving agent** MUST:
 import json
 from pathlib import Path
 
-handoff_path = Path("shared/data/3_interim/agent_handoffs/profiling_to_cleaning_20260316_150000.json")
+handoff_path = Path("/data/3_interim/agent_handoffs/profiling_to_cleaning_20260316_150000.json")
 
 # 1. Verify handoff exists
 if not handoff_path.exists():
@@ -663,3 +786,9 @@ The final output MUST include:
 - Any noted discrepancies or issues
 - **Updated README files documenting code execution flow** (see README Documentation Requirements above)
 - Verification that README instructions have been tested and work correctly
+- **For Parallel Multi-User Story Execution** (if applicable):
+  - Agent assignment and coordination summary
+  - Handoff file inventory showing inter-agent communication
+  - Consolidation report (shared utilities extracted, duplicate code removed)
+  - Multi-user-story quality review results
+  - Cross-user-story integration test results
