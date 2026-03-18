@@ -126,13 +126,20 @@ Every user story implementation MUST include at least one Jupyter notebook:
 
 ### 2. Continuous Code Quality Analysis (MANDATORY)
 
-**🚨 CRITICAL REQUIREMENT**: You MUST execute quality review and Jupyter Notebook Execution Agent before this task can be marked as complete. Quality checks are NOT optional and NOT end-of-implementation tasks. Failure to execute these subagents means the implementation is INCOMPLETE.
+**🚨 CRITICAL REQUIREMENT**: You MUST execute Code Review Agent and Jupyter Notebook Execution Agent before this task can be marked as complete. Quality checks are NOT optional and NOT end-of-implementation tasks. Failure to execute these mandatory subagents means the implementation is INCOMPLETE.
+
+**MANDATORY SUBAGENTS (NON-NEGOTIABLE):**
+1. **Code Review Agent** - Execute during implementation (after 2-3 modules) and before marking complete
+2. **Jupyter Notebook Execution Agent** - Execute after creating/updating notebooks and before marking complete
 
 **EXECUTION WORKFLOW (MANDATORY):**
 
 ```
 For EACH implementation stage:
-1. Implement the code/module → 2. IMMEDIATELY delegate quality review and jupyter notebook execution → 3. Fix issues found → 4. Proceed to next stage
+1. Implement the code/module 
+→ 2. IMMEDIATELY delegate quality review (Code Review Agent) and jupyter notebook execution (Jupyter Notebook Execution Agent) 
+→ 3. Fix issues found 
+→ 4. Proceed to next stage
 ```
 
 **WHEN TO EXECUTE SUBAGENTS (NON-NEGOTIABLE):**
@@ -143,12 +150,19 @@ For EACH implementation stage:
 | **After creating each module** | Code Reviewer Agent Code Review | Review error handling, types, security |
 | **After completing 2-3 modules** | Dead Code Elimination | Clean up unused code before it accumulates |
 | **After completing 2-3 modules** | Import Path Validation | Verify all imports match actual directory structure |
-| **Before marking work complete** | Code Reviewer Agent Comprehensive Review | Final validation of all code quality standards |
+| **After creating/updating notebooks** | **Jupyter Notebook Execution Agent (MANDATORY)** | Execute ALL notebooks, verify zero errors, fix issues |
+| **Before marking work complete** | **Jupyter Notebook Execution Agent (MANDATORY)** | Final notebook validation - ALL notebooks must execute successfully |
+| **Before marking work complete** | **Code Reviewer Agent Comprehensive Review (MANDATORY)** | Final validation of all code quality standards |
 | **Multi-Agent Orchestration for Data Analysis Lifecycle** | Specialized agent (refer to section 7) | During Implementation of multiple user stories in parallel, execute coordination subagent to manage handoffs and integration |
 
 **MANDATORY SUBAGENT EXECUTIONS:**
 
-Execute these subagents in during implementation. Each subagent call is REQUIRED:
+Execute these subagents during implementation. Each subagent call is REQUIRED:
+
+**🚨 CRITICAL: Code Review Agent and Jupyter Notebook Execution Agent are NON-NEGOTIABLE**
+- These agents MUST be executed before marking any implementation as complete
+- Failure to execute = Implementation is INCOMPLETE
+- ALL notebooks MUST execute with ZERO errors before completion
 
 ---
 
@@ -344,7 +358,20 @@ Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
 
 **After execution verification passes (ALL code runs with zero errors), proceed with additional tasks:**
 
-5. **Code Formatting (Python Files AND Notebooks - MANDATORY):**
+5. **Verify Dynamic Data Structure Analysis Was Followed (MANDATORY):**
+   - **PURPOSE**: Confirm the agent analyzed data structures DURING coding (see §6 Dynamic Data Structure Analysis)
+   - For EVERY data file used in the codebase:
+     * Verify code includes structure analysis (print columns/schema) BEFORE accessing columns
+     * Check for comments documenting actual structure discovered
+     * Verify column names in code match actual data (not assumed from plans)
+     * Look for explicit rename operations if expected names differ from actual
+   - Flag violations:
+     * Code accesses columns without prior analysis
+     * Column names assumed without verification
+     * Missing structure documentation comments
+   - **Evidence required**: Analysis output visible in code/notebooks showing actual columns discovered
+
+6. **Code Formatting (Python Files AND Notebooks - MANDATORY):**
    - Format Python files: `ruff format problem-statement/ps-{num}-{descriptive-name}/ --check`
    - **Format Jupyter notebooks**: `ruff format problem-statement/ps-{num}-{descriptive-name}/**/*.ipynb --check`
    - Auto-format both file types if needed
@@ -405,7 +432,8 @@ Before marking implementation complete, you MUST document:
 ## Input Requirements
 
 The input will consist of:
-- A detailed implementation plan (typically in Markdown format)
+- A detailed implementation plan for the associated user story (typically in Markdown format)
+- **Prerequisite Completion Documents**: ALL dependent user story completion documents (`problem-statement/ps-{num}-{descriptive-name}/US-XX-IMPLEMENTATION-COMPLETE.md`) to verify what was ACTUALLY implemented (data schemas, column names, file paths, data types) and adapt your implementation to match reality instead of making assumptions
 - User story/stories and acceptance criteria
   - **Single User Story**: Implementation plan for one deliverable
   - **Multiple User Stories**: Implementation plans for multiple deliverables (may require parallel execution and coordination)
@@ -523,13 +551,14 @@ When extending existing implementations:
 ## 6. Implementation Requirements
 
 The implementation MUST:
-- **FIRST: Create the problem-statement-specific directory structure per CRITICAL RULES** (see top of document)
+- **FIRST**: Create the problem-statement-specific directory structure per CRITICAL RULES** (see top of document)
 - Follow the staged implementation approach outlined below
 - Adhere to file paths, code structures, and configurations specified in the plan
 - Follow project coding standards and best practices
 - **Leverage MCP (Model Context Protocol) tools for all file and data operations as specified below**
 - **Implement ALL code blocks provided in the implementation plan verbatim (see Code Implementation Fidelity below)**
 - **Update README files to document the code running flow and execution instructions (see README Documentation Requirements below)**
+- **VERIFY DATA STRUCTURES BEFORE WRITING CODE**
 - **Create at least one Jupyter notebook for each execution** to facilitate user viewing of outputs and results
   - **Notebook Location**: Place notebooks in `problem-statement/ps-{num}-{name}/notebooks/` directory
   - **CRITICAL Dependency Requirements**:
@@ -636,14 +665,6 @@ START: How many user stories need implementation?
 | **Review Timing** | Every 2-3 stages | Only after ALL agents complete |
 | **Failure Impact** | Blocks next stage only | Blocks final quality review only |
 | **Consolidation** | Not needed (single pipeline) | **MANDATORY** (merge shared utilities) |
-
-**When to Switch Strategies:**
-
-Start with one approach and switch if:
-- **Sequential → Parallel**: User requests additional user stories mid-implementation
-  - Action: Convert completed work to parallel format, assign new agents to new user stories
-- **Parallel → Sequential**: Discover tight coupling between "independent" user stories
-  - Action: Merge into single pipeline, resequence stages based on dependencies
 
 ### 7.2 How to Invoke Specialist Agents (Sequential Multi-Stage)
 
@@ -756,6 +777,8 @@ When updating README files, follow this process:
 5. **Capture Error Messages**: Note common errors encountered during testing (especially missing dependencies)
 6. **Verify Instructions**: Test README instructions on a fresh environment to ensure accuracy
 7. **Test Notebook Prerequisites**: Verify notebooks fail gracefully if dependencies haven't run
+8. **Document Folder Structure**: Update README with complete directory structure tree (see Folder Structure Documentation Requirements below)
+9. **Map Import Paths to Structure**: Document import path mappings to prevent ModuleError/ImportError (see Import Path Mapping Requirements below)
 
 ## README Update Verification
 
@@ -785,6 +808,8 @@ The final output MUST include:
 - The completed Design Implementation Verification Checklist
 - Any noted discrepancies or issues
 - **Updated README files documenting code execution flow** (see README Documentation Requirements above)
+- **Updated README with complete folder structure tree** (see Folder Structure Documentation Requirements above)
+- **Updated README with import path mapping table** to prevent ModuleError/ImportError
 - Verification that README instructions have been tested and work correctly
 - **For Parallel Multi-User Story Execution** (if applicable):
   - Agent assignment and coordination summary
