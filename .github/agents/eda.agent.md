@@ -75,12 +75,17 @@ For time series data:
 
 ### 4. Output Generation
 
-**Code**: Create `src/problem-statement-{num}/wave-2/04_exploratory_analysis.py`
+**Analysis Module**: Create `problem-statements/ps-{num}-{name}/src/analysis/{domain}_trend_analysis.py`
+- Problem-specific analysis functions
+- Statistical calculations and transformations
+
+**Notebook**: Create `problem-statements/ps-{num}-{name}/notebooks/04_exploratory_{domain}_analysis.ipynb`
+- Interactive exploration with visualizations
 - Modular functions for each analysis type
 - Reusable visualization utilities
 - Statistical test implementations
 
-**Figures**: Save to `reports/figures/problem-statement-{num}/`
+**Figures**: Save to `problem-statements/ps-{num}-{name}/reports/figures/problem-statement-{num}/`
 Minimum required plots:
 1. `01_univariate_distributions.png` - Grid of histograms
 2. `02_correlation_matrix.png` - Heatmap
@@ -88,7 +93,7 @@ Minimum required plots:
 4. `04_group_comparisons.png` - Comparative box plots
 5. `05_key_relationships.png` - Scatter plots of important correlations
 
-**Summary Table**: Save `results/tables/problem-statement-{num}/eda_summary.csv`
+**Summary Table**: Save `problem-statements/ps-{num}-{name}/results/tables/problem-statement-{num}/eda_summary.csv`
 ```csv
 variable,type,n,mean,median,std,min,max,missing_pct,skewness,kurtosis
 case_count,continuous,1000,245.3,230,45.2,150,450,0.0,0.3,2.1
@@ -110,7 +115,7 @@ In your summary, include:
 - **Business insights**: Actionable findings for stakeholders
 
 ### 6. Handoff Preparation
-Create: `data/3_interim/agent_handoffs/eda_to_modeling_{timestamp}.json`
+Create: `shared/data/3_interim/agent_handoffs/eda_to_modeling_{timestamp}.json`
 
 ```json
 {

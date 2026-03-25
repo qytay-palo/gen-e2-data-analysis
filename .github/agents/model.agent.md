@@ -93,10 +93,22 @@ Determine modeling approach based on problem statement:
 
 ### 4. Model Training & Validation
 
-**Train-Test Split Strategy**:
-- Time series: Chronological split (80% train, 20% test, NO shuffle)
-- Cross-sectional: Stratified K-fold (k=5 or k=10)
-- Temporal cross-validation: Rolling window or expanding window
+**Train-Validation-Test Split Strategy**:
+- Time series: Chronological 3-way split (60% train, 20% validation, 20% test, NO shuffle)
+  - Train: Model fitting
+  - Validation: Hyperparameter tuning and model selection
+  - Test: Final evaluation only (NEVER use for tuning)
+- Cross-sectional: Stratified K-fold (k=5 or k=10) with separate holdout test set
+- Temporal cross-validation: Rolling window or expanding window on train+validation sets only
+
+**Backtesting Requirements** (CRITICAL for time series):
+- Generate historical forecasts on validation period to verify model accuracy
+- Example workflow:
+  1. Train on 2006-2016 data → Generate forecasts for 2017-2019 (validation)
+  2. Compare forecasts vs actuals → Calculate validation metrics
+  3. Retrain on full 2006-2019 data → Generate production forecasts 2020-2030
+- Save backtesting forecasts to: `results/tables/backtesting_forecasts_{validation_period}.parquet`
+- Never deploy models without successful backtesting validation
 
 **Baseline Models** (establish first):
 - Naive forecast (persistence model: y_t = y_{t-1})
@@ -127,7 +139,45 @@ For regression:
 - Grid search for small parameter spaces
 - Randomized search for large spaces
 - Bayesian optimization (Optuna) for expensive models
-- Cross-validation within training set only (no test set leakage)
+- **CRITICAL**: Tune on validation set only, NEVER on test set
+- Use cross-validation within train set for initial selection
+- Final model selection based on validation performance
+
+**Data Leakage Prevention Checklist**:
+- [ ] Features use only past information (no future data)
+- [ ] Scaling/normalization fitted on train set only, applied to val/test
+- [ ] Feature engineering pipeline doesn't peek at validation/test data
+- [ ] Time-based features respect temporal order (no look-ahead bias)
+- [ ] Cross-validation folds maintain chronological order for time series
+- [ ] Target variable not included in feature set
+- [ ] No test set information used during hyperparameter tuning
+
+**Experiment Tracking** (MANDATORY):
+```python
+import mlflow
+
+mlflow.set_experiment(f"problem_statement_{num}")
+
+with mlflow.start_run(run_name=f"{model_type}_{timestamp}"):
+    # Log parameters
+    mlflow.log_params(hyperparameters)
+    
+    # Train model
+    model = train_model(X_train, y_train)
+    
+    # Log metrics
+    mlflow.log_metrics({
+        'train_rmse': train_rmse,
+        'val_rmse': val_rmse,
+        'test_rmse': test_rmse
+    })
+    
+    # Log model
+    mlflow.sklearn.log_model(model, "model")
+    
+    # Log artifacts
+    mlflow.log_artifact("feature_importance.png")
+```
 
 **Model Ensemble Methods**:
 - Voting ensemble (combine multiple model predictions)
@@ -142,11 +192,29 @@ For regression:
 - Autocorrelation of residuals (Ljung-Box test)
 - Out-of-sample forecast accuracy
 
-**Model Interpretation**:
-- Feature importance ranking (SHAP values, permutation importance)
-- Partial dependence plots (PDP)
-- Individual conditional expectation (ICE) plots
-- LIME for local interpretability
+**Model Interpretation** (MANDATORY for healthcare):
+- Feature importance ranking (SHAP values, permutation importance) - REQUIRED
+- Partial dependence plots (PDP) - REQUIRED
+- Individual conditional expectation (ICE) plots - RECOMMENDED
+- LIME for local interpretability - RECOMMENDED
+
+**Model Explainability Code** (REQUIRED):
+```python
+import shap
+import matplotlib.pyplot as plt
+
+# SHAP values for feature importance
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+
+# Summary plot
+shap.summary_plot(shap_values, X_test, feature_names=feature_names)
+plt.savefig('problem-statements/ps-{num}-{name}/reports/figures/shap_summary.png')
+
+# Feature importance
+shap.summary_plot(shap_values, X_test, plot_type="bar")
+plt.savefig('problem-statements/ps-{num}-{name}/reports/figures/shap_importance.png')
+```
 
 **Robustness Checks**:
 - Sensitivity analysis (vary input assumptions)
@@ -195,7 +263,7 @@ result = linprog(c, A_ub=A_ub, b_ub=b_ub, method='highs')
 
 ### 7. Output Generation
 
-**Code**: Create `src/problem-statement-{num}/wave-2/06_modeling.py`
+**Code**: Create `src/problem-statements/ps-{num}-{name}/scripts/{modeling-name}.py`
 ```python
 """
 Predictive and prescriptive modeling for Problem Statement {num}
@@ -217,20 +285,69 @@ import xgboost as xgb
 from loguru import logger
 
 def engineer_features(df: pl.DataFrame) -> pl.DataFrame:
-    """Create predictive features from raw data."""
-    pass
+    """Create predictive features from raw data.
+    
+    Returns:
+        DataFrame with engineered features (temporal lags, rolling stats, calendar features)
+    """
+    # Temporal features
+    df = df.with_columns([
+        pl.col('case_count').shift(7).over('disease').alias('lag_7'),
+        pl.col('case_count').shift(14).over('disease').alias('lag_14'),
+        pl.col('case_count').rolling_mean(7).over('disease').alias('ma_7'),
+        pl.col('case_count').rolling_mean(28).over('disease').alias('ma_28')
+    ])
+    
+    # Calendar features
+    df = df.with_columns([
+        pl.col('date').dt.month().alias('month'),
+        pl.col('date').dt.quarter().alias('quarter'),
+        pl.col('date').dt.week().alias('week_of_year')
+    ])
+    
+    return df
 
 def train_baseline_model(df: pl.DataFrame) -> dict:
-    """Train naive baseline for comparison."""
-    pass
+    """Train naive baseline for comparison.
+    
+    Returns:
+        dict with model object and validation metrics
+    """
+    # Implement naive forecast (persistence model)
+    baseline_pred = df.select('case_count').shift(1)
+    metrics = calculate_metrics(df['case_count'], baseline_pred)
+    return {'model': 'naive', 'metrics': metrics}
 
 def train_statistical_model(df: pl.DataFrame, target: str) -> dict:
-    """Train SARIMA or similar time series model."""
-    pass
+    """Train SARIMA or similar time series model.
+    
+    Returns:
+        dict with fitted model and validation metrics
+    """
+    from statsmodels.tsa.statespace.sarimax import SARIMAX
+    
+    model = SARIMAX(df[target], order=(2,1,1), seasonal_order=(1,1,1,52))
+    fitted = model.fit(disp=False)
+    
+    return {'model': fitted, 'aic': fitted.aic, 'bic': fitted.bic}
 
 def train_ml_model(df: pl.DataFrame, features: list, target: str) -> dict:
-    """Train machine learning model (XGBoost, Random Forest)."""
-    pass
+    """Train machine learning model (XGBoost, Random Forest).
+    
+    Returns:
+        dict with fitted model, feature importance, and validation metrics
+    """
+    import xgboost as xgb
+    
+    X = df.select(features).to_numpy()
+    y = df[target].to_numpy()
+    
+    model = xgb.XGBRegressor(n_estimators=100, max_depth=5, random_state=42)
+    model.fit(X, y)
+    
+    importance = dict(zip(features, model.feature_importances_))
+    
+    return {'model': model, 'feature_importance': importance}
 
 def evaluate_model(y_true, y_pred, model_name: str) -> dict:
     """Calculate evaluation metrics."""
@@ -253,19 +370,81 @@ def optimize_resource_allocation(constraints: dict) -> dict:
     pass
 ```
 
-**Models**: Save trained models to `models/problem-statement-{num}/`
+**Models**: Save trained models to `problem-statements/ps-{num}-{name}/src/models/`
 - `baseline_model_{timestamp}.pkl` - Naive baseline
 - `{model_type}_model_{timestamp}.pkl` - Best performing model
 - `ensemble_model_{timestamp}.pkl` - Ensemble if applicable
 - `model_metadata_{timestamp}.json` - Training parameters, features used
+- `backtesting_forecasts_{validation_period}.parquet` - Historical validation forecasts
+- `mlruns/` - MLflow experiment tracking directory
 
-**Predictions**: Save to `results/tables/problem-statement-{num}/`
+**Data Versioning** (MANDATORY with DVC):
+```bash
+# Initialize DVC (if not done)
+dvc init
+
+# Track datasets
+dvc add data/4_processed/modeling_features.parquet
+dvc add problem-statements/ps-{num}-{name}/src/models/
+
+# Commit .dvc files to git
+git add data/4_processed/modeling_features.parquet.dvc
+git add problem-statements/ps-{num}-{name}/src/models/.dvc
+git commit -m "Track modeling data and models v1.0"
+
+# Push data to remote storage
+dvc push
+```
+
+**Feature Store** (Create versioned feature engineering pipeline):
+```python
+# src/features/feature_store.py
+class FeatureStore:
+    """Versioned feature engineering for reproducibility."""
+    
+    def __init__(self, version: str = "v1.0"):
+        self.version = version
+        self.feature_metadata = {
+            'version': version,
+            'created_at': datetime.now().isoformat(),
+            'features': []
+        }
+    
+    def create_features(self, df: pl.DataFrame) -> pl.DataFrame:
+        """Generate features with version tracking."""
+        # Feature engineering logic
+        df_features = engineer_features(df)
+        
+        # Track feature names and types
+        self.feature_metadata['features'] = df_features.columns
+        
+        # Save metadata
+        with open(f'problem-statements/ps-{num}-{name}/src/features/features_metadata_{self.version}.json', 'w') as f:
+            json.dump(self.feature_metadata, f)
+        
+        return df_features
+```
+
+**Predictions**: Save to `problem-statements/ps-{num}-{name}/results/tables/`
 - `predictions_{horizon}.csv` - Point predictions with confidence intervals
 ```csv
 date,actual,predicted,lower_95,upper_95,model_name
 2026-03-01,245,238,215,261,SARIMA
 2026-03-08,230,242,219,265,SARIMA
 ...
+```
+- `backtesting_forecasts_{validation_period}.parquet` - Historical forecasts for validation
+```python
+# Example: Generate backtesting forecasts
+# Train on 2006-2016, forecast 2017-2019 for validation
+train_data = df.filter(pl.col('year') <= 2016)
+val_data = df.filter((pl.col('year') >= 2017) & (pl.col('year') <= 2019))
+
+model.fit(train_data)
+val_forecasts = model.forecast(steps=len(val_data))
+
+# Save for validation notebook
+val_forecasts.write_parquet('problem-statements/ps-{num}-{name}/results/tables/backtesting_forecasts_2017_2019.parquet')
 ```
 
 - `feature_importance.csv` - Feature importance rankings
@@ -277,11 +456,13 @@ month_indicator,0.156,3
 ...
 ```
 
-**Evaluation Report**: Generate `results/tables/problem-statement-{num}/model_evaluation_report.md`
+**Evaluation Report**: Generate `problem-statements/ps-{num}-{name}/results/tables/model_evaluation_report.md`
 ```markdown
 # Model Evaluation Report: Problem Statement {num}
 **Generated**: YYYY-MM-DD HH:MM:SS
 **Agent**: ModelingAgent
+**MLflow Experiment**: problem_statement_{num}
+**Data Version**: DVC commit hash
 
 ## Executive Summary
 - **Best Model**: SARIMA(2,1,1)(1,1,1,52)
@@ -289,9 +470,23 @@ month_indicator,0.156,3
 - **Baseline Improvement**: 34% reduction in RMSE vs naive forecast
 - **Forecast Horizon**: 12 weeks
 
+## Validation Strategy
+- **Train Period**: 2006-2016 (60% of data)
+- **Validation Period**: 2017-2018 (20% of data) - for hyperparameter tuning
+- **Test Period**: 2019 (20% of data) - final evaluation only
+- **Backtesting**: Generated forecasts for 2017-2019 validation period
+- **Cross-Validation**: 5-fold expanding window on train+validation sets
+
+## Data Leakage Prevention
+- ✅ Features use only historical information (no future data)
+- ✅ Scaling fitted on train set, applied to val/test
+- ✅ No test data used during hyperparameter tuning
+- ✅ Temporal order maintained in cross-validation folds
+- ✅ Independent validation through backtesting
+
 ## Model Comparison
-| Model | RMSE | MAE | R² | MAPE | Training Time |
-|-------|------|-----|----|----- |---------------|
+| Model | Train RMSE | Val RMSE | Test RMSE | MAE | R² | MAPE | Training Time |
+|-------|------------|----------|-----------|-----|----|----- |---------------|
 | Naive Baseline | 23.2 | 18.5 | 0.42 | 12.1% | <1s |
 | Seasonal Naive | 19.8 | 16.1 | 0.56 | 10.3% | <1s |
 | SARIMA | **15.3** | **12.4** | **0.71** | **8.2%** | 45s |
@@ -309,16 +504,34 @@ month_indicator,0.156,3
 - Normality test (p=0.08): Residuals approximately normal ✓
 - Homoscedasticity: Variance stable across fitted values ✓
 
-## Out-of-Sample Performance
-- Last 12 weeks held out for testing
-- Actual vs Predicted: Mean difference = 2.1 cases
-- 95% prediction intervals captured 94% of actual values
+## Backtesting Results
+- **Validation Period**: 2017-2019 (104 weeks)
+- **Backtesting RMSE**: 15.8 cases
+- **Actual vs Predicted**: Mean difference = 2.1 cases
+- **95% prediction intervals**: Captured 94% of actual values
+- **Backtesting plots**: See `problem-statements/ps-{num}-{name}/reports/figures/backtesting_validation.png`
+
+## Out-of-Sample Performance (Test Set)
+- **Test Period**: 2019 (52 weeks)
+- **Test RMSE**: 15.3 cases (better than validation, model generalized well)
+- **Test MAPE**: 8.2%
+- **95% CI Coverage**: 94%
+
+## Model Monitoring Plan
+- **Retraining Schedule**: Monthly with latest data
+- **Performance Monitoring**: Track RMSE, MAPE on rolling 4-week window
+- **Drift Detection**: Alert if performance degrades by >15% from baseline
+- **Data Drift**: Monitor input feature distributions using KS test
+- **Prediction Drift**: Track forecast error trends over time
+- **Alerting**: Email notification if 3 consecutive weeks exceed CI bounds
 
 ## Recommendations
-1. Deploy SARIMA model for weekly forecasts
-2. Re-train monthly with new data
+1. Deploy SARIMA model for weekly forecasts (MLflow model registry)
+2. Re-train monthly with new data (automated pipeline)
 3. Monitor prediction intervals - investigate if actuals fall outside
 4. Consider ensemble with XGBoost for improved robustness
+5. Set up MLflow model monitoring dashboard
+6. Version all features using Feature Store v1.0
 
 ## Prescriptive Insights
 - Increase surveillance during months 5-7 (highest predicted cases)
@@ -326,14 +539,14 @@ month_indicator,0.156,3
 - Stockpile supplies expecting 240-260 cases in peak week
 ```
 
-**Figures**: Save to `reports/figures/problem-statement-{num}/`
+**Figures**: Save to `problem-statements/ps-{num}-{name}/reports/figures/`
 1. `06_actual_vs_predicted.png` - Time series with predictions
 2. `07_residual_diagnostics.png` - Residual plots (4-panel)
 3. `08_feature_importance.png` - Horizontal bar chart
 4. `09_prediction_intervals.png` - Forecast with confidence bands
 5. `10_model_comparison.png` - Performance metrics comparison
 
-**Notebook**: Create `notebooks/2_analysis/problem-statement-{num}_modeling.ipynb`
+**Notebook**: Create `problem-statements/ps-{num}-{name}/notebooks/*_modeling.ipynb`
 - Step-by-step model development
 - Hyperparameter tuning experiments
 - Model comparison visualizations
@@ -342,21 +555,30 @@ month_indicator,0.156,3
 ### 8. Validation Checklist
 Before finalizing outputs:
 
-- [ ] Baseline model established and documented
-- [ ] At least 3 models compared (baseline + 2+ candidates)
-- [ ] Cross-validation performed correctly (no data leakage)
-- [ ] Best model selected based on validation metrics
-- [ ] Residual diagnostics passed (no patterns in residuals)
-- [ ] Feature importance analyzed and documented
-- [ ] Predictions have confidence intervals
-- [ ] Model interpretation provided (SHAP/PDP)
-- [ ] Performance meets minimum threshold (better than baseline)
-- [ ] Code is modular, tested, and documented
-- [ ] Models saved with versioning and metadata
-- [ ] Evaluation report generated with findings
+- [ ] **Data Split**: Train-Val-Test split implemented (60-20-20)
+- [ ] **Backtesting**: Historical forecasts generated for validation period
+- [ ] **Baseline**: Naive/seasonal naive models established and documented
+- [ ] **Model Comparison**: At least 3 models compared (baseline + 2+ candidates)
+- [ ] **Cross-Validation**: Performed correctly (no data leakage, temporal order maintained)
+- [ ] **Hyperparameter Tuning**: Done on validation set only, NOT test set
+- [ ] **Data Leakage**: Checklist completed and verified
+- [ ] **Best Model**: Selected based on validation metrics, confirmed on test set
+- [ ] **Residual Diagnostics**: Passed (no patterns, autocorrelation, heteroscedasticity)
+- [ ] **Feature Importance**: Analyzed and documented with SHAP values
+- [ ] **Explainability**: SHAP/PDP plots generated (MANDATORY)
+- [ ] **Confidence Intervals**: All predictions include uncertainty quantification
+- [ ] **Performance**: Meets minimum threshold (≥20% better than baseline)
+- [ ] **Unit Tests**: Core modeling functions have pytest tests
+- [ ] **Code Quality**: Modular, type-hinted, documented (no stub functions with `pass`)
+- [ ] **Experiment Tracking**: MLflow runs logged with params, metrics, artifacts
+- [ ] **Data Versioning**: DVC tracking enabled for datasets and models
+- [ ] **Model Registry**: Model registered in MLflow with version and metadata
+- [ ] **Monitoring Plan**: Defined retraining schedule and drift detection
+- [ ] **Evaluation Report**: Generated with validation strategy, backtesting, monitoring plan
+- [ ] **Reproducibility**: Random seeds set, environment documented, DVC manifest created
 
 ### 9. Handoff Preparation
-Create: `data/3_interim/agent_handoffs/modeling_to_visualization_{timestamp}.json`
+Create: `problem-statements/ps-{num}-{name}/data/3_interim/agent_handoffs/modeling_to_visualization_{timestamp}.json`
 
 ```json
 {
@@ -365,19 +587,19 @@ Create: `data/3_interim/agent_handoffs/modeling_to_visualization_{timestamp}.jso
   "stage": 7,
   "problem_statement": "{num}",
   "outputs": {
-    "code": "src/problem-statement-{num}/wave-2/06_modeling.py",
-    "models": "models/problem-statement-{num}/",
-    "predictions": "results/tables/problem-statement-{num}/predictions_12weeks.csv",
-    "evaluation_report": "results/tables/problem-statement-{num}/model_evaluation_report.md",
-    "feature_importance": "results/tables/problem-statement-{num}/feature_importance.csv",
+    "code": "src/problem-statements/ps-{num}-{name}/scripts/{modeling-name}.py",
+    "models": "problem-statements/ps-{num}-{name}/src/models/",
+    "predictions": "problem-statements/ps-{num}-{name}/results/tables/predictions_12weeks.csv",
+    "evaluation_report": "problem-statements/ps-{num}-{name}/results/tables/model_evaluation_report.md",
+    "feature_importance": "problem-statements/ps-{num}-{name}/results/tables/feature_importance.csv",
     "figures": [
-      "reports/figures/problem-statement-{num}/06_actual_vs_predicted.png",
-      "reports/figures/problem-statement-{num}/07_residual_diagnostics.png",
-      "reports/figures/problem-statement-{num}/08_feature_importance.png",
-      "reports/figures/problem-statement-{num}/09_prediction_intervals.png",
-      "reports/figures/problem-statement-{num}/10_model_comparison.png"
+      "problem-statements/ps-{num}-{name}/reports/figures/06_actual_vs_predicted.png",
+      "problem-statements/ps-{num}-{name}/reports/figures/07_residual_diagnostics.png",
+      "problem-statements/ps-{num}-{name}/reports/figures/08_feature_importance.png",
+      "problem-statements/ps-{num}-{name}/reports/figures/09_prediction_intervals.png",
+      "problem-statements/ps-{num}-{name}/reports/figures/10_model_comparison.png"
     ],
-    "notebook": "notebooks/2_analysis/problem-statement-{num}_modeling.ipynb"
+    "notebook": "problem-statements/ps-{num}-{name}/notebooks/*_modeling.ipynb"
   },
   "validation_status": "passed",
   "model_performance": {

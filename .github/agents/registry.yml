@@ -142,6 +142,39 @@ agents:
       - reports/figures/problem-statement-*/final/*.png
       - reports/problem-statement-*/final_report.md
     
+  DashboardAgent:
+    id: dashboard
+    version: "1.0.0"
+    description: Creates interactive self-contained HTML dashboards with narrative storytelling for executive stakeholders
+    capabilities:
+      - interactive_dashboard_generation
+      - kpi_card_design
+      - narrative_storytelling
+      - stakeholder_question_mapping
+      - chart_js_integration
+      - filter_and_interactivity
+      - data_export_functionality
+      - responsive_design
+    instruction_files:
+      primary: .github/agents/dashboard.agent.md
+      secondary:
+        - .claude/skills/build-dashboard/SKILL.md
+        - .claude/skills/create-viz/SKILL.md
+        - .claude/skills/data-visualization/SKILL.md
+        - .github/instructions/python-best-practices.instructions.md
+    skills:
+      - .claude/skills/build-dashboard/SKILL.md
+      - .claude/skills/create-viz/SKILL.md
+      - .claude/skills/data-visualization/SKILL.md
+    tools:
+      mcp: [filesystem]
+      python_packages: [polars, matplotlib, seaborn, plotly, pyyaml]
+    output_patterns:
+      - problem-statements/ps-*/reports/dashboards/*_dashboard.html
+      - problem-statements/ps-*/notebooks/*_dashboard.ipynb
+      - problem-statements/ps-*/src/visualization/*_dashboard.py
+      - problem-statements/ps-*/config/dashboard_config.yml
+    
   QualityAgent:
     id: quality
     version: "2.0.0"
@@ -255,16 +288,20 @@ interaction_matrix:
     shares_context_with: [ProfilingAgent, QualityAgent, DocumentationAgent]
   
   EDAAgent:
-    can_handoff_to: [ModelingAgent]
-    shares_context_with: [ModelingAgent, VisualizationAgent, DocumentationAgent]
+    can_handoff_to: [ModelingAgent, DashboardAgent]
+    shares_context_with: [ModelingAgent, VisualizationAgent, DashboardAgent, DocumentationAgent]
   
   ModelingAgent:
-    can_handoff_to: [VisualizationAgent]
-    shares_context_with: [EDAAgent, QualityAgent, DocumentationAgent]
+    can_handoff_to: [VisualizationAgent, DashboardAgent]
+    shares_context_with: [EDAAgent, DashboardAgent, QualityAgent, DocumentationAgent]
   
   VisualizationAgent:
+    can_handoff_to: [DashboardAgent, DocumentationAgent]
+    shares_context_with: [ModelingAgent, DashboardAgent, DocumentationAgent]
+  
+  DashboardAgent:
     can_handoff_to: [DocumentationAgent]
-    shares_context_with: [ModelingAgent, DocumentationAgent]
+    shares_context_with: [EDAAgent, ModelingAgent, VisualizationAgent, DocumentationAgent]
   
   QualityAgent:
     can_handoff_to: [DuplicateDetectionAgent, DeadCodeEliminationAgent]
@@ -317,5 +354,15 @@ skills_library:
   
   - name: moh-presentation-standards
     path: .agents/skills/moh-presentation-standards/SKILL.md
-    applies_to: [VisualizationAgent, DocumentationAgent]
+    applies_to: [VisualizationAgent, DashboardAgent, DocumentationAgent]
     description: MOH reporting standards, color schemes, chart formatting guidelines
+  
+  - name: interactive-dashboard-design
+    path: .claude/skills/build-dashboard/SKILL.md
+    applies_to: [DashboardAgent]
+    description: Interactive HTML dashboard patterns, Chart.js integration, narrative storytelling
+  
+  - name: data-visualization-best-practices
+    path: .claude/skills/data-visualization/SKILL.md
+    applies_to: [VisualizationAgent, DashboardAgent]
+    description: Chart selection, color theory, accessibility, and visual design principles

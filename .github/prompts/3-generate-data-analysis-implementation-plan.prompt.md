@@ -188,13 +188,150 @@ def extract_data(
 Use Pydantic models or dataclasses (see [Reference Guide](./implementation-plan-reference-guide.md#section-62-data-schemas))
 
 **6.3 Data Validation Rules** (Executable)
-Required columns, expected dtypes, value constraints as code variables (see [Reference Guide](./implementation-plan-reference-guide.md#section-63-data-validation-rules))
+Required columns, expected dtypes, value constraints as code variables. Include:
+- Percentage-based null reporting (more meaningful than absolute counts)
+- Duplicate detection with row count impact
+- Categorical value validation (unique counts, value distributions)
+- See [Reference Guide](./implementation-plan-reference-guide.md#section-63-data-validation-rules)
+
+**Example - Comprehensive Data Profiling**:
+```python
+import polars as pl
+
+def profile_dataframe(df: pl.DataFrame) -> dict[str, any]:
+    """Generate comprehensive data quality profile.
+    
+    Returns dict with:
+        - shape: tuple of (rows, cols)
+        - null_counts: absolute null counts by column
+        - null_percentages: percentage nulls by column
+        - dtypes: data types by column
+        - duplicates: number of duplicate rows
+    """
+    profile = {
+        'shape': df.shape,
+        'null_counts': df.null_count(),
+        'null_percentages': (df.null_count() / df.shape[0] * 100),
+        'dtypes': df.schema,
+        'duplicates': df.is_duplicated().sum()
+    }
+    return profile
+```
 
 **6.3.5 String Normalization & Standardization** (Executable)
-For string/categorical data cleaning: normalization operations, standardization mappings, similarity-based auto-detection (see [Reference Guide](./implementation-plan-reference-guide.md#section-635-string-normalization-patterns))
+For string/categorical data cleaning: normalization operations, standardization mappings, similarity-based auto-detection, categorical validation (see [Reference Guide](./implementation-plan-reference-guide.md#section-635-string-normalization-patterns))
+
+**Example - Categorical Validation & Auto-Cleaning**:
+```python
+import polars as pl
+from loguru import logger
+
+def validate_categorical(df: pl.DataFrame, col: str) -> dict[str, any]:
+    """Validate categorical column for quality issues.
+    
+    Returns:
+        Dict with unique_count, value_counts, and potential issues
+    """
+    unique_vals = df[col].unique().sort().to_list()
+    value_counts = df[col].value_counts()
+    
+    validation = {
+        'column': col,
+        'unique_count': len(unique_vals),
+        'unique_values': unique_vals,
+        'value_counts': value_counts,
+        'has_whitespace': any(v != v.strip() for v in unique_vals if v),
+        'has_mixed_case': len(set(v.lower() for v in unique_vals)) < len(unique_vals)
+    }
+    
+    logger.info(f"Column '{col}': {len(unique_vals)} unique values")
+    return validation
+
+def clean_categorical_columns(df: pl.DataFrame) -> pl.DataFrame:
+    """Auto-clean all string columns: strip whitespace, lowercase.
+    
+    Returns:
+        DataFrame with cleaned string columns
+    """
+    string_cols = df.select(pl.col(pl.String)).columns
+    
+    for col in string_cols:
+        df = df.with_columns(
+            pl.col(col).str.strip_chars().str.to_lowercase().alias(col)
+        )
+        logger.debug(f"Cleaned categorical column: {col}")
+    
+    return df
+```
 
 **6.4 Library-Specific Patterns**
-Exact Polars operations, logging patterns, config loading (see [Reference Guide](./implementation-plan-reference-guide.md#section-64-library-specific-patterns))
+Exact Polars operations, logging patterns, config loading, reusable visualization helpers (see [Reference Guide](./implementation-plan-reference-guide.md#section-64-library-specific-patterns))
+
+**Example - Reusable Visualization Wrappers**:
+```python
+import polars as pl
+import matplotlib.pyplot as plt
+import seaborn as sns
+from pathlib import Path
+
+def plot_line_trends(
+    df: pl.DataFrame,
+    x: str,
+    y: str,
+    hue: str = None,
+    title: str = None,
+    output_path: Path = None
+) -> None:
+    """Create line plot for time series trends.
+    
+    Args:
+        df: Input dataframe
+        x: Column for x-axis (typically 'year')
+        y: Column for y-axis (metric)
+        hue: Column for color grouping
+        title: Plot title
+        output_path: If provided, save to this path
+    """
+    plt.figure(figsize=(12, 6))
+    sns.lineplot(data=df.to_pandas(), x=x, y=y, hue=hue, marker='o')
+    
+    if title:
+        plt.title(title, fontweight='bold')
+    plt.xlabel(x.replace('_', ' ').title())
+    plt.ylabel(y.replace('_', ' ').title())
+    plt.xticks(rotation=45)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    
+    if output_path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    
+    plt.show()
+
+def plot_bar_distribution(
+    df: pl.DataFrame,
+    x: str,
+    y: str,
+    hue: str = None,
+    title: str = None,
+    output_path: Path = None
+) -> None:
+    """Create bar plot for categorical distributions."""
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=df.to_pandas(), x=x, y=y, hue=hue)
+    
+    if title:
+        plt.title(title, fontweight='bold')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    
+    if output_path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    
+    plt.show()
+```
 
 **6.5 Test Specifications**
 Specific assertions with expected values (see Section 10)
@@ -230,6 +367,55 @@ uv pip freeze > requirements.txt
 
 **Prioritize practicality**: Fewer well-grounded features > many infeasible features.
 
+**Growth Rate & Temporal Features**:
+For time series analysis, include calculated growth metrics:
+- Year-over-year growth rates (percentage change)
+- Period-over-period differences
+- Moving averages and trends
+- Seasonal decomposition components
+
+**Example - Growth Rate Calculations**:
+```python
+import polars as pl
+
+def calculate_growth_rates(
+    df: pl.DataFrame,
+    metric_col: str,
+    group_cols: list[str],
+    time_col: str = 'year'
+) -> pl.DataFrame:
+    """Calculate year-over-year growth rates for metrics.
+    
+    Args:
+        df: Input dataframe
+        metric_col: Column to calculate growth for
+        group_cols: Columns to group by (e.g., ['profession', 'sector'])
+        time_col: Time column for ordering
+        
+    Returns:
+        DataFrame with added growth columns:
+        - {metric}_growth_abs: Absolute change
+        - {metric}_growth_pct: Percentage change
+    """
+    df_sorted = df.sort(time_col, *group_cols)
+    
+    growth_df = df_sorted.with_columns([
+        # Absolute growth
+        pl.col(metric_col)
+          .diff()
+          .over(group_cols)
+          .alias(f"{metric_col}_growth_abs"),
+        
+        # Percentage growth
+        (
+            pl.col(metric_col).diff().over(group_cols) /
+            pl.col(metric_col).shift(1).over(group_cols) * 100
+        ).alias(f"{metric_col}_growth_pct")
+    ])
+    
+    return growth_df
+```
+
 ### 8. API Endpoints & Data Contracts [CONDITIONAL - API PROJECTS]
 When feature includes APIs:
 - Endpoint paths or service names
@@ -245,6 +431,77 @@ When feature includes dashboards/UI:
 - For Power BI: Direct hex colors (no tokens), font specs, visuals list, responsiveness
 - For web dashboards: CSS frameworks, component libraries
 - Visual implementation checklist
+
+**Advanced Visualization Patterns**:
+- **Dual Y-Axis Plots**: Compare metrics with different scales (e.g., workforce count vs bed capacity)
+- **Faceted Visualizations**: Multiple subplots for comparing categories
+- **Interactive Tooltips**: Enhanced data exploration
+
+**Example - Dual Y-Axis Visualization**:
+```python
+import polars as pl
+import matplotlib.pyplot as plt
+import seaborn as sns
+from pathlib import Path
+
+def plot_dual_yaxis(
+    df: pl.DataFrame,
+    x: str,
+    y_left: str,
+    y_right: str,
+    hue: str = None,
+    title: str = None,
+    output_path: Path = None
+) -> None:
+    """Create scatter plot with two y-axes for comparing different scales.
+    
+    Useful for comparing metrics like workforce count (hundreds) vs 
+    facility capacity (thousands) on the same timeline.
+    
+    Args:
+        df: Input dataframe
+        x: X-axis column (typically time)
+        y_left: Left y-axis metric
+        y_right: Right y-axis metric
+        hue: Column for color grouping
+        title: Plot title
+        output_path: Save location
+    """
+    pdf = df.to_pandas()
+    
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+    ax2 = ax1.twinx()
+    
+    # Left y-axis
+    sns.scatterplot(
+        data=pdf, x=x, y=y_left, hue=hue,
+        ax=ax1, marker='o', s=100, alpha=0.7
+    )
+    
+    # Right y-axis (different marker to distinguish)
+    sns.scatterplot(
+        data=pdf, x=x, y=y_right, hue=hue,
+        ax=ax2, marker='X', s=100, alpha=0.7, legend=False
+    )
+    
+    # Styling
+    ax1.set_ylabel(y_left.replace('_', ' ').title(), fontweight='bold')
+    ax2.set_ylabel(y_right.replace('_', ' ').title(), fontweight='bold')
+    ax1.set_xlabel(x.replace('_', ' ').title())
+    ax1.tick_params(axis='x', rotation=45)
+    ax1.grid(True, alpha=0.3)
+    
+    if title:
+        plt.title(title, fontweight='bold', pad=20)
+    
+    plt.tight_layout()
+    
+    if output_path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    
+    plt.show()
+```
 
 ### 10. Testing Strategy [CRITICAL]
 
@@ -341,7 +598,7 @@ Generate code in this sequence to ensure dependencies exist:
 9. Unit tests (`shared/tests/unit/` for shared code, `problem-statement/ps-{num}-{name}/tests/` for problem-specific)
 10. Integration tests (`problem-statement/ps-{num}-{name}/tests/integration/`)
 11. Pipeline orchestration (`problem-statement/ps-{num}-{name}/scripts/run_pipeline.py`)
-12. Notebooks (`problem-statement/ps-{num}-{name}/notebooks/{1_exploratory,2_analysis,3_feature_engineering}/`)
+12. Notebooks (`problem-statement/ps-{num}-{name}/notebooks/{{user-story_num}-{name}.ipynb/`)
 13. Documentation (`problem-statement/ps-{num}-{name}/README.md`, methodology docs)
 
 ### 14. Data Quality & Validation [CRITICAL]
@@ -356,7 +613,7 @@ Generate code in this sequence to ensure dependencies exist:
 - Source validation (completeness, accuracy, consistency)
 - Transformation validation (business logic correctness)
 - Output validation (statistical checks, distributions)
-- Check nulls in required fields
+- Check nulls in required fields (percentage-based reporting)
 - Verify uniqueness constraints
 - Validate referential integrity
 - Check data ranges and accepted values
@@ -364,7 +621,69 @@ Generate code in this sequence to ensure dependencies exist:
 - Test transformations with edge cases
 - Validate business rules
 - Monitor freshness/latency (< 24hrs for operational)
-- Outlier detection and handling
+- Outlier detection and handling (IQR method with visualization)
+
+**Statistical Outlier Detection**:
+```python
+import polars as pl
+import matplotlib.pyplot as plt
+from loguru import logger
+
+def detect_outliers_iqr(
+    df: pl.DataFrame,
+    col: str,
+    multiplier: float = 1.5,
+    visualize: bool = True
+) -> tuple[pl.DataFrame, dict]:
+    """Detect outliers using IQR (Interquartile Range) method.
+    
+    Args:
+        df: Input dataframe
+        col: Column to check for outliers
+        multiplier: IQR multiplier (1.5 = standard, 3.0 = extreme)
+        visualize: Whether to show boxplot
+        
+    Returns:
+        Tuple of (outlier_df, statistics_dict)
+    """
+    q1 = df[col].quantile(0.25)
+    q3 = df[col].quantile(0.75)
+    iqr = q3 - q1
+    
+    lower_bound = q1 - multiplier * iqr
+    upper_bound = q3 + multiplier * iqr
+    
+    outliers = df.filter(
+        (pl.col(col) < lower_bound) | (pl.col(col) > upper_bound)
+    )
+    
+    stats = {
+        'column': col,
+        'q1': q1,
+        'q3': q3,
+        'iqr': iqr,
+        'lower_bound': lower_bound,
+        'upper_bound': upper_bound,
+        'outlier_count': len(outliers),
+        'outlier_percentage': (len(outliers) / len(df)) * 100
+    }
+    
+    logger.info(
+        f"Column '{col}': {len(outliers)} outliers "
+        f"({stats['outlier_percentage']:.2f}%)"
+    )
+    
+    if visualize:
+        plt.figure(figsize=(10, 5))
+        plt.boxplot(df[col].drop_nulls().to_list())
+        plt.title(f"Boxplot: {col}")
+        plt.ylabel(col)
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
+    
+    return outliers, stats
+```
 
 **Code Testability Requirements**:
 - Modular functions with clear inputs/outputs

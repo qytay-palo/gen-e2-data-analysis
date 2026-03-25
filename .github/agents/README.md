@@ -44,6 +44,59 @@ When using templates, replace these variables:
 - `{input_data_path}` - Path to input data file
 - `{cleaned_data_path}` - Path to cleaned data
 
+### Adaptive Implementation Workflow
+
+**CRITICAL** Each agent follows this workflow to ensure **data-driven and context-aware** implementation:
+
+```
+
+**Stage Execution Workflow (Per Agent)**
+
+1. READ CONTEXT
+   ├─ Load implementation plan segment for this stage
+   ├─ Read agent template (.github/agents/{agent}.agent.md)
+   └─ Read stage instructions (.github/instructions/data-analysis-stages-instructions/)
+
+2. VALIDATE INPUTS (from previous stage)
+   ├─ Read handoff file from previous agent
+   ├─ Verify all input files exist
+   ├─ Validate data schema and quality gates
+   └─ Review recommended actions from previous stage
+
+3. GATHER ADDITIONAL CONTEXT (if needed)
+   ├─ Use MCP filesystem tools to inspect data
+   ├─ Use Context7 to fetch library documentation
+   ├─ Query existing codebase patterns
+   └─ Review configuration files
+
+4. IMPLEMENT STAGE REQUIREMENTS
+   ├─ Generate code following project best practices
+   ├─ Apply recommended actions from previous stage
+   ├─ Create notebooks for user visibility
+   └─ Generate all required outputs
+
+5. VALIDATE OUTPUTS
+   ├─ Execute all generated code (Python scripts AND notebooks)
+   ├─ Verify zero execution errors
+   ├─ Check output files exist and are valid
+   └─ Validate against stage-specific success criteria
+
+6. CREATE HANDOFF
+   ├─ Generate handoff file for next agent
+   ├─ Document findings and recommendations
+   ├─ Set validation_status based on success criteria
+   └─ Specify recommended next steps
+
+7. QUALITY CHECK (before proceeding)
+   ├─ Run code review subagent
+   ├─ Execute notebook validation subagent
+   ├─ Fix any critical issues found
+   └─ Re-validate until all quality gates pass
+
+8. PROCEED TO NEXT STAGE
+   └─ Hand off to next agent via handoff file
+```
+
 ## Usage Example
 
 ```python
