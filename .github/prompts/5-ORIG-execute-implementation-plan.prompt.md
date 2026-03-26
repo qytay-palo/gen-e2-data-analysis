@@ -1,6 +1,7 @@
 ---
 description: Prompt for Execution of the Implementation Plan
 stage: Development
+model: Claude Sonnet 4.6
 ---
 # AI Agent Prompt: Execute Implementation Plan
 
@@ -120,11 +121,20 @@ query-docs({libraryId: "polars", question: "scan_csv lazy evaluation collect fil
 **🚨 CRITICAL REQUIREMENT**: You MUST execute quality review and Jupyter Notebook Execution Agent before this task can be marked as complete. Quality checks are NOT optional and NOT end-of-implementation tasks. Failure to execute these subagents means the implementation is INCOMPLETE.
 
 **EXECUTION WORKFLOW (MANDATORY):**
-
 ```
 For EACH implementation stage:
-1. Implement the code/module → 2. IMMEDIATELY RUN THE CODE to verify zero errors → 3. Fix ALL errors found → 4. Delegate quality review and jupyter notebook execution → 5. Fix issues found → 6. Proceed to next stage
+1. Implement the code/module
+2. IMMEDIATELY RUN THE CODE to verify zero errors
+3. Fix ALL errors found
+4. Delegate quality review and jupyter notebook execution
+5. Fix issues found
+6. [If visualization user story] → Run VisualizationAgent
+   → THEN CONTINUE: run Code Review, Notebook Execution,
+     Import Validation, Final Review — ALL REQUIRED
+7. Proceed to next stage ONLY after all quality gates pass
 ```
+
+> **⚠️ KEY RULE**: VisualizationAgent is a PIPELINE STEP, not a terminal step. The full quality workflow applies AFTER it completes, not instead of it.
 
 **🔴 ZERO TOLERANCE FOR EXECUTION ERRORS:**
 - **ALL Python scripts (.py) MUST execute successfully with exit code 0**
@@ -141,7 +151,10 @@ For EACH implementation stage:
 | **After creating each module** | Code Reviewer Agent Code Review | Review error handling, types, security |
 | **After completing 2-3 modules** | Dead Code Elimination | Clean up unused code before it accumulates |
 | **After completing 2-3 modules** | Import Path Validation | Verify all imports match actual directory structure |
-| **Before marking work complete** | Code Reviewer Agent Comprehensive Review | Final validation of all code quality standards |
+| **For visualization/dashboard user stories** | VisualizationAgent | NON-BLOCKING |
+| **After VisualizationAgent returns** | Code Review Agent | Review ALL visualization files produced |
+| **After VisualizationAgent returns** | Jupyter Notebook Execution Agent| Execute ALL notebooks including new visualization notebooks |
+| **Before marking work complete** | Code Reviewer Agent Comprehensive Review| Final validation of all code quality standards |
 
 **MANDATORY SUBAGENT EXECUTIONS:**
 
@@ -436,7 +449,7 @@ The implementation MUST:
 - **Leverage MCP (Model Context Protocol) tools for all file and data operations as specified below**
 - **Implement ALL code blocks provided in the implementation plan verbatim (see Code Implementation Fidelity below)**
 - **Update README files to document the code running flow and execution instructions (see README Documentation Requirements below)**
-- **Create at least one Jupyter notebook for each execution** to facilitate user viewing of outputs and results
+- **Create at least one Jupyter notebook for each user story** to facilitate user viewing of outputs and results
   - **Notebook Location**: Place notebooks in `problem-statement/ps-{num}-{name}/notebooks/` directory
   - **CRITICAL Dependency Requirements**:
     - **BEFORE creating notebooks**: Execute all prerequisite scripts/code to generate required data
@@ -568,55 +581,13 @@ This approach ensures that code generation is **data-driven and context-aware**,
 
 ## 7. VisualizationAgent (MANDATORY for Dashboard / Visualization User Stories)
 
-**🚨 CRITICAL RULE**: If the user story involves **any** of the following, you MUST invoke the VisualizationAgent via `#runSubagent` **before** marking the user story complete:
+**🚨 CRITICAL RULE**: If the user story involves **any** of the following, you **MUST** invoke the VisualizationAgent via `#runSubagent` in [../agents/visualization.agent.md](../agents/visualization.agent.md) **before** marking the user story complete:
 
 - Creating or updating an interactive dashboard (HTML, Plotly Dash, Streamlit, etc.)
 - Generating publication-quality charts or figures for stakeholder reports
 - Producing visualizations that surface EDA or model results
 - Any user story whose title or acceptance criteria include keywords: `dashboard`, `visualiz`, `chart`, `plot`, `figure`, `KPI`, `report`, `interactive`
-
-### Invocation Template
-
-```javascript
-#runSubagent({
-  description: "VisualizationAgent for Problem Statement {num} — {user_story_title}",
-  prompt: `Read and execute the VisualizationAgent template from .github/agents/Visualization.agent.md
-
-  Context:
-  - Problem Statement: {num}
-  - Problem Title: {problem_statement_title}
-  - User Story: {user_story_num} — {user_story_title}
-  - Cleaned Data Path: {path_to_cleaned_data}
-  - Previous Agent Handoff: {path_to_eda_or_modeling_handoff} (EDAAgent or ModelingAgent)
-  - Dashboard Output Path: problem-statements/ps-{num}-{name}/reports/dashboards/
-
-  Instructions:
-  1. Read the VisualizationAgent template completely (.github/agents/Visualization.agent.md)
-  2. Load the previous agent handoff file to extract key insights and findings
-  3. Complete the Notebook Output Audit BEFORE designing any dashboard component
-  4. Complete the Objective Coverage Table — resolve ALL ❌ Gap rows before coding
-  5. Follow ALL sections in the template's 'Your Responsibilities' section
-  6. Produce the self-contained HTML dashboard, dashboard builder code, config YAML, and user guide
-  7. Validate against the Pre-Deployment Checklist in the template
-  8. Create the handoff JSON at: problem-statements/ps-{num}-{name}/data/3_interim/agent_handoffs/dashboard_to_documentation_{timestamp}.json
-  9. Return the path to the handoff file and a summary of dashboard components created
-
-  CRITICAL REQUIREMENTS:
-  - ✅ NEVER use placeholder or mock data — load real data from shared/data/ or problem-statements/ps-{num}-{name}/data/
-  - ✅ Notebook Output Audit completed before dashboard design begins
-  - ✅ All PS objectives mapped to IN_DASHBOARD components (zero ❌ Gap rows)
-  - ✅ Full time-series shown in primary chart (not just endpoint comparisons)
-  - ✅ Key Insights section has all three levels: entity-specific, cross-entity comparative, portfolio/system
-  - ✅ Dashboard opens in Chrome, Firefox, and Safari with zero errors
-  `
-})
-```
-
-### Post-VisualizationAgent Verification
-
-After the subagent returns, verify the following before marking the user story complete:
-
-- [ ] HTML dashboard file exists at `problem-statements/ps-{num}-{name}/reports/dashboards/*.html`
+- Run this tool: #runSubagent [../.agents/visualization_agent.md]tements/ps-{num}-{name}/reports/dashboards/*.html`
 - [ ] Dashboard opens in browser without errors
 - [ ] All KPIs display correct values (spot-check 2–3 against source data)
 - [ ] All PS objectives are answered by at least one dashboard component

@@ -1,6 +1,6 @@
 ---
 description: Identify Analytics Problem Statements and Opportunities
-model: claude-sonnet-4.5
+model: Claude Sonnet 4.6
 ---
 
 <!-- Metadata:
