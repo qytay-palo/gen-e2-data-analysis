@@ -25,12 +25,13 @@ Execute the main data analysis workflow in sequence:
 
 | Agent | Stages | Purpose | Key Outputs |
 |-------|--------|---------|-------------|
-| **ExtractionAgent** | 0-2 | Data extraction from Kaggle, CSV, APIs | `data/3_interim/extracted_*.csv` |
+| **ExtractionAgent** | 0-2 | Data extraction from Kaggle, CSV, APIs | `shared/data/3_interim/extracted_*.csv` |
 | **ProfilingAgent** | 3 | Data quality assessment & profiling | `results/tables/*/data_quality_report.md` |
-| **CleaningAgent** | 4 | Data cleaning & preprocessing | `data/4_processed/cleaned_*.csv` |
-| **EDAAgent** | 5 | Exploratory data analysis | `reports/figures/*/`, `notebooks/1_exploratory/` |
-| **ModelingAgent** | 7 | Statistical modeling & forecasting | `models/*/`, `results/metrics/*/model_performance.json` |
-| **VisualizationAgent** | 9 | Publication-quality visualizations | `reports/figures/*/final/`, `reports/*/final_report.md` |
+| **CleaningAgent** | 4 | Data cleaning & preprocessing | `problem-statements/ps-{num}-{name}/data/4_processed/cleaned_*.csv` |
+| **EDAAgent** | 5 | Exploratory data analysis | `problem-statements/ps-{num}-{name}/reports/figures/*/`, `problem-statements/ps-{num}-{name}/notebooks/1_exploratory/` |
+| **ModelingAgent** | 7 | Statistical modeling & forecasting | `problem-statements/ps-{num}-{name}/models/*/`, `problem-statements/ps-{num}-{name}/results/metrics/*/model_performance.json` |
+| **VisualizationAgent** | 9 | Publication-quality visualizations | `problem-statements/ps-{num}-{name}/reports/figures/*/final/`, `problem-statements/ps-{num}-{name}/reports/*/final_report.md` |
+| **DashboardAgent** | 9 | Interactive HTML dashboards with narrative storytelling | `problem-statements/ps-{num}-{name}/reports/dashboards/*.html`, `problem-statements/ps-{num}-{name}/notebooks/3_dashboards/` |
 
 #### 2. Code Quality Agents
 Ensure code quality and maintainability:

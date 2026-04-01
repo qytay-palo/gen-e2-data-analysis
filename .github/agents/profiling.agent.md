@@ -76,7 +76,11 @@ score = (
 
 ### 4. Output Generation
 
-**Code**: Create `src/problem-statement-{num}/wave-1/02_profile_data.py`
+**Profiler Module**: Create `shared/src/data_processing/{domain}_profiler.py`
+- Reusable profiling functions
+
+**Notebook**: Create `problem-statements/ps-{num}-{name}/notebooks/02_profile_{domain}_data.ipynb`
+- Interactive profiling and validation
 - Use Polars for analysis
 - Generate reusable profiling functions
 - Include visualization of missing value patterns
@@ -128,7 +132,7 @@ score = (
 ```
 
 ### 5. Handoff Preparation
-Create: `data/3_interim/agent_handoffs/profiling_to_cleaning_{timestamp}.json`
+Create: `problem-statements/ps-{num}-{name}/data/3_interim/agent_handoffs/profiling_to_cleaning_{timestamp}.json`
 
 ```json
 {

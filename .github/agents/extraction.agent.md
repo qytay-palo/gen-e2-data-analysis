@@ -39,8 +39,14 @@ You MUST follow these instruction files:
 - Log data characteristics (rows, columns, memory usage)
 
 ### 4. Output Generation
-**Code**: Create `src/problem-statement-{num}/wave-1/01_extract_data.py`
+
+**Extractor Module**: Create `shared/src/data_processing/extractors/{domain}_extractor.py`
 - Use Polars for data processing
+- Inherit from BaseConnector for consistency
+
+**Notebook**: Create `problem-statements/ps-{num}-{name}/notebooks/01_extract_{domain}_data.ipynb`
+- Document extraction process
+- Validate extracted data
 - Include type hints and docstrings
 - Follow coding standards from python-best-practices.instructions.md
 
@@ -64,8 +70,9 @@ Include:
   "stage": 2,
   "problem_statement": "{num}",
   "outputs": {
-    "code": "src/problem-statement-{num}/wave-1/01_extract_data.py",
-    "data": "data/3_interim/extracted_data_{timestamp}.csv",
+    "extractor": "shared/src/data_processing/extractors/{domain}_extractor.py",
+    "notebook": "problem-statements/ps-{num}-{name}/notebooks/01_extract_{domain}_data.ipynb",
+    "data": "problem-statements/ps-{num}-{name}/data/3_interim/extracted_{domain}_data.csv",
     "logs": "logs/etl/extraction_{timestamp}.log"
   },
   "validation_status": "passed",
