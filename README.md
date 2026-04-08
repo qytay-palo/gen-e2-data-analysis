@@ -161,8 +161,5 @@ ls problem-statement/ps-001-healthcare-workforce-sustainability/data/4_processed
 
 ## Key References
 
-- [docs/project-context/business-objectives.md](docs/project-context/business-objectives.md) — MOH strategic goals
-- [docs/project-context/data-sources.md](docs/project-context/data-sources.md) — Dataset schema and access
-- [docs/project-context/tech-stack.md](docs/project-context/tech-stack.md) — Platform and library standards
 - [.github/copilot-instructions.md](.github/copilot-instructions.md) — Coding conventions (Polars, uv, loguru)
 - [.github/agents/executor.agent.md](.github/agents/executor.agent.md) — Full pipeline executor
