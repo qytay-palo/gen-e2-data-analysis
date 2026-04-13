@@ -1,0 +1,47 @@
+# ============================================================
+# Singapore Infectious Disease Analysis - Dependencies
+# Platform: HEALIX/Databricks (Runtime 13.3.x, Python 3.9+)
+# Manage with: uv pip install -r requirements.txt
+# ============================================================
+
+# --- Core Data Processing (MANDATORY: Polars over Pandas) ---
+polars>=0.20.0
+pyarrow>=14.0.0          # Parquet/Arrow interop
+
+# --- Data Acquisition ---
+kaggle>=1.6.0
+
+# --- Statistical & ML ---
+scikit-learn>=1.3.0
+statsmodels>=0.14.0
+prophet>=1.1.5           # Time-series forecasting (seasonality)
+scipy>=1.11.0
+
+# --- Visualization ---
+plotly>=5.18.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+kaleido>=0.2.1           # Static image export for plotly
+
+# --- Notebook & Reporting ---
+jupyter>=1.0.0
+nbformat>=5.9.0
+ipykernel>=6.25.0
+
+# --- Logging ---
+loguru>=0.7.0
+
+# --- Configuration ---
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+
+# --- Testing ---
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# --- Code Quality ---
+black>=23.9.0
+ruff>=0.1.0
+
+# --- Databricks (optional for local dev with databricks-connect) ---
+# databricks-connect>=13.3.0  # Uncomment when connecting to HEALIX cluster

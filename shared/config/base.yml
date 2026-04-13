@@ -1,0 +1,27 @@
+# Shared Infrastructure Configuration
+# Singapore Infectious Disease Analysis - HEALIX/Databricks
+
+project:
+  name: sg-infectious-disease-analysis
+  description: Singapore infectious disease burden analysis for MOH policy decision-making
+  platform: HEALIX/Databricks
+  python_version: "3.9"
+  stakeholders:
+    - Minister of Health
+    - Internal Committee Members
+
+paths:
+  data_raw: shared/data/1_raw
+  data_external: shared/data/2_external
+  data_schemas: shared/data/schemas
+  logs: logs/
+
+logging:
+  level: INFO
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  rotation: "10 MB"
+  retention: "30 days"
+
+data_quality:
+  max_missing_pct: 0.20      # Flag columns with >20% nulls
+  min_records_per_disease: 10

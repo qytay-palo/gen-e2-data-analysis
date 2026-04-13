@@ -205,3 +205,31 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ============================================================
+# Project-specific: Singapore Infectious Disease Analysis
+# ============================================================
+
+# Raw data — immutable, large files managed outside version control
+shared/data/1_raw/
+shared/data/2_external/
+
+# Problem-statement data outputs (large processed files)
+problem-statements/*/data/3_interim/
+problem-statements/*/data/4_processed/
+
+# Trained model artifacts
+problem-statements/*/models/*.pkl
+problem-statements/*/models/*.joblib
+
+# Execution logs
+problem-statements/*/logs/
+logs/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# kaggle API key
+.kaggle/
+kaggle.json
