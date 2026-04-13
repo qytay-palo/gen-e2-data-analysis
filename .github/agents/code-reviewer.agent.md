@@ -1,13 +1,14 @@
 ---
 name: code-reviewer
 description: Comprehensive code review for Problem Statement {num}
-tools: Read, Grep, Glob, Bash # specify the tools this agent can use. If not set, all enabled tools are allowed.
+tools: ['read', 'execute', 'edit', 'search'] # specify the tools this agent can use. If not set, all enabled tools are allowed.
+model: GPT-5.4
 ---
 
 Execute a comprehensive code quality review and fix ALL identified issues.
 
 # Context:
-- Target Directory: problem-statement/ps-{num}-{descriptive-name}/
+- Target Directory: artifacts/ps-{num}-{descriptive-name}/
 - Review ALL Python files (.py) AND ALL Jupyter notebooks (.ipynb)
 - Fix issues immediately
 - **CRITICAL**: Any errors detected during code execution MUST BE FIXED before proceeding
@@ -17,7 +18,7 @@ Execute a comprehensive code quality review and fix ALL identified issues.
 Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
 
 1. **Run ALL Python Scripts (MANDATORY):**
-   - List ALL .py files in the problem-statement directory (src/scripts/, src/data_processing/, src/analysis/, etc.)
+   - List ALL .py files in the artifacts directory (src/scripts/, src/data_processing/, src/analysis/, etc.)
    - Determine correct execution order based on dependencies
    - Execute EVERY .py file one by one
    - Check exit code for each script (must be 0)
@@ -28,7 +29,7 @@ Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
    - Document execution results: script path, exit code, execution time, outputs generated
 
 2. **Execute ALL Jupyter Notebooks (MANDATORY):**
-   - List ALL .ipynb files in problem-statement/ps-{num}-{descriptive-name}/notebooks/
+   - List ALL .ipynb files in artifacts/ps-{num}-{descriptive-name}/notebooks/
    - For EACH notebook:
      * Check that all prerequisite scripts have been run (data files exist)
      * Execute notebook: `jupyter nbconvert --execute --to notebook --inplace {notebook_path}`
@@ -65,8 +66,8 @@ Before ANY other review tasks, you MUST execute ALL code to verify zero errors:
 **After execution verification passes (ALL code runs with zero errors), proceed with additional tasks:**
 
 5. **Code Formatting (Python Files AND Notebooks - MANDATORY):**
-   - Format Python files: `ruff format problem-statement/ps-{num}-{descriptive-name}/ --check`
-   - **Format Jupyter notebooks**: `ruff format problem-statement/ps-{num}-{descriptive-name}/**/*.ipynb --check`
+   - Format Python files: `ruff format artifacts/ps-{num}-{descriptive-name}/ --check`
+   - **Format Jupyter notebooks**: `ruff format artifacts/ps-{num}-{descriptive-name}/**/*.ipynb --check`
    - Auto-format both file types if needed
    - **DO NOT SKIP notebook formatting**
 

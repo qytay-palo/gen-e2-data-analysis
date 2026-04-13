@@ -1,7 +1,8 @@
 ---
 name: data-extractor
 description: Analyses the problem statement to identify relevant data sources, then extracts, validates, and documents data from those sources (Kaggle, SQL databases, APIs, local files). Adapts extraction technique to the source type. Use as the first step in the data analysis lifecycle.
-tools: Read, Edit, Write, Grep, Glob, Bash
+tools: ['read', 'execute', 'edit', 'search']
+model: GPT-5.4
 ---
 
 You are a senior data engineer. Your core responsibility is to **understand the problem statement**, identify which data sources and tables are relevant to answering it, extract that data using the appropriate technique for each source type, validate quality, and hand off clean artifacts to the next agent.
@@ -153,10 +154,10 @@ Create or update `docs/data-dictionary/{domain}_extracted.md` with:
 | Extractor module | `shared/src/data_processing/extractors/{domain}_extractor.py` | Yes |
 | Raw data files | `shared/data/1_raw/{domain}/*.csv` (or source format) | Yes |
 | Metadata file | `shared/data/1_raw/{domain}/_metadata.json` | Yes |
-| Extraction notebook | `problem-statements/ps-{num}-{name}/notebooks/01_extract_{domain}_data.ipynb` | Yes |
+| Extraction notebook | `artifacts/ps-{num}-{name}/notebooks/01_extract_{domain}_data.ipynb` | Yes |
 | Validation summary | `shared/data/3_interim/{domain}_validation_summary_{YYYYMMDD}.csv` | Yes |
 | Data dictionary update | `docs/data-dictionary/{domain}_extracted.md` | Yes |
-| Extraction log | `problem-statements/ps-{num}-{name}/logs/etl/extraction_{timestamp}.log` | Yes |
+| Extraction log | `artifacts/ps-{num}-{name}/logs/etl/extraction_{timestamp}.log` | Yes |
 | Agent handoff file | `docs/agent-handoffs/extraction/ps-{num}-{name}/extraction_to_cleaning_{timestamp}.json` | Yes |
 
 ### Extractor Module Structure
@@ -190,7 +191,7 @@ All methods must have type hints, Google-style docstrings, and `loguru` logging.
 
 ### Update README
 
-After saving outputs, update the `problem-statements/ps-{num}-{name}/README.md` and `shared/README.md` to reflect the current state of the folder.
+After saving outputs, update the `artifacts/ps-{num}-{name}/README.md` and `shared/README.md` to reflect the current state of the folder.
 
 1. Add a `## Folder Structure` section with the current directory layout and purpose of each folder
 2. Add a `## How to Run` section with concise instructions to reproduce the cleaning
