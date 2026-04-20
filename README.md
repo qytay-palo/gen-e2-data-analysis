@@ -1,165 +1,99 @@
-# gen-e2-data-analysis
-Repo for the Gen-e2 flavor for data analysis. For use especially for implementation.
+# Gen-E2 Workforce Trends Analysis
 
+This repository is initialized for a Gen-E2 data analysis project focused on extracting workforce trends and producing five-year forward-looking forecasts for Ministry of Health stakeholders.
 
-## Workflow Overview
+## Project overview
 
-```
-Prompt 0 → Prompt 1 → Prompt 2 → Prompt 3 → executor.agent.md
-  Setup     Problem    User        Impl.       Automated
-  Project   Statements Stories     Plan        Execution
-```
+The current delivery focus is:
 
----
+- analyze historical healthcare workforce trends
+- build reusable shared ingestion and validation utilities
+- prepare a self-contained problem package for workforce trend forecasting
+- stay compatible with HEALIX/Databricks while remaining runnable locally
 
-## Prerequisites
+## Selected platform
 
-```bash
-# Install uv (if not already installed)
-pip install uv
-```
+- Primary platform: HEALIX/Databricks
+- Local development: `uv` + `.venv`
+- Primary data processing library: Polars
+- Primary external source: MOH SharePoint / DataDojo workforce folder
 
----
+## Repository structure
 
-## Step 1 — Attach Project Context
-
-Before running any prompt, upload the following context documents in your project folder so the agent has full project awareness:
-
-| Document | Path | Purpose |
-|---|---|---|
-| Business Objectives | [docs/project-context/business-objectives.md](docs/project-context/business-objectives.md) | strategic goals, KPIs, and current analysis focus |
-| Data Sources | [docs/project-context/data-sources.md](docs/project-context/data-sources.md) | dataset details, schema, and access methods |
-| Tech Stack | [docs/project-context/tech-stack.md](docs/project-context/tech-stack.md) | Platform (Databricks/HEALIX), libraries (Polars, uv), and coding standards |
-
----
-
-## Step 2 — Execute Prompts 0 → 3 (in order)
-
-Run each prompt sequentially in GitHub Copilot Chat using `/` to invoke them. Each prompt builds on the outputs of the previous one.
-
-### Prompt 0 — Project Initialization
-**File**: [.github/prompts/0-start-gen-e2-data-analysis-project.prompt.md](.github/prompts/0-start-gen-e2-data-analysis-project.prompt.md)
-
-Sets up the project folder structure, virtual environment, and base configuration. Answers questions about the target platform, data volume, and stakeholders.
-
-```
-/0-start-gen-e2-data-analysis-project
-```
-
-**Outputs**: Folder structure, `.env.example`, `requirements.txt`, `README.md` updates.
-
----
-
-### Prompt 1 — Identify Problem Statements
-**File**: [.github/prompts/1-identify-problem-statement.prompt.md](.github/prompts/1-identify-problem-statement.prompt.md)
-
-Analyzes business context to surface and prioritize actionable analytics problem statements, constrained by actual data availability.
-
-```
-/1-identify-problem-statement
-```
-
-**Outputs**: `docs/objectives/problem_statements/ps-{num}-{name}.md` files.
-
----
-
-### Prompt 2 — Generate User Stories
-**File**: [.github/prompts/2-generate-user-stories-from-problem_statement.prompt.md](.github/prompts/2-generate-user-stories-from-problem_statement.prompt.md)
-
-Decomposes every problem statement into sprint-ready user stories covering extraction, cleaning, EDA, feature engineering, modelling, and dashboards.
-
-```
-/2-generate-user-stories-from-problem_statement <file path of the problem statement>
-```
-
-**Outputs**: `docs/objectives/user_stories/problem-statement-{num}-{name}/` story files.
-
----
-
-### Prompt 3 — Generate Implementation Plan
-**File**: [.github/prompts/3-generate-data-analysis-implementation-plan.prompt.md](.github/prompts/3-generate-data-analysis-implementation-plan.prompt.md)
-
-Creates a detailed, executable implementation plan for each user story. Evaluates model options (Hugging Face, statsmodels, scikit-learn) and appends the plan directly to the user story file.
-
-```
-/3-generate-data-analysis-implementation-plan <file path of the user story folder>
-```
-
-**Outputs**: Implementation plan sections appended to each user story file.
-
----
-
-## Step 3 — Execute the Implementation (executor.agent.md)
-
-**File**: [.github/agents/executor.agent.md](.github/agents/executor.agent.md)
-
-The executor orchestrates the full pipeline by spawning specialized subagents for each phase. Run it in Copilot Chat, passing the problem statement number and name:
-
-```
-#executor.agent.md ps-001-healthcare-workforce-sustainability
-```
-
-### Execution Phases
-
-| Phase | Agent(s) | Description |
-|---|---|---|
-| 1 | `data-extractor` | Download and extract raw data via Kaggle API |
-| 2 | `data-cleaning` + `data-validation` | Clean datasets and validate schema/quality (parallel) |
-| 3 | `exploratory-analysis` + `feature-engineer` | EDA, trend analysis, and feature construction (parallel) |
-| 4 | `model-forecasting` | Train and evaluate forecasting models |
-| 5 | `dashboard-visualization` | Build interactive HTML dashboard |
-| 6 | `code-simplifier` → `code-reviewer` | Quality gate: simplify code, then execute all notebooks end-to-end |
-
-Each phase writes a handoff JSON to `docs/agent-handoffs/{phase}/ps-{num}-{name}/` before the next phase begins.
-
-### Verify Completion
-
-After the executor finishes, check:
-
-```bash
-# Confirm handoff files exist for all phases
-ls docs/agent-handoffs/*/ps-001-healthcare-workforce-sustainability/
-
-# Confirm notebooks are non-empty
-du -sh problem-statement/ps-001-healthcare-workforce-sustainability/notebooks/*.ipynb
-
-# Confirm processed data exists
-ls problem-statement/ps-001-healthcare-workforce-sustainability/data/4_processed/
-```
-
----
-
-## Project Structure
-
-```
+```text
 .
-├── .github/
-│   ├── prompts/               # Prompts 0-5 (run in order)
-│   ├── agents/                # Specialist agents (executor + subagents)
-│   ├── skills/                # Reusable skill instructions
-│   └── copilot-instructions.md
+├── artifacts/
+│   └── ps-001-workforce-trends-forecasting/
+│       ├── notebooks/
+│       ├── src/
+│       ├── data/
+│       │   ├── 3_interim/
+│       │   └── 4_processed/
+│       ├── results/
+│       ├── reports/
+│       ├── models/
+│       ├── config/
+│       ├── scripts/
+│       ├── tests/
+│       └── logs/
 ├── docs/
-│   ├── project-context/       # business-objectives, data-sources, tech-stack ← attach these
-│   ├── objectives/
-│   │   ├── problem_statements/  # ps-{num}-{name}.md
-│   │   └── user_stories/        # Generated by Prompt 2
-│   ├── agent-handoffs/          # Phase-to-phase communication JSONs
-│   └── domain-knowledge/        # Healthcare metrics, forecasting guides
+│   ├── index.md
+│   ├── project-context/
+│   └── data_dictionary/
 ├── shared/
-│   └── data/1_raw/              # Raw downloaded datasets
-└── problem-statement/
-    └── ps-{num}-{name}/         # All artifacts for a given problem statement
-        ├── notebooks/
-        ├── src/
-        ├── data/
-        ├── results/
-        ├── reports/
-        └── models/
+│   ├── src/
+│   ├── data/
+│   ├── sql/
+│   ├── tests/
+│   └── config/
+├── scripts/
+├── logs/
+├── requirements.txt
+├── pyproject.toml
+└── TODO.md
 ```
 
----
+## Shared vs problem-specific layout
 
-## Key References
+- `shared/` contains reusable connectors, config, tests, schemas, and immutable raw data.
+- `artifacts/ps-001-workforce-trends-forecasting/` contains the self-contained analysis package for the current problem statement.
+- Raw source data should be written to `shared/data/1_raw/` and not modified in place.
+- Processed outputs, forecasts, and stakeholder-ready results should live inside the relevant problem package.
 
-- [.github/copilot-instructions.md](.github/copilot-instructions.md) — Coding conventions (Polars, uv, loguru)
-- [.github/agents/executor.agent.md](.github/agents/executor.agent.md) — Full pipeline executor
+## Environment setup
+
+1. Create the virtual environment:
+   - `uv venv .venv`
+2. Activate it:
+   - `source .venv/bin/activate`
+3. Install dependencies:
+   - `uv pip install -r requirements.txt`
+4. Optional dev tooling:
+   - `uv pip install -e .`
+
+## Data access
+
+The project expects SharePoint credentials in `.env`.
+Use `.env.example` as the template.
+
+Primary source folder:
+
+- `/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce/`
+
+## Main workflows
+
+- Project navigation: see `docs/index.md`
+- Shared extraction script: `scripts/load_workforce_data.py`
+- Problem package orchestrator: `artifacts/ps-001-workforce-trends-forecasting/scripts/run_pipeline.py`
+
+## Code quality
+
+- formatting and linting: Ruff
+- testing: Pytest
+- logging: Loguru
+- configuration: YAML + environment variables
+
+## Notes
+
+- SharePoint extraction requires valid credentials and network access.
+- No transcript files were found, so transcript analysis was skipped during initialization.

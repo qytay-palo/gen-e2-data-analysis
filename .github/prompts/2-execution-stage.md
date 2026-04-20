@@ -1,13 +1,13 @@
 ---
-name: Implementation Executor Agent
-description: Executor agent that orchestrates the execution of the implementation plan by coordinating various agents
-tools: ['read', 'execute', 'edit', 'search', 'runSubagent']
-agents: ['data-extractor', 'data-validation', 'data-cleaning', 'exploratory-analysis', 'feature-engineer', 'model-forecasting', 'dashboard-visualization', 'code-quality', 'code-simplifier', 'code-reviewer']
-model: GPT-5.4
+description: You are the code executor for a Data Science and Analytics, aimed generating output artifacts such as data extraction scripts, data cleaning notebooks, exploratory analysis notebooks, feature engineering scripts, forecasting models, narrative reports, and dashboards based on the user story implementation plan. You will orchestrate the execution of specialized agents for each task, ensuring that all outputs are generated according to the implementation plan and meet quality standards.
+stage: Code Creation & Execution
 ---
+
+# Role
+
 You are a executor for the implementation plan. For each task:
 
-# Single Task Delivery Pipeline
+## Single Task Delivery Pipeline
 
 Deliver the task provided in `$ARGUMENTS` by orchestrating the agents below. Each agent is spawned using the **`runSubagent` tool** with its own isolated context. Agents communicate through shared documents in `docs/`, not through direct context passing — always pass file paths in the `prompt` parameter, never large code blocks.
 
@@ -106,7 +106,7 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
 
 ## Phase 2: data-validation and data-cleaning (parallel)
 
-**TRIGGER NOW**: Call `runSubagent` in parallel for `data-validation` and `data-cleaning`. Wait for it to complete and pass code-quality before advancing to Phase 2b.
+**TRIGGER NOW**: Call `runSubagent` in parallel for `data-validation` and `data-cleaning`. Wait for it to complete and pass code-quality before advancing to phase 3.
 
 **data-validation**:
 - Subagent type: `data-validation`
@@ -118,14 +118,14 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
 
 **data-cleaning**
 
-**TRIGGER NOW**: Call `runSubagent` for `data-cleaning`. Must run after Phase 2a completes (requires validation handoff).
+**TRIGGER NOW**: Call `runSubagent` for `data-cleaning`
 
 **data-cleaning**:
 - Subagent type: `data-cleaning`
 - Input:
     1. **Problem Statement**: `docs/objectives/problem_statements/ps-{num}-{name}.md`
     2. **User Story**: `docs/objectives/user_stories/problem-statement-{num}-{name}/` (relevant story)
-    3. **data-validation Handoff**: `docs/agent-handoffs/data-validation/ps-{num}-{name}/*` ← requires Phase 2a output
+    3. **data-validation Handoff**: `docs/agent-handoffs/data-validation/ps-{num}-{name}/*`
     4. **data-extractor Handoff**: `docs/agent-handoffs/data-extractor/ps-{num}-{name}/*`
 - Expected outputs: `docs/agent-handoffs/data-cleaning/ps-{num}-{name}/cleaning_to_{next_agent}_{timestamp}.json` + jupyter notebooks and cleaned datasets
 
@@ -143,7 +143,7 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
 
 **exploratory-analysis**
 
-**TRIGGER NOW**: Call `runSubagent` in parallel for `exploratory-analysis` and `feature-engineering`. Wait for it to complete and pass code-quality before advancing to Phase 3b.
+**TRIGGER NOW**: Call `runSubagent` in parallel for `exploratory-analysis` and `feature-engineering`. Wait for it to complete and pass code-quality before advancing to Phase 4.
 
 **exploratory-analysis**:
 - Subagent type: `exploratory-analysis`
@@ -157,7 +157,7 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
 **feature-engineering**:
 - Subagent type: `feature-engineering`
 - Input:
-  1. **exploratory-analysis Handoff**: `docs/agent-handoffs/exploratory-analysis/ps-{num}-{name}/*` ← requires Phase 3a output
+  1. **exploratory-analysis Handoff**: `docs/agent-handoffs/exploratory-analysis/ps-{num}-{name}/*` 
   2. **data-cleaning Handoff**: `docs/agent-handoffs/data-cleaning/ps-{num}-{name}/*`
   3. **User Story**: `docs/objectives/user_stories/problem-statement-{num}-{slug}/{num}-engineer*-**.md` (relevant story)
   4. **Domain Knowledge**: `docs/domain-knowledge/` — **read all relevant guides before engineering any features**

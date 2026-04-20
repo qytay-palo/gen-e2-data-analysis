@@ -23,30 +23,6 @@ The Ministry of Health (MOH) is the government ministry responsible for managing
 - Address aging population needs and age-related health challenges
 - Monitor and respond to communicable disease threats
 
-### 3. Healthcare Quality & Safety
-- Maintain high standards of clinical care across all healthcare institutions
-- Ensure patient safety through robust governance and monitoring systems
-- Drive continuous quality improvement in healthcare delivery
-- Foster evidence-based medical practices
-
-### 4. Healthcare System Sustainability
-- Plan for long-term healthcare capacity and infrastructure needs
-- Optimize resource allocation across acute, intermediate, and primary care
-- Build resilience against future health crises and pandemics
-- Integrate technology and data analytics for system efficiency
-
-### 5. Healthcare Workforce Development
-- Develop and retain skilled healthcare professionals
-- Ensure adequate manpower across all healthcare sectors
-- Support continuing education and professional development
-- Build interdisciplinary care teams
-
-### 6. Innovation & Digital Health
-- Leverage technology to enhance care delivery and patient experience
-- Implement data-driven decision making and predictive analytics
-- Advance precision medicine and personalized care
-- Integrate electronic medical records and health information systems
-
 ## Key Performance Areas
 
 ### Access to Care
@@ -99,61 +75,40 @@ When analyzing MOH data, the focus should be on:
 
 ### Primary Analysis Goals
 
-#### 1. Disease Outbreak Detection
-**Objective**: Identify potential disease outbreaks through early warning signals in healthcare utilization data.
+#### 1. Workforce Trend Extraction
+**Objective**: Extract, standardize, and understand healthcare workforce trends across the in-scope profession files.
 
 **Approach**:
-- Syndromic surveillance using hospital admissions and polyclinic visits
-- Time series anomaly detection for unusual disease patterns
-- Geographic clustering analysis for localized outbreaks
-- Seasonal trend analysis to distinguish normal variation from genuine threats
+- Consolidate SharePoint workforce files into a common analytical structure
+- Compare profession-level trajectories across time and sector
+- Surface directional changes, growth rates, and data gaps
 
 **Success Metrics**:
-- Early detection capability (days before traditional surveillance)
-- Reduction in false positive alerts
-- Improved outbreak response time
+- Historical trend coverage across all workforce source files
+- Clear stakeholder-ready explanation of trend direction and variation
 
-#### 2. Clinic Visitation Distribution Analysis
-**Objective**: Understand distribution of healthcare demand across polyclinics and identify capacity imbalances.
+#### 2. Five-Year Workforce Forecasting
+**Objective**: Produce a practical five-year view of workforce direction to support planning discussions.
 
 **Approach**:
-- Spatial analysis of clinic locations vs. population distribution
-- Capacity utilization metrics (visits per clinic, staffing ratios)
-- Peak demand period identification
-- Accessibility mapping (travel time, public transport access)
+- Build trend-aware time-series baselines by profession
+- Compare forecast assumptions and document limitations clearly
+- Emphasize transparency, validation, and fitness for planning use
 
 **Success Metrics**:
-- Identification of underserved areas
-- Capacity utilization optimization
-- Reduced wait times in high-demand clinics
+- Useful directional forecasts for the next five years
+- Agreement on what is "good enough" for an initial delivery
 
-#### 3. Policy Intervention Identification
-**Objective**: Pinpoint specific areas where government intervention or policy changes could have maximum impact.
+#### 3. Stakeholder Decision Support
+**Objective**: Give the team lead a concise basis for discussing workforce planning priorities.
 
 **Approach**:
-- Gap analysis comparing actual vs. target health outcomes
-- Equity assessment across demographic groups and regions
-- Cost-effectiveness analysis of potential interventions
-- Benchmarking against international best practices
+- Summarize profession-specific trends, gaps, and planning implications
+- Prepare reusable tables and metrics for downstream dashboards and reports
 
 **Success Metrics**:
-- Prioritized list of intervention opportunities
-- Evidence-based policy recommendations
-- Projected impact assessments
-
-#### 4. Process Improvement in Healthcare Facilities
-**Objective**: Analyze and identify bottlenecks in hospital and polyclinic patient flow processes.
-
-**Approach**:
-- Wait time analysis across different service points
-- Patient flow modeling (registration → consultation → discharge)
-- Resource utilization efficiency metrics
-- Comparative analysis of high-performing vs. low-performing facilities
-
-**Success Metrics**:
-- Identification of process bottlenecks
-- Quantified improvement opportunities
-- Best practice recommendations
+- Clear evidence for workforce discussion and prioritization
+- Reusable outputs that support the next project phases
 
 ### Stakeholder Pain Points Addressed
 
@@ -162,12 +117,14 @@ When analyzing MOH data, the focus should be on:
 - Lack of integrated insights across different healthcare domains
 - Difficulty identifying root causes vs. symptoms
 - Uncertainty about prioritization of interventions
+- Limited time to manually consolidate workforce trend context
 
 **Project Solution**: Provide integrated analysis that:
 - Connects multiple data domains (facilities, utilization, outcomes)
 - Identifies systemic patterns rather than isolated incidents
 - Quantifies relative importance of different issues
 - Offers evidence-based prioritization frameworks
+- Provides a focused workforce trend and forecast package for the current problem
 
 ## Success Metrics
 

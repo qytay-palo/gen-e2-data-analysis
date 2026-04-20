@@ -214,16 +214,16 @@ __marimo__/
 shared/data/1_raw/
 shared/data/2_external/
 
-# Problem-statement data outputs (large processed files)
-problem-statements/*/data/3_interim/
-problem-statements/*/data/4_processed/
+# Problem package data outputs (large processed files)
+artifacts/*/data/3_interim/
+artifacts/*/data/4_processed/
 
 # Trained model artifacts
-problem-statements/*/models/*.pkl
-problem-statements/*/models/*.joblib
+artifacts/*/models/*.pkl
+artifacts/*/models/*.joblib
 
 # Execution logs
-problem-statements/*/logs/
+artifacts/*/logs/
 logs/
 
 # Jupyter checkpoints
@@ -233,3 +233,7 @@ logs/
 # kaggle API key
 .kaggle/
 kaggle.json
+
+# local editor and OS files
+.DS_Store
+.vscode/

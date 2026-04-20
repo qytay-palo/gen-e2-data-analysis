@@ -1,6 +1,6 @@
 ---
 name: build-dashboard
-description: Build an interactive HTML dashboard with charts, filters, and tables. Use when creating an executive overview with KPI cards, turning query results into a shareable self-contained report, building a team monitoring snapshot, or needing multiple charts with filters in one browser-openable file.
+description: Build an interactive Dash web application with charts, filters, and tables. Use when creating an executive overview with KPI cards, turning query results into a dynamic dashboard, building a team monitoring tool, or needing multiple charts with interactive callbacks.
 argument-hint: "<description> [data source]"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "<description> [data source]"
 
 > If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../../CONNECTORS.md).
 
-Build a self-contained interactive HTML dashboard with charts, filters, tables, and professional styling. Opens directly in a browser -- no server or dependencies required.
+Build an interactive Dash web application with charts, filters, tables, and professional styling using callbacks for full interactivity.
 
 ## Usage
 
@@ -26,17 +26,20 @@ Determine:
 - **Audience**: Who will use this dashboard?
 - **Key metrics**: What numbers matter most?
 - **Dimensions**: What should users be able to filter or slice by?
-- **Data source**: Live query, pasted data, CSV file, or sample data
+- **Data source**: Database query, CSV file, Parquet, or sample data
+- **Deployment**: Local development (`localhost:8050`) or production server
 
 ### 2. Gather the Data
 
 **If data warehouse is connected:**
 1. Query the necessary data
-2. Embed the results as JSON within the HTML file
+2. Save to Parquet or CSV files
+3. Load into global dataframes at app startup
 
 **If data is pasted or uploaded:**
 1. Parse and clean the data
-2. Embed as JSON in the dashboard
+2. Save to appropriate format (Parquet/CSV)
+3. Load at startup
 
 **If working from a description without data:**
 1. Create a realistic sample dataset matching the described schema
@@ -45,7 +48,7 @@ Determine:
 
 ### 3. Design the Dashboard Layout
 
-Follow a standard dashboard layout pattern:
+Follow a standard Dash dashboard layout pattern using Bootstrap Grid:
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -55,340 +58,407 @@ Follow a standard dashboard layout pattern:
 ├────────────┴────────────┼────────────┴───────────┤
 │                         │                        │
 │    Primary Chart        │   Secondary Chart      │
-│    (largest area)       │                        │
+│    (dcc.Graph)          │   (dcc.Graph)          │
 │                         │                        │
 ├─────────────────────────┴────────────────────────┤
 │                                                  │
-│    Detail Table (sortable, scrollable)           │
+│    Detail Table (dash_table.DataTable)           │
 │                                                  │
 └──────────────────────────────────────────────────┘
 ```
 
 **Adapt the layout to the content:**
-- 2-4 KPI cards at the top for headline numbers
-- 1-3 charts in the middle section for trends and breakdowns
-- Optional detail table at the bottom for drill-down data
-- Filters in the header or sidebar depending on complexity
+- 2-4 KPI cards at the top (using `dbc.Card` components)
+- 1-3 charts in the middle section (`dcc.Graph` for trends and breakdowns)
+- Optional detail table at bottom (`dash_table.DataTable` for drill-down data)
+- Filters in header or sidebar using `dcc.Dropdown`, `dcc.RadioItems`, `dcc.RangeSlider`
 
-### 4. Build the HTML Dashboard
+### 4. Build the Dash Application
 
-Generate a single self-contained HTML file using the base template below. The file includes:
-
-**Structure (HTML):**
-- Semantic HTML5 layout
-- Responsive grid using CSS Grid or Flexbox
-- Filter controls (dropdowns, date pickers, toggles)
-- KPI cards with values and labels
-- Chart containers
-- Data table with sortable headers
-
-**Styling (CSS):**
-- Professional color scheme (clean whites, grays, with accent colors for data)
-- Card-based layout with subtle shadows
-- Consistent typography (system fonts for fast loading)
-- Responsive design that works on different screen sizes
-- Print-friendly styles
-
-**Interactivity (JavaScript):**
-- Chart.js for interactive charts (included via CDN)
-- Filter dropdowns that update all charts and tables simultaneously
-- Sortable table columns
-- Hover tooltips on charts
-- Number formatting (commas, currency, percentages)
-
-**Data (embedded JSON):**
-- All data embedded directly in the HTML as JavaScript variables
+Generate a Dash application using the base structure below. The application includes:
 - No external data fetches required
-- Dashboard works completely offline
+- Dashboard is fully interactive with real-time filtering
+- Can be deployed for team access or run locally
 
 ### 5. Implement Chart Types
 
-Use Chart.js for all charts. Common dashboard chart patterns:
+Use Plotly via `dcc.Graph` for all charts. Common dashboard chart patterns:
 
-- **Line chart**: Time series trends
-- **Bar chart**: Category comparisons
-- **Doughnut chart**: Composition (when <6 categories)
-- **Stacked bar**: Composition over time
-- **Mixed (bar + line)**: Volume with rate overlay
+- **Line chart** (`px.line` or `go.Scatter`): Time series trends
+- **Bar chart** (`px.bar` or `go.Bar`): Category comparisons
+- **Pie/Doughnut chart** (`px.pie`): Composition (when <6 categories)
+- **Stacked bar** (`px.bar` with `barmode='stack'`): Composition over time
+- **Mixed charts** (`go.Figure` with multiple traces): Volume with rate overlay
 
-Use the Chart.js integration patterns below for each chart type.
+Use the Plotly chart integration patterns below for each chart type.
 
 ### 6. Add Interactivity
 
-Use the filter and interactivity implementation patterns below for dropdown filters, date range filters, combined filter logic, sortable tables, and chart updates.
+Use Dash callbacks to connect filters to outputs. Common patterns below include dropdown filters, date range filters, combined multi-filter logic, and data tables with sorting/filtering.
 
-### 7. Save and Open
+### 7. Run and Test
 
-1. Save the dashboard as an HTML file with a descriptive name (e.g., `sales_dashboard.html`)
-2. Open it in the user's default browser
-3. Confirm it renders correctly
-4. Provide instructions for updating data or customizing
+1. Save the dashboard as a Python file with a descriptive name (e.g., `app_sales_dashboard.py`)
+2. Run the Dash server using `python app_sales_dashboard.py`
+3. Open browser to `http://localhost:8050` to view the dashboard
+4. Confirm it renders correctly and callbacks work
+5. Provide instructions for updating data, customizing, and deploying to production
 
 ---
 
 ## Base Template
 
-Every dashboard follows this structure:
+Every Dash dashboard follows this structure:
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Title</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0" integrity="sha384-cVMg8E3QFwTvGCDuK+ET4PD341jF3W8nO1auiXfuZNQkzbUUiBGLsIQUE+b1mxws" crossorigin="anonymous"></script>
-    <style>
-        /* Dashboard styles go here */
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <header class="dashboard-header">
-            <h1>Dashboard Title</h1>
-            <div class="filters">
-                <!-- Filter controls -->
-            </div>
-        </header>
+```python
+import dash
+from dash import dcc, html, Input, Output, dash_table
+import dash_bootstrap_components as dbc
+import plotly.express as px
+import plotly.graph_objects as go
+import polars as pl
+from datetime import datetime
 
-        <section class="kpi-row">
-            <!-- KPI cards -->
-        </section>
+# Initialize app with Bootstrap theme
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-        <section class="chart-row">
-            <!-- Chart containers -->
-        </section>
+# Load data (use global dataframes for efficiency)
+df = pl.read_csv('data/sales_data.csv')
+# Or for larger files: df = pl.scan_csv('data/large_file.csv').collect()
 
-        <section class="table-section">
-            <!-- Data table -->
-        </section>
+#############################################
+# Layout
+#############################################
 
-        <footer class="dashboard-footer">
-            <span>Data as of: <span id="data-date"></span></span>
-        </footer>
-    </div>
+app.layout = dbc.Container([
+    # Header with title and filters
+    dbc.Row([
+        dbc.Col(html.H1("Dashboard Title", className="text-primary mb-3"), width=6),
+        dbc.Col([
+            dcc.Dropdown(
+                id='filter-region',
+                options=[{'label': 'All Regions', 'value': 'all'}] + 
+                        [{'label': r, 'value': r} for r in df['region'].unique().to_list()],
+                value='all',
+                className="mb-2"
+            ),
+        ], width=6)
+    ], className="mb-4"),
+    
+    # KPI Cards
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([
+                dbc.CardBody([
+                    html.H6("Total Revenue", className="text-muted"),
+                    html.H3(id="kpi-revenue", children="$0"),
+                    html.P(id="kpi-revenue-change", className="text-success")
+                ])
+            ])
+        ], width=3),
+        # Add more KPI cards as needed
+    ], className="mb-4"),
+    
+    # Charts
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(id='revenue-trend-chart')
+        ], width=6),
+        dbc.Col([
+            dcc.Graph(id='category-breakdown-chart')
+        ], width=6),
+    ], className="mb-4"),
+    
+    # Data Table
+    dbc.Row([
+        dbc.Col([
+            dash_table.DataTable(
+                id='detail-table',
+                page_size=20,
+                sort_action='native',
+                filter_action='native',
+                style_table={'overflowX': 'auto'},
+                style_cell={'textAlign': 'left', 'padding': '10px'},
+                style_header={'fontWeight': 'bold', 'backgroundColor': '#f8f9fa'}
+            )
+        ])
+    ]),
+    
+    # Footer
+    html.Footer([
+        html.P(f"Data as of: {datetime.now().strftime('%Y-%m-%d %H:%M')}", 
+               className="text-muted mt-4")
+    ])
+], fluid=True, className="p-4")
 
-    <script>
-        // Embedded data
-        const DATA = [];
+#############################################
+# Callbacks
+#############################################
 
-        // Dashboard logic
-        class Dashboard {
-            constructor(data) {
-                this.rawData = data;
-                this.filteredData = data;
-                this.charts = {};
-                this.init();
-            }
+@app.callback(
+    [
+        Output('kpi-revenue', 'children'),
+        Output('revenue-trend-chart', 'figure'),
+        Output('category-breakdown-chart', 'figure'),
+        Output('detail-table', 'data'),
+        Output('detail-table', 'columns')
+    ],
+    [Input('filter-region', 'value')]
+)
+def update_dashboard(selected_region):
+    # Filter data
+    filtered_df = df if selected_region == 'all' else df.filter(pl.col('region') == selected_region)
+    
+    # Calculate KPIs
+    total_revenue = filtered_df['revenue'].sum()
+    
+    # Create charts
+    revenue_fig = px.line(
+        filtered_df.to_pandas(),
+        x='date',
+        y='revenue',
+        title='Revenue Trend'
+    )
+    
+    category_fig = px.bar(
+        filtered_df.group_by('category').agg(pl.col('revenue').sum()).to_pandas(),
+        x='category',
+        y='revenue',
+        title='Revenue by Category'
+    )
+    
+    # Table data
+    table_data = filtered_df.head(100).to_pandas().to_dict('records')
+    table_columns = [{'name': col, 'id': col} for col in filtered_df.columns]
+    
+    return (
+        f"${total_revenue:,.0f}",
+        revenue_fig,
+        category_fig,
+        table_data,
+        table_columns
+    )
 
-            init() {
-                this.setupFilters();
-                this.renderKPIs();
-                this.renderCharts();
-                this.renderTable();
-            }
+#############################################
+# Run Server
+#############################################
 
-            applyFilters() {
-                // Filter logic
-                this.filteredData = this.rawData.filter(row => {
-                    // Apply each active filter
-                    return true; // placeholder
-                });
-                this.renderKPIs();
-                this.updateCharts();
-                this.renderTable();
-            }
-
-            // ... methods for each section
-        }
-
-        const dashboard = new Dashboard(DATA);
-    </script>
-</body>
-</html>
+if __name__ == '__main__':
+    app.run_server(debug=True, host='localhost', port=8050)
 ```
 
 ## KPI Card Pattern
 
-```html
-<div class="kpi-card">
-    <div class="kpi-label">Total Revenue</div>
-    <div class="kpi-value" id="kpi-revenue">$0</div>
-    <div class="kpi-change positive" id="kpi-revenue-change">+0%</div>
-</div>
+Use Bootstrap Card components for KPI displays:
+
+```python
+# In app.layout
+dbc.Row([
+    dbc.Col([
+        dbc.Card([
+            dbc.CardBody([
+                html.H6("Total Revenue", className="text-muted text-uppercase"),
+                html.H2(id="kpi-revenue", className="mb-0"),
+                html.P(id="kpi-revenue-change", className="mb-0")
+            ])
+        ], className="shadow-sm")
+    ], width=3),
+    # Repeat for more KPIs
+], className="mb-4")
+
+# In callback
+@app.callback(
+    [
+        Output('kpi-revenue', 'children'),
+        Output('kpi-revenue-change', 'children'),
+        Output('kpi-revenue-change', 'className')
+    ],
+    [Input('filter-date', 'value')]
+)
+def update_kpi(date_range):
+    current_revenue = calculate_revenue(date_range)
+    previous_revenue = calculate_revenue(previous_period(date_range))
+    
+    # Format the value
+    formatted_value = format_currency(current_revenue)
+    
+    # Calculate change
+    if previous_revenue > 0:
+        pct_change = ((current_revenue - previous_revenue) / previous_revenue) * 100
+        change_text = f"{'+' if pct_change >= 0 else ''}{pct_change:.1f}% vs prior period"
+        change_class = "text-success" if pct_change >= 0 else "text-danger"
+    else:
+        change_text = "N/A"
+        change_class = "text-muted"
+    
+    return formatted_value, change_text, change_class
+
+def format_currency(value):
+    """Format large numbers with K/M suffixes"""
+    if value >= 1e6:
+        return f"${value/1e6:.1f}M"
+    elif value >= 1e3:
+        return f"${value/1e3:.1f}K"
+    else:
+        return f"${value:,.0f}"
 ```
 
-```javascript
-function renderKPI(elementId, value, previousValue, format = 'number') {
-    const el = document.getElementById(elementId);
-    const changeEl = document.getElementById(elementId + '-change');
-
-    // Format the value
-    el.textContent = formatValue(value, format);
-
-    // Calculate and display change
-    if (previousValue && previousValue !== 0) {
-        const pctChange = ((value - previousValue) / previousValue) * 100;
-        const sign = pctChange >= 0 ? '+' : '';
-        changeEl.textContent = `${sign}${pctChange.toFixed(1)}% vs prior period`;
-        changeEl.className = `kpi-change ${pctChange >= 0 ? 'positive' : 'negative'}`;
-    }
-}
-
-function formatValue(value, format) {
-    switch (format) {
-        case 'currency':
-            if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
-            if (value >= 1e3) return `$${(value / 1e3).toFixed(1)}K`;
-            return `$${value.toFixed(0)}`;
-        case 'percent':
-            return `${value.toFixed(1)}%`;
-        case 'number':
-            if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
-            if (value >= 1e3) return `${(value / 1e3).toFixed(1)}K`;
-            return value.toLocaleString();
-        default:
-            return value.toString();
-    }
-}
-```
-
-## Chart.js Integration
+## Plotly Chart Integration
 
 ### Chart Container Pattern
 
-```html
-<div class="chart-container">
-    <h3 class="chart-title">Monthly Revenue Trend</h3>
-    <canvas id="revenue-chart"></canvas>
-</div>
+Use `dcc.Graph` components for all charts:
+
+```python
+# In app.layout
+dbc.Row([
+    dbc.Col([
+        html.H5("Monthly Revenue Trend"),
+        dcc.Graph(id='revenue-chart')
+    ], width=6)
+])
 ```
 
 ### Line Chart
 
-```javascript
-function createLineChart(canvasId, labels, datasets) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    return new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: datasets.map((ds, i) => ({
-                label: ds.label,
-                data: ds.data,
-                borderColor: COLORS[i % COLORS.length],
-                backgroundColor: COLORS[i % COLORS.length] + '20',
-                borderWidth: 2,
-                fill: ds.fill || false,
-                tension: 0.3,
-                pointRadius: 3,
-                pointHoverRadius: 6,
-            }))
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: { usePointStyle: true, padding: 20 }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${formatValue(context.parsed.y, 'currency')}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return formatValue(value, 'currency');
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
+```python
+import plotly.express as px
+import plotly.graph_objects as go
+
+@app.callback(
+    Output('revenue-chart', 'figure'),
+    [Input('filter-region', 'value')]
+)
+def update_line_chart(selected_region):
+    filtered_df = apply_filters(df, selected_region)
+    
+    # Using Plotly Express (easier)
+    fig = px.line(
+        filtered_df.to_pandas(),
+        x='month',
+        y='revenue',
+        color='category',  # For multiple series
+        title='Monthly Revenue Trend',
+        labels={'revenue': 'Revenue ($)', 'month': 'Month'},
+        template='plotly_white'
+    )
+    
+    # Or using Graph Objects (more control)
+    fig = go.Figure()
+    for category in filtered_df['category'].unique():
+        category_data = filtered_df.filter(pl.col('category') == category)
+        fig.add_trace(go.Scatter(
+            x=category_data['month'].to_list(),
+            y=category_data['revenue'].to_list(),
+            mode='lines+markers',
+            name=category,
+            line=dict(width=2),
+            marker=dict(size=6)
+        ))
+    
+    fig.update_layout(
+        title='Monthly Revenue Trend',
+        xaxis_title='Month',
+        yaxis_title='Revenue ($)',
+        hovermode='x unified',
+        template='plotly_white',
+        height=400
+    )
+    
+    return fig
 ```
 
 ### Bar Chart
 
-```javascript
-function createBarChart(canvasId, labels, data, options = {}) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    const isHorizontal = options.horizontal || labels.length > 8;
+```python
+import plotly.express as px
 
-    return new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: options.label || 'Value',
-                data: data,
-                backgroundColor: options.colors || COLORS.map(c => c + 'CC'),
-                borderColor: options.colors || COLORS,
-                borderWidth: 1,
-                borderRadius: 4,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: isHorizontal ? 'y' : 'x',
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return formatValue(context.parsed[isHorizontal ? 'x' : 'y'], options.format || 'number');
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: { display: isHorizontal },
-                    ticks: isHorizontal ? {
-                        callback: function(value) {
-                            return formatValue(value, options.format || 'number');
-                        }
-                    } : {}
-                },
-                y: {
-                    beginAtZero: !isHorizontal,
-                    grid: { display: !isHorizontal },
-                    ticks: !isHorizontal ? {
-                        callback: function(value) {
-                            return formatValue(value, options.format || 'number');
-                        }
-                    } : {}
-                }
-            }
-        }
-    });
-}
+@app.callback(
+    Output('category-chart', 'figure'),
+    [Input('filter-date', 'value')]
+)
+def update_bar_chart(date_range):
+    filtered_df = filter_by_date(df, date_range)
+    
+    # Aggregate data
+    agg_df = (
+        filtered_df
+        .group_by('category')
+        .agg(pl.col('revenue').sum())
+        .sort('revenue', descending=True)
+        .head(10)
+    )
+    
+    # Determine orientation based on number of categories
+    is_horizontal = len(agg_df) > 8
+    
+    if is_horizontal:
+        fig = px.bar(
+            agg_df.to_pandas(),
+            y='category',
+            x='revenue',
+            orientation='h',
+            title='Revenue by Category',
+            labels={'revenue': 'Revenue ($)', 'category': 'Category'}
+        )
+    else:
+        fig = px.bar(
+            agg_df.to_pandas(),
+            x='category',
+            y='revenue',
+            title='Revenue by Category',
+            labels={'revenue': 'Revenue ($)', 'category': 'Category'}
+        )
+    
+    fig.update_traces(marker_color='#4C72B0')
+    fig.update_layout(
+        template='plotly_white',
+        height=400,
+        showlegend=False
+    )
+    
+    return fig
 ```
 
-### Doughnut Chart
+### Pie/Doughnut Chart
 
-```javascript
-function createDoughnutChart(canvasId, labels, data) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    return new Chart(ctx, {
+```python
+import plotly.express as px
+
+@app.callback(
+    Output('distribution-chart', 'figure'),
+    [Input('filter-metric', 'value')]
+)
+def update_pie_chart(metric):
+    # Aggregate data
+    dist_df = (
+        df
+        .group_by('segment')
+        .agg(pl.col(metric).sum())
+        .sort(metric, descending=True)
+        .head(10)
+    )
+    
+    fig = px.pie(
+        dist_df.to_pandas(),
+        values=metric,
+        names='segment',
+        title=f'{metric.title()} Distribution',
+        hole=0.4  # Creates doughnut effect; omit for regular pie
+    )
+    
+    fig.update_traces(
+        textposition='inside',
+        textinfo='percent+label'
+    )
+    
+    fig.update_layout(
+        template='plotly_white',
+        height=400
+    )
+    
+    return fig
+```
         type: 'doughnut',
         data: {
             labels: labels,
@@ -418,425 +488,323 @@ function createDoughnutChart(canvasId, labels, data) {
                     }
                 }
             }
-        }
-    });
-}
-```
-
-### Updating Charts on Filter Change
-
-```javascript
-function updateChart(chart, newLabels, newData) {
-    chart.data.labels = newLabels;
-
-    if (Array.isArray(newData[0])) {
-        // Multiple datasets
-        newData.forEach((data, i) => {
-            chart.data.datasets[i].data = data;
-        });
-    } else {
-        chart.data.datasets[0].data = newData;
-    }
-
-    chart.update('none'); // 'none' disables animation for instant update
-}
 ```
 
 ## Filter and Interactivity Implementation
 
 ### Dropdown Filter
 
-```html
-<div class="filter-group">
-    <label for="filter-region">Region</label>
-    <select id="filter-region" onchange="dashboard.applyFilters()">
-        <option value="all">All Regions</option>
-    </select>
-</div>
-```
+```python
+# In app.layout
+dbc.Row([
+    dbc.Col([
+        html.Label("Region:"),
+        dcc.Dropdown(
+            id='filter-region',
+            options=[{'label': 'All Regions', 'value': 'all'}],  # Populated dynamically
+            value='all',
+            clearable=False
+        )
+    ], width=4)
+])
 
-```javascript
-function populateFilter(selectId, data, field) {
-    const select = document.getElementById(selectId);
-    const values = [...new Set(data.map(d => d[field]))].sort();
+# Populate dropdown options from data
+def get_dropdown_options(df, column):
+    unique_values = df[column].unique().sort().to_list()
+    return [{'label': 'All', 'value': 'all'}] + [{'label': v, 'value': v} for v in unique_values]
 
-    // Keep the "All" option, add unique values
-    values.forEach(val => {
-        const option = document.createElement('option');
-        option.value = val;
-        option.textContent = val;
-        select.appendChild(option);
-    });
-}
-
-function getFilterValue(selectId) {
-    const val = document.getElementById(selectId).value;
-    return val === 'all' ? null : val;
-}
+# In callback
+@app.callback(
+    Output('some-output', 'figure'),
+    [Input('filter-region', 'value')]
+)
+def update_on_filter(selected_region):
+    if selected_region == 'all':
+        filtered_df = df
+    else:
+        filtered_df = df.filter(pl.col('region') == selected_region)
+    # ... rest of logic
 ```
 
 ### Date Range Filter
 
-```html
-<div class="filter-group">
-    <label>Date Range</label>
-    <input type="date" id="filter-date-start" onchange="dashboard.applyFilters()">
-    <span>to</span>
-    <input type="date" id="filter-date-end" onchange="dashboard.applyFilters()">
-</div>
+```python
+from datetime import datetime, timedelta
+
+# In app.layout
+dbc.Row([
+    dbc.Col([
+        html.Label("Date Range:"),
+        dcc.DatePickerRange(
+            id='filter-date-range',
+            start_date=datetime.now() - timedelta(days=90),
+            end_date=datetime.now(),
+            display_format='YYYY-MM-DD'
+        )
+    ], width=6)
+])
+
+# In callback
+@app.callback(
+    Output('chart', 'figure'),
+    [
+        Input('filter-date-range', 'start_date'),
+        Input('filter-date-range', 'end_date')
+    ]
+)
+def update_on_date_range(start_date, end_date):
+    filtered_df = df.filter(
+        (pl.col('date') >= start_date) & (pl.col('date') <= end_date)
+    )
+    # ... rest of logic
 ```
 
-```javascript
-function filterByDateRange(data, dateField, startDate, endDate) {
-    return data.filter(row => {
-        const rowDate = new Date(row[dateField]);
-        if (startDate && rowDate < new Date(startDate)) return false;
-        if (endDate && rowDate > new Date(endDate)) return false;
-        return true;
-    });
-}
+### Radio Buttons Filter
+
+```python
+# In app.layout
+dbc.Row([
+    dbc.Col([
+        html.Label("View:"),
+        dcc.RadioItems(
+            id='filter-view',
+            options=[
+                {'label': 'Daily', 'value': 'day'},
+                {'label': 'Weekly', 'value': 'week'},
+                {'label': 'Monthly', 'value': 'month'}
+            ],
+            value='day',
+            inline=True
+        )
+    ])
+])
 ```
 
-### Combined Filter Logic
+### Combined Multi-Filter Callback
 
-```javascript
-applyFilters() {
-    const region = getFilterValue('filter-region');
-    const category = getFilterValue('filter-category');
-    const startDate = document.getElementById('filter-date-start').value;
-    const endDate = document.getElementById('filter-date-end').value;
-
-    this.filteredData = this.rawData.filter(row => {
-        if (region && row.region !== region) return false;
-        if (category && row.category !== category) return false;
-        if (startDate && row.date < startDate) return false;
-        if (endDate && row.date > endDate) return false;
-        return true;
-    });
-
-    this.renderKPIs();
-    this.updateCharts();
-    this.renderTable();
-}
+```python
+@app.callback(
+    [
+        Output('kpi-revenue', 'children'),
+        Output('revenue-chart', 'figure'),
+        Output('detail-table', 'data')
+    ],
+    [
+        Input('filter-region', 'value'),
+        Input('filter-category', 'value'),
+        Input('filter-date-range', 'start_date'),
+        Input('filter-date-range', 'end_date')
+    ]
+)
+def update_all_components(region, category, start_date, end_date):
+    # Apply all filters
+    filtered_df = df
+    
+    if region != 'all':
+        filtered_df = filtered_df.filter(pl.col('region') == region)
+    
+    if category != 'all':
+        filtered_df = filtered_df.filter(pl.col('category') == category)
+    
+    if start_date and end_date:
+        filtered_df = filtered_df.filter(
+            (pl.col('date') >= start_date) & (pl.col('date') <= end_date)
+        )
+    
+    # Update KPI
+    total_revenue = filtered_df['revenue'].sum()
+    
+    # Update chart
+    fig = create_revenue_chart(filtered_df)
+    
+    # Update table
+    table_data = filtered_df.head(100).to_pandas().to_dict('records')
+    
+    return f"${total_revenue:,.0f}", fig, table_data
 ```
 
-### Sortable Table
+### Data Table with Dash
 
-```javascript
-function renderTable(containerId, data, columns) {
-    const container = document.getElementById(containerId);
-    let sortCol = null;
-    let sortDir = 'desc';
+```python
+from dash import dash_table
 
-    function render(sortedData) {
-        let html = '<table class="data-table">';
+# In app.layout
+dbc.Row([
+    dbc.Col([
+        html.H5("Detailed Data"),
+        dash_table.DataTable(
+            id='detail-table',
+            columns=[],  # Populated in callback
+            data=[],     # Populated in callback
+            page_size=50,
+            page_action='native',
+            sort_action='native',
+            sort_mode='multi',
+            filter_action='native',
+            style_table={'overflowX': 'auto'},
+            style_cell={
+                'textAlign': 'left',
+                'padding': '10px',
+                'fontSize': '13px',
+                'fontFamily': 'sans-serif'
+            },
+            style_header={
+                'fontWeight': 'bold',
+                'backgroundColor': '#f8f9fa',
+                'borderBottom': '2px solid #dee2e6',
+                'textTransform': 'uppercase',
+                'fontSize': '12px'
+            },
+            style_data_conditional=[
+                {
+                    'if': {'row_index': 'odd'},
+                    'backgroundColor': '#f8f9fa'
+                },
+                {
+                    'if': {'state': 'selected'},
+                    'backgroundColor': '#e3f2fd',
+                    'border': '1px solid #2196f3'
+                }
+            ],
+            # Formatting specific columns
+            style_data_conditional=[
+                {
+                    'if': {
+                        'column_id': 'revenue',
+                        'filter_query': '{revenue} > 100000'
+                    },
+                    'backgroundColor': '#d4edda',
+                    'color': '#155724'
+                }
+            ]
+        )
+    ])
+])
 
-        // Header
-        html += '<thead><tr>';
-        columns.forEach(col => {
-            const arrow = sortCol === col.field
-                ? (sortDir === 'asc' ? ' ▲' : ' ▼')
-                : '';
-            html += `<th onclick="sortTable('${col.field}')" style="cursor:pointer">${col.label}${arrow}</th>`;
-        });
-        html += '</tr></thead>';
-
-        // Body
-        html += '<tbody>';
-        sortedData.forEach(row => {
-            html += '<tr>';
-            columns.forEach(col => {
-                const value = col.format ? formatValue(row[col.field], col.format) : row[col.field];
-                html += `<td>${value}</td>`;
-            });
-            html += '</tr>';
-        });
-        html += '</tbody></table>';
-
-        container.innerHTML = html;
-    }
-
-    window.sortTable = function(field) {
-        if (sortCol === field) {
-            sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-        } else {
-            sortCol = field;
-            sortDir = 'desc';
+# In callback
+@app.callback(
+    [
+        Output('detail-table', 'data'),
+        Output('detail-table', 'columns')
+    ],
+    [Input('filter-region', 'value')]
+)
+def update_table(selected_region):
+    filtered_df = apply_filters(df, selected_region)
+    
+    # Limit rows for performance (use pagination)
+    display_df = filtered_df.head(1000)
+    
+    # Format data
+    table_data = display_df.to_pandas().to_dict('records')
+    
+    # Define columns with formatting
+    table_columns = [
+        {'name': 'Date', 'id': 'date', 'type': 'datetime'},
+        {'name': 'Region', 'id': 'region', 'type': 'text'},
+        {
+            'name': 'Revenue',
+            'id': 'revenue',
+            'type': 'numeric',
+            'format': {'specifier': '$,.2f'}  # Currency formatting
+        },
+        {
+            'name': 'Growth %',
+            'id': 'growth_pct',
+            'type': 'numeric',
+            'format': {'specifier': '.1%'}  # Percentage formatting
         }
-        const sorted = [...data].sort((a, b) => {
-            const aVal = a[field], bVal = b[field];
-            const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-            return sortDir === 'asc' ? cmp : -cmp;
-        });
-        render(sorted);
-    };
-
-    render(data);
-}
+    ]
+    
+    return table_data, table_columns
 ```
 
-## CSS Styling for Dashboards
+## Styling Dash Applications
 
-### Color System
+### Using Bootstrap Themes
+
+Dash Bootstrap Components provides ready-to-use themes:
+
+```python
+import dash_bootstrap_components as dbc
+
+# Available themes:
+# BOOTSTRAP, CERULEAN, COSMO, CYBORG, DARKLY, FLATLY, JOURNAL, LITERA,
+# LUMEN, LUX, MATERIA, MINTY, MORPH, PULSE, QUARTZ, SANDSTONE, SIMPLEX,
+# SKETCHY, SLATE, SOLAR, SPACELAB, SUPERHERO, UNITED, VAPOR, YETI, ZEPHYR
+
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+```
+
+### Custom CSS Styling
+
+For custom styles, create `assets/custom.css`:
 
 ```css
+/* assets/custom.css */
+
+/* Custom color variables */
 :root {
-    /* Background layers */
-    --bg-primary: #f8f9fa;
-    --bg-card: #ffffff;
-    --bg-header: #1a1a2e;
-
-    /* Text */
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
-    --text-on-dark: #ffffff;
-
-    /* Accent colors for data */
-    --color-1: #4C72B0;
-    --color-2: #DD8452;
-    --color-3: #55A868;
-    --color-4: #C44E52;
-    --color-5: #8172B3;
-    --color-6: #937860;
-
-    /* Status colors */
-    --positive: #28a745;
-    --negative: #dc3545;
-    --neutral: #6c757d;
-
-    /* Spacing */
-    --gap: 16px;
-    --radius: 8px;
-}
-```
-
-### Layout
-
-```css
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    --primary-color: #4C72B0;
+    --secondary-color: #DD8452;
+    --success-color: #55A868;
+    --danger-color: #C44E52;
+    --bg-light: #f8f9fa;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.5;
+/* Card customization */
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    border: none;
+    transition: transform 0.2s ease;
 }
 
-.dashboard-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: var(--gap);
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
 
+/* Dashboard header */
 .dashboard-header {
-    background: var(--bg-header);
-    color: var(--text-on-dark);
-    padding: 20px 24px;
-    border-radius: var(--radius);
-    margin-bottom: var(--gap);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 2rem;
 }
 
-.dashboard-header h1 {
-    font-size: 20px;
-    font-weight: 600;
-}
-```
-
-### KPI Cards
-
-```css
-.kpi-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--gap);
-    margin-bottom: var(--gap);
-}
-
-.kpi-card {
-    background: var(--bg-card);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.kpi-label {
-    font-size: 13px;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
-
-.kpi-value {
-    font-size: 28px;
+/* KPI value highlighting */
+.kpi-value-large {
+    font-size: 2.5rem;
     font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 4px;
-}
-
-.kpi-change {
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.kpi-change.positive { color: var(--positive); }
-.kpi-change.negative { color: var(--negative); }
-```
-
-### Chart Containers
-
-```css
-.chart-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: var(--gap);
-    margin-bottom: var(--gap);
-}
-
-.chart-container {
-    background: var(--bg-card);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.chart-container h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 16px;
-}
-
-.chart-container canvas {
-    max-height: 300px;
+    color: var(--primary-color);
 }
 ```
 
-### Filters
+Dash automatically loads CSS files from the `assets/` directory.
 
-```css
-.filters {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-}
+### Inline Styling
 
-.filter-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.filter-group label {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.filter-group select,
-.filter-group input[type="date"] {
-    padding: 6px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-on-dark);
-    font-size: 13px;
-}
-
-.filter-group select option {
-    background: var(--bg-header);
-    color: var(--text-on-dark);
-}
-```
-
-### Data Table
-
-```css
-.table-section {
-    background: var(--bg-card);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    overflow-x: auto;
-}
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-
-.data-table thead th {
-    text-align: left;
-    padding: 10px 12px;
-    border-bottom: 2px solid #dee2e6;
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    user-select: none;
-}
-
-.data-table thead th:hover {
-    color: var(--text-primary);
-    background: #f8f9fa;
-}
-
-.data-table tbody td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.data-table tbody tr:hover {
-    background: #f8f9fa;
-}
-
-.data-table tbody tr:last-child td {
-    border-bottom: none;
-}
-```
-
-### Responsive Design
-
-```css
-@media (max-width: 768px) {
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
+```python
+# Using style dictionaries
+html.Div(
+    "Dashboard Title",
+    style={
+        'fontSize': '24px',
+        'fontWeight': 'bold',
+        'color': '#2c3e50',
+        'marginBottom': '20px'
     }
+)
 
-    .kpi-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .chart-row {
-        grid-template-columns: 1fr;
-    }
-
-    .filters {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-@media print {
-    body { background: white; }
-    .dashboard-container { max-width: none; }
-    .filters { display: none; }
-    .chart-container { break-inside: avoid; }
-    .kpi-card { border: 1px solid #dee2e6; box-shadow: none; }
-}
+# Bootstrap utility classes (with dbc)
+dbc.Card(
+    dbc.CardBody([
+        html.H4("Revenue", className="card-title text-muted"),
+        html.H2("$1.2M", className="text-primary mb-0")
+    ]),
+    className="shadow-sm border-0"
+)
 ```
 
 ## Performance Considerations for Large Datasets
@@ -845,61 +813,101 @@ body {
 
 | Data Size | Approach |
 |---|---|
-| <1,000 rows | Embed directly in HTML. Full interactivity. |
-| 1,000 - 10,000 rows | Embed in HTML. May need to pre-aggregate for charts. |
-| 10,000 - 100,000 rows | Pre-aggregate server-side. Embed only aggregated data. |
-| >100,000 rows | Not suitable for client-side dashboard. Use a BI tool or paginate. |
+| <10,000 rows | Load full dataset. Use Polars for efficient processing. |
+| 10,000 - 100,000 rows | Load full dataset with lazy evaluation. Pre-aggregate for charts. |
+| 100,000 - 1M rows | Pre-aggregate before loading. Use sampling for detail tables. |
+| >1M rows | Use database queries with filters. Implement server-side pagination. |
 
 ### Pre-Aggregation Pattern
 
-Instead of embedding raw data and aggregating in the browser:
+For large datasets, pre-aggregate before creating visualizations:
 
-```javascript
-// DON'T: embed 50,000 raw rows
-const RAW_DATA = [/* 50,000 rows */];
+```python
+# DON'T: Load 500,000 raw rows into memory
+df = pl.read_csv('large_file.csv')  # Slow and memory-intensive
 
-// DO: pre-aggregate before embedding
-const CHART_DATA = {
-    monthly_revenue: [
-        { month: '2024-01', revenue: 150000, orders: 1200 },
-        { month: '2024-02', revenue: 165000, orders: 1350 },
-        // ... 12 rows instead of 50,000
-    ],
-    top_products: [
-        { product: 'Widget A', revenue: 45000 },
-        // ... 10 rows
-    ],
-    kpis: {
-        total_revenue: 1980000,
-        total_orders: 15600,
-        avg_order_value: 127,
-    }
-};
+# DO: Use lazy evaluation and pre-aggregate
+df_agg = (
+    pl.scan_csv('large_file.csv')
+    .group_by('month', 'category')
+    .agg([
+        pl.col('revenue').sum().alias('total_revenue'),
+        pl.col('order_id').count().alias('order_count')
+    ])
+    .collect()  # Only collect aggregated data
+)
+
+# Or for time series: downsample high-frequency data
+df_daily = (
+    pl.scan_csv('minute_level_data.csv')
+    .group_by_dynamic('timestamp', every='1d')
+    .agg([
+        pl.col('value').mean().alias('avg_value'),
+        pl.col('value').max().alias('max_value')
+    ])
+    .collect()
+)
 ```
 
 ### Chart Performance
 
-- Limit line charts to <500 data points per series (downsample if needed)
-- Limit bar charts to <50 categories
-- For scatter plots, cap at 1,000 points (use sampling for larger datasets)
-- Disable animations for dashboards with many charts: `animation: false` in Chart.js options
-- Use `Chart.update('none')` instead of `Chart.update()` for filter-triggered updates
+- **Line charts**: Limit to <500 data points per series (use downsampling for larger datasets)
+- **Bar charts**: Limit to <50 categories (show top N, aggregate rest as "Other")
+- **Scatter plots**: Cap at 1,000 points (use sampling: `df.sample(n=1000)`)
+- **Tables**: Use pagination (`page_size=50`) for datasets >100 rows
+- **Callbacks**: Avoid expensive computations in callbacks; pre-compute where possible
 
-### DOM Performance
+```python
+# Efficient downsampling for charts
+def downsample_timeseries(df, max_points=500):
+    \"\"\"Reduce data points while preserving visual fidelity\"\"\"
+    if len(df) <= max_points:
+        return df
+    
+    # Calculate interval to achieve target points
+    interval = len(df) // max_points
+    return df.take_every(interval)
+```
 
-- Limit data tables to 100-200 visible rows. Add pagination for more.
-- Use `requestAnimationFrame` for coordinated chart updates
-- Avoid rebuilding the entire DOM on filter change -- update only changed elements
+### Callback Performance
 
-```javascript
-// Efficient table pagination
-function renderTablePage(data, page, pageSize = 50) {
-    const start = page * pageSize;
-    const end = Math.min(start + pageSize, data.length);
-    const pageData = data.slice(start, end);
-    // Render only pageData
-    // Show pagination controls: "Showing 1-50 of 2,340"
-}
+```python
+# DON'T: Expensive computation in callback
+@app.callback(Output('chart', 'figure'), [Input('filter', 'value')])
+def update_chart(filter_val):
+    # Reads entire file on every filter change - SLOW
+    df = pl.read_csv('large_file.csv')
+    filtered = df.filter(pl.col('category') == filter_val)
+    return create_chart(filtered)
+
+# DO: Load data globally, filter in callback
+# At top of file (outside callbacks)
+df = pl.read_csv('data.csv')  # Load once
+
+@app.callback(Output('chart', 'figure'), [Input('filter', 'value')])
+def update_chart(filter_val):
+    # Fast filtering on in-memory data
+    filtered = df.filter(pl.col('category') == filter_val)
+    return create_chart(filtered)
+```
+
+### Deployment Considerations
+
+For production deployment:
+
+```python
+# Development server (DO NOT use in production)
+if __name__ == '__main__':
+    app.run_server(debug=True, host='localhost', port=8050)
+
+# Production server (use Gunicorn)
+# Install: uv pip install gunicorn
+# Run: gunicorn app:server --bind 0.0.0.0:8080 --workers 4
+server = app.server  # Expose the Flask server for WSGI
+
+# Or use waitress (Windows-compatible)
+# Install: uv pip install waitress
+# Run: waitress-serve --port=8080 app:server
 ```
 
 ## Examples
@@ -918,7 +926,30 @@ function renderTablePage(data, page, pageSize = 50) {
 
 ## Tips
 
-- Dashboards are fully self-contained HTML files -- share them with anyone by sending the file
-- For real-time dashboards, consider connecting to a BI tool instead. These dashboards are point-in-time snapshots
-- Request "dark mode" or "presentation mode" for different styling
-- You can request a specific color scheme to match your brand
+- **Development**: Dash apps run on `localhost:8050` during development with `debug=True` for hot-reloading
+- **Production**: Deploy with Gunicorn (Linux/Mac) or Waitress (Windows) for production workloads
+- **Static Export**: Add a "Download Report" button using `dcc.Download` to export static HTML snapshots
+- **Real-time Updates**: Use `dcc.Interval` component for auto-refreshing dashboards (e.g., monitoring)
+- **Theming**: Request specific Bootstrap themes (FLATLY, DARKLY, SOLAR, etc.) for different styling
+- **Authentication**: Add user authentication with `dash-auth` for restricted access dashboards
+- **Sharing**: Deploy to cloud platforms (Heroku, AWS, Azure) or share via URL for team access
+- **Custom Components**: Extend with custom React components when needed for specialized visualizations
+
+## Package Installation
+
+Install required packages using `uv`:
+
+```bash
+uv pip install dash>=2.14.0
+uv pip install dash-bootstrap-components>=1.5.0
+uv pip install polars>=0.20.0
+uv pip install plotly>=5.18.0
+
+# For production deployment
+uv pip install gunicorn  # Linux/Mac
+# OR
+uv pip install waitress  # Windows
+
+# Optional: authentication
+uv pip install dash-auth
+```

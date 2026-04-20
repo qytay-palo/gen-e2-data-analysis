@@ -2,24 +2,26 @@
 
 This project uses the following analytics platforms and tools. When providing code examples, recommendations, or technical guidance, prioritize these technologies:
 
-## Current Project Configuration (March 2026)
+## Current Project Configuration (April 2026)
 
-**Selected Platform**: HEALIX/Databricks (Large-scale data processing >1GB)
+**Selected Platform**: Hybrid / local-first, with HEALIX/Databricks preferred for scale and MCDR/CDSW retained as fallback
 
-**Primary Data Sources**: Kaggle datasets + Singapore health data
+**Primary Data Sources**: MOH SharePoint workforce datasets
 
-**Project Focus**: Singapore health trends analysis for policy-making decisions
+**Project Focus**: Workforce trend extraction and five-year forecasting
 
 ### Analytics Platforms
 
-**HEALIX (GCC Cloud Environment)** ✅ *Selected for this project*
+**HEALIX (GCC Cloud Environment)** ✅ *Preferred scaled target*
+
 - Platform: Databricks
 - Languages: Python (primary), R (secondary)
 - Available tools: STATA for statistical analysis
 - Scale: Optimized for large datasets (>1GB)
 - Deployment: Cloud-native workflows
 
-**MCDR (On-Premise Compute Cluster)** *(Available as fallback)*
+**MCDR (On-Premise Compute Cluster)** ✅ *Retained as fallback target*
+
 - Platform: Cloudera Data Science Workbench (CDSW)
   - Languages: R and Python
   - Analytics Engine: Apache Spark
@@ -29,7 +31,7 @@ This project uses the following analytics platforms and tools. When providing co
 
 ### Tool Specifications
 
-- **Databricks**: Preferred for new analytics workflows in the cloud environment
+- **Databricks**: Preferred for scaled cloud execution once local logic is validated
 - **CDSW**: Primary platform for on-premise Spark-based analytics with R/Python
 - **HUE**: SQL interface for ad-hoc queries and data exploration
 - **STATA**: Statistical analysis tool, especially for economics and econometrics research
@@ -64,12 +66,12 @@ df = pl.scan_csv("data.csv").collect()  # Lazy loading for large files
 
 ### Data Acquisition
 
-**Kaggle API** - Primary external data source
+**Office365-REST-Python-Client** - Primary SharePoint integration library
 ```python
-from kaggle.api.kaggle_api_extended import KaggleApi
-api = KaggleApi()
-api.authenticate()
+from office365.sharepoint.client_context import ClientContext
 ```
+
+**MSAL** - Optional Microsoft Graph authentication support
 
 ### Logging & Monitoring
 
@@ -107,14 +109,22 @@ uv pip freeze > requirements.txt
 When generating code or providing technical solutions for this project:
 1. **ALWAYS use Polars** for data processing (NOT pandas unless justified)
 2. **Use Python 3.9+** as primary language (Databricks runtime compatible)
-3. **Use Kaggle API** for external dataset acquisition
+3. **Use the shared SharePoint connector** for workforce dataset acquisition
 4. **Use `uv`** for package management, NOT pip or conda
 5. **Use Loguru** for logging, never print() in production code
 6. **Use type hints** and docstrings for all functions
 7. **Write unit tests** with pytest for critical logic
-8. **Save intermediate results** with timestamps in `data/3_interim/`
-9. **Never modify raw data** - keep `data/1_raw/` immutable
+8. **Save intermediate results** with timestamps in `artifacts/ps-*/data/3_interim/`
+9. **Never modify raw data** - keep `shared/data/1_raw/` immutable
 10. **Use lazy evaluation** (`scan_csv`, `scan_parquet`) for large files (>100MB)
+
+### Current initialization decisions
+
+- Build local-first code that remains compatible with Databricks deployment.
+- Keep the same code path portable enough for CDSW execution when Databricks is not the immediate target.
+- Keep all reusable ingestion code under `shared/src/`.
+- Use YAML configuration for both shared and problem-specific settings.
+- Start with CSV ingestion from SharePoint and add Spark-specific paths only when scale requires it.
 
 ### Code Quality Standards
 
