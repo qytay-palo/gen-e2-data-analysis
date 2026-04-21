@@ -1,0 +1,14 @@
+databricks:
+  runtime: "13.3.x-scala2.12"
+  python_version: "3.9"
+  workspace_path: "/Workspace/Users/moh-analytics/"
+  dbfs_mount: "/dbfs/mnt/moh-data/"
+  use_databricks_connect: true
+  spark_conf:
+    spark.sql.adaptive.enabled: "true"
+    spark.sql.adaptive.coalescePartitions.enabled: "true"
+
+storage:
+  raw_data_path: "/dbfs/mnt/moh-data/1_raw/"
+  processed_data_path: "/dbfs/mnt/moh-data/4_processed/"
+  model_artifacts_path: "/dbfs/mnt/moh-data/models/"

@@ -1,6 +1,6 @@
 # Gen-E2 Workforce Trends Analysis
 
-This repository is initialized for a Gen-E2 data analysis project focused on extracting workforce trends and producing five-year forward-looking forecasts for Ministry of Health stakeholders.
+This repository is initialized for a Gen-E2 data analysis project focused on extracting workforce trends and producing a practical five-year forecasting baseline for the Ministry of Health team lead.
 
 ## Project overview
 
@@ -9,11 +9,13 @@ The current delivery focus is:
 - analyze historical healthcare workforce trends
 - build reusable shared ingestion and validation utilities
 - prepare a self-contained problem package for workforce trend forecasting
-- stay compatible with HEALIX/Databricks while remaining runnable locally
+- stay local-first while remaining compatible with HEALIX/Databricks and MCDR/CDSW
 
-## Selected platform
+## Technical environment
 
-- Primary platform: HEALIX/Databricks
+- Current decision: hybrid / local-first
+- Preferred scaled target: HEALIX/Databricks
+- Secondary fallback target: MCDR/CDSW
 - Local development: `uv` + `.venv`
 - Primary data processing library: Polars
 - Primary external source: MOH SharePoint / DataDojo workforce folder
@@ -59,6 +61,12 @@ The current delivery focus is:
 - `artifacts/ps-001-workforce-trends-forecasting/` contains the self-contained analysis package for the current problem statement.
 - Raw source data should be written to `shared/data/1_raw/` and not modified in place.
 - Processed outputs, forecasts, and stakeholder-ready results should live inside the relevant problem package.
+
+## Stakeholders and success criteria
+
+- Primary stakeholder: team lead
+- Decision supported: interpretation of historical workforce trends
+- Good-enough first delivery: a transparent five-year forecast baseline plus reusable outputs for later reporting
 
 ## Environment setup
 

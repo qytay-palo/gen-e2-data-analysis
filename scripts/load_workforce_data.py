@@ -26,7 +26,7 @@ from loguru import logger
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from shared.src.data_processing.sharepoint_connector import (
+from shared.src.data_processing.sharepoint_connector import (  # noqa: E402
     SharePointConnector,
     SharePointSettings,
 )
@@ -50,8 +50,8 @@ def validate_environment():
     required_vars = [
         "SHAREPOINT_SITE_URL",
         "SHAREPOINT_WORKFORCE_FOLDER",
-        "SHAREPOINT_USERNAME",
-        "SHAREPOINT_PASSWORD",
+        "SHAREPOINT_CLIENT_ID",
+        "SHAREPOINT_CLIENT_SECRET",
     ]
     missing_vars = [var for var in required_vars if not os.getenv(var)]
 
@@ -61,7 +61,7 @@ def validate_environment():
             f"Please ensure these are set in your .env file"
         )
 
-    logger.info("✓ Username/password SharePoint environment variables are set")
+    logger.info("✓ Client ID/secret SharePoint environment variables are set")
 
 
 def load_workforce_data(save_local: bool = True):
@@ -76,21 +76,20 @@ def load_workforce_data(save_local: bool = True):
     """
     # Get workforce folder from environment
     workforce_folder = os.getenv("SHAREPOINT_WORKFORCE_FOLDER")
-    username = os.getenv("SHAREPOINT_USERNAME")
-    password = os.getenv("SHAREPOINT_PASSWORD")
 
     settings = SharePointSettings(
         site_url=os.getenv("SHAREPOINT_SITE_URL", ""),
         workforce_folder=workforce_folder or "",
-        username=username,
-        password=password,
+        client_id=os.getenv("SHAREPOINT_CLIENT_ID"),
+        client_secret=os.getenv("SHAREPOINT_CLIENT_SECRET"),
+        tenant_id=os.getenv("SHAREPOINT_TENANT_ID"),
     )
 
-    # Initialize connector with username/password auth only
+    # Initialize connector with app (client ID/secret) authentication
     connector = SharePointConnector(settings=settings)
 
     logger.info(f"Loading workforce data from: {workforce_folder}")
-    logger.info("Using SharePoint username/password authentication for this load")
+    logger.info("Using SharePoint client ID/secret authentication for this load")
     
     # Define workforce files
     workforce_files = [

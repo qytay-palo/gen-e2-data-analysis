@@ -237,3 +237,16 @@ kaggle.json
 # local editor and OS files
 .DS_Store
 .vscode/
+
+#notebooks
+#./shared/
+
+#/artifacts
+
+#/scripts
+
+#/shared
+
+pyproject.toml
+TODO.md
+uv.lock

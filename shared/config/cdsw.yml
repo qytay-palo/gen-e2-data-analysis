@@ -1,0 +1,10 @@
+cdsw:
+  platform: Cloudera Data Science Workbench
+  python_version: "3.9"
+  hdfs_root: "/user/moh-analytics/"
+  spark_enabled: true
+  hue_enabled: true
+
+storage:
+  raw_data_path: "/user/moh-analytics/raw/"
+  processed_data_path: "/user/moh-analytics/processed/"
