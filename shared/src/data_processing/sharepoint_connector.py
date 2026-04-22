@@ -68,18 +68,18 @@ class SharePointConnector:
         self._context = self._build_context()
 
     def _build_context(self) -> ClientContext:
-        if self.settings.username and self.settings.password:
-            logger.info("Using username/password SharePoint authentication")
+        if self.settings.client_id and self.settings.client_secret:
+            logger.info("Using client credential SharePoint authentication")
             return ClientContext(self.settings.site_url).with_credentials(
-                UserCredential(self.settings.username, self.settings.password)
+                ClientCredential(
+                    self.settings.client_id,
+                    self.settings.client_secret,
+                )
             )
 
-        logger.info("Using client credential SharePoint authentication")
+        logger.info("Using username/password SharePoint authentication")
         return ClientContext(self.settings.site_url).with_credentials(
-            ClientCredential(
-                self.settings.client_id or "",
-                self.settings.client_secret or "",
-            )
+            UserCredential(self.settings.username or "", self.settings.password or "")
         )
 
     @staticmethod
@@ -104,29 +104,64 @@ class SharePointConnector:
     def extract_file(self, file_path: str) -> pl.DataFrame:
         """Download a CSV file from SharePoint into a Polars DataFrame."""
         target_path = self._normalize_server_relative_url(file_path)
-        response = File.open_binary(self._context, target_path)
-        dataframe = pl.read_csv(io.BytesIO(response.content))
+        file_bytes = self._download_file_bytes(target_path)
+        dataframe = pl.read_csv(io.BytesIO(file_bytes))
         logger.info(
             f"Loaded {Path(target_path).name} with {dataframe.height} rows "
             f"and {dataframe.width} columns"
         )
         return dataframe
 
+    def _download_file_bytes(self, file_path: str) -> bytes:
+        """Download raw file bytes from SharePoint without rewriting the content."""
+        target_path = self._normalize_server_relative_url(file_path)
+        response = File.open_binary(self._context, target_path)
+        return response.content
+
     def extract_folder(
         self,
         folder_path: str | None = None,
         file_pattern: str = "*.csv",
-    ) -> Dict[str, pl.DataFrame]:
-        """Download all matching files from a SharePoint folder."""
+        output_dir: Path | None = None,
+        allowed_filenames: List[str] | None = None,
+    ) -> Dict[str, Any]:
+        """Download all matching files from a SharePoint folder.
+
+        When ``output_dir`` is provided, raw file bytes are written unchanged to disk and
+        the return value maps file stems to saved paths. Otherwise, files are returned as
+        in-memory Polars DataFrames.
+        """
         files = self.list_files(folder_path)
-        extracted: Dict[str, pl.DataFrame] = {}
+        extracted: Dict[str, Any] = {}
+        allowed = set(allowed_filenames or [])
+
+        if output_dir is not None:
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         for file_info in files:
             filename = file_info["name"]
             if not fnmatch.fnmatch(filename, file_pattern):
                 continue
+            if allowed and filename not in allowed:
+                continue
             key = Path(filename).stem
-            extracted[key] = self.extract_file(file_info["server_relative_url"])
+            file_path = file_info["server_relative_url"]
+
+            if output_dir is None:
+                extracted[key] = self.extract_file(file_path)
+                continue
+
+            destination = output_dir / filename
+            if destination.exists():
+                logger.info(
+                    f"Raw file already exists at {destination}; skipping overwrite"
+                )
+                extracted[key] = destination
+                continue
+
+            destination.write_bytes(self._download_file_bytes(file_path))
+            logger.info(f"Saved raw SharePoint file to {destination}")
+            extracted[key] = destination
 
         return extracted
 

@@ -1,0 +1,18 @@
+{
+  "agent": "dashboard-visualization",
+  "ps": "ps-002-workforce-trends-dashboard",
+  "status": "success",
+  "timestamp": "2026-04-23",
+  "outputs": [
+    "artifacts/ps-002-workforce-trends-dashboard/config/config.yml",
+    "artifacts/ps-002-workforce-trends-dashboard/reports/dashboards/workforce_trends_dashboard.py",
+    "artifacts/ps-002-workforce-trends-dashboard/reports/dashboards/tabs/__init__.py",
+    "artifacts/ps-002-workforce-trends-dashboard/reports/dashboards/tabs/headcount_over_time.py",
+    "artifacts/ps-002-workforce-trends-dashboard/reports/dashboards/tabs/sector_breakdown.py",
+    "artifacts/ps-002-workforce-trends-dashboard/tests/integration/test_smoke.py"
+  ],
+  "dashboard_entry": "artifacts/ps-002-workforce-trends-dashboard/reports/dashboards/workforce_trends_dashboard.py",
+  "http_200_confirmed": true,
+  "smoke_test": "pass",
+  "next_agent": "narrative-compiler"
+}

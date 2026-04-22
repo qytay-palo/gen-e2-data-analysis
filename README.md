@@ -1,31 +1,48 @@
 # Gen-E2 Workforce Trends Analysis
 
-This repository is initialized for a Gen-E2 data analysis project focused on extracting workforce trends and producing a practical five-year forecasting baseline for the Ministry of Health team lead.
+MOH workforce planners need to know whether current training and recruitment pipelines will produce enough doctors, nurses, pharmacists, and physiotherapists to meet projected demand over the next five years. This repository delivers a reproducible data foundation, interactive trend dashboards, and profession-level 5-year forecasts.
 
 ## Project overview
 
-The current delivery focus is:
+**Business decision supported:** Headcount planning for MOH doctors, nurses, pharmacists, and physiotherapists across public and private sectors through 2030.
 
-- analyze historical healthcare workforce trends
-- build reusable shared ingestion and validation utilities
-- prepare a self-contained problem package for workforce trend forecasting
-- stay local-first while remaining compatible with HEALIX/Databricks and MCDR/CDSW
+**What happens without this:** Hiring and training decisions are made on intuition and spreadsheets, risking either over-supply (budget waste) or under-supply (patient care gaps).
+
+**Success criteria:**
+1. Trusted, reproducible cleaned dataset from all four profession files with a documented audit trail
+2. Interactive self-service dashboard — historical trends by profession and sector with no manual steps
+3. Profession-level 5-year forecasts with MAPE < 10% on held-out validation period
+4. Full pipeline re-runs from scratch in under 30 minutes on source file refresh
 
 ## Technical environment
 
-- Current decision: hybrid / local-first
-- Preferred scaled target: HEALIX/Databricks
-- Secondary fallback target: MCDR/CDSW
-- Local development: `uv` + `.venv`
-- Primary data processing library: Polars
-- Primary external source: MOH SharePoint / DataDojo workforce folder
+- Platform: Local-first (Python 3.11 + `.venv`); production target HEALIX/Databricks
+- Fallback: MCDR/CDSW
+- Package manager: `uv`
+- Data processing: Polars (mandatory)
+- Dashboard: Plotly Dash
+- Primary source: MOH SharePoint / DataDojo workforce folder
+
+## Problem statements
+
+| PS | Name | Purpose | Demo role |
+|----|------|---------|-----------|
+| PS-001 | Workforce Data Foundation | Extract, validate, clean → `shared/data/4_processed/workforce_clean.parquet` | Prerequisite |
+| PS-002 | Workforce Trends Dashboard | Dash app with 2 pre-built tabs: Headcount Over Time + Sector Breakdown | Demo 1 opening state |
+| PS-003 | Workforce Growth Rate Analysis | Computes YoY growth + CAGR; adds Growth Trends tab live during demo | Demo 1 live story |
+| PS-004 | Headcount Forecasting Models | Linear baseline + ARIMA per profession; champion registry + 5-year forecast table | Demo 2 pre-executed |
+| PS-005 | Forecast Dashboard Integration | Adds 5-Year Forecast tab by reading PS-004 outputs — no retraining | Demo 2 live story |
 
 ## Repository structure
 
 ```text
 .
 ├── artifacts/
-│   └── ps-001-workforce-trends-forecasting/
+│   ├── ps-001-workforce-data-foundation/
+│   ├── ps-002-workforce-trends-dashboard/
+│   ├── ps-003-workforce-growth-analysis/
+│   ├── ps-004-headcount-forecasting/
+│   └── ps-005-forecast-dashboard-integration/
 │       ├── notebooks/
 │       ├── src/
 │       ├── data/
@@ -43,63 +60,58 @@ The current delivery focus is:
 │   ├── project-context/
 │   └── data_dictionary/
 ├── shared/
-│   ├── src/
+│   ├── src/           ← reusable connectors, ETL, models, viz
 │   ├── data/
+│   │   ├── 1_raw/     ← immutable source downloads
+│   │   ├── 2_external/
+│   │   ├── 4_processed/ ← shared clean outputs (e.g. workforce_clean.parquet)
+│   │   └── schemas/
 │   ├── sql/
 │   ├── tests/
 │   └── config/
 ├── scripts/
-├── logs/
 ├── requirements.txt
-├── pyproject.toml
 └── TODO.md
 ```
 
 ## Shared vs problem-specific layout
 
 - `shared/` contains reusable connectors, config, tests, schemas, and immutable raw data.
-- `artifacts/ps-001-workforce-trends-forecasting/` contains the self-contained analysis package for the current problem statement.
-- Raw source data should be written to `shared/data/1_raw/` and not modified in place.
-- Processed outputs, forecasts, and stakeholder-ready results should live inside the relevant problem package.
+- Each `artifacts/ps-*/` folder is a self-contained analysis package — notebooks, src, data, results, reports, models, config, scripts, tests, logs.
+- Raw source data is written to `shared/data/1_raw/` and never modified in place.
+- The canonical clean dataset lives at `shared/data/4_processed/workforce_clean.parquet`.
+- Processed outputs and stakeholder-ready results live inside the relevant problem package.
 
-## Stakeholders and success criteria
+## Stakeholders
 
-- Primary stakeholder: team lead
-- Decision supported: interpretation of historical workforce trends
-- Good-enough first delivery: a transparent five-year forecast baseline plus reusable outputs for later reporting
+- **Primary:** Team Lead — reviews outputs, approves forecasts for planning use
+- **End consumers:** MOH workforce planners — self-service dashboard users
 
 ## Environment setup
 
-1. Create the virtual environment:
-   - `uv venv .venv`
-2. Activate it:
-   - `source .venv/bin/activate`
-3. Install dependencies:
-   - `uv pip install -r requirements.txt`
-4. Optional dev tooling:
-   - `uv pip install -e .`
+```bash
+uv venv .venv
+source .venv/bin/activate    # macOS/Linux
+uv pip install -r requirements.txt
+```
 
 ## Data access
 
-The project expects SharePoint credentials in `.env`.
-Use `.env.example` as the template.
+Copy `.env.example` to `.env` and fill in SharePoint credentials.
 
-Primary source folder:
-
-- `/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce/`
-
-## Main workflows
-
-- Project navigation: see `docs/index.md`
-- Shared extraction script: `scripts/load_workforce_data.py`
-- Problem package orchestrator: `artifacts/ps-001-workforce-trends-forecasting/scripts/run_pipeline.py`
+```
+SHAREPOINT_SITE_URL=https://<tenant>.sharepoint.com/sites/DataDojo
+SHAREPOINT_WORKFORCE_FOLDER=/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce
+SHAREPOINT_USERNAME=...
+SHAREPOINT_PASSWORD=...
+```
 
 ## Code quality
 
-- formatting and linting: Ruff
-- testing: Pytest
-- logging: Loguru
-- configuration: YAML + environment variables
+- Formatting / linting: Ruff
+- Testing: Pytest (`>80%` coverage target for critical modules)
+- Logging: Loguru (never `print()` in production code)
+- Configuration: YAML + `.env` environment variables
 
 ## Notes
 

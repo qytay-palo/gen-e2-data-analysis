@@ -1,0 +1,15 @@
+{
+  "agent": "data-validation",
+  "ps": "ps-001-workforce-data-foundation",
+  "status": "success",
+  "timestamp": "2026-04-22",
+  "outputs": [
+    "shared/src/data_processing/workforce_validation.py",
+    "artifacts/ps-001-workforce-data-foundation/scripts/validate_workforce_data.py",
+    "artifacts/ps-001-workforce-data-foundation/notebooks/02_validate_workforce_data.ipynb",
+    "artifacts/ps-001-workforce-data-foundation/results/tables/data_quality_report.yml"
+  ],
+  "quality_report_path": "artifacts/ps-001-workforce-data-foundation/results/tables/data_quality_report.yml",
+  "schema_validation": "pass",
+  "next_agent": "data-cleaning"
+}

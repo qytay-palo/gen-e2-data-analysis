@@ -1,0 +1,11 @@
+{
+  "agent": "narrative-compiler",
+  "ps": "ps-001-workforce-data-foundation",
+  "status": "success",
+  "timestamp": "2026-04-23",
+  "outputs": [
+    "artifacts/ps-001-workforce-data-foundation/results/narrative.md"
+  ],
+  "narrative_path": "artifacts/ps-001-workforce-data-foundation/results/narrative.md",
+  "next_agent": "delivery-report"
+}

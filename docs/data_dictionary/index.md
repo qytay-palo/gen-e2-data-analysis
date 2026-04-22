@@ -10,14 +10,20 @@ This index tracks the datasets currently documented for the Gen-E2 workforce ana
 
 ```text
 SharePoint / DataDojo
-  -> shared/data/1_raw/workforce/
-  -> artifacts/ps-001-workforce-trends-forecasting/data/3_interim/
-  -> artifacts/ps-001-workforce-trends-forecasting/data/4_processed/
-  -> artifacts/ps-001-workforce-trends-forecasting/results/
+  -> shared/data/1_raw/workforce/           (immutable raw CSVs — PS-001)
+  -> shared/data/4_processed/
+       workforce_clean.parquet              (canonical clean dataset — PS-001 output)
+  -> artifacts/ps-002-workforce-trends-dashboard/   (dashboard reads parquet)
+  -> artifacts/ps-003-workforce-growth-analysis/    (growth rates read parquet)
+  -> artifacts/ps-004-headcount-forecasting/
+       results/forecasts/forecast_table.csv
+       results/metrics/model_registry.csv   (PS-004 outputs)
+  -> artifacts/ps-005-forecast-dashboard-integration/  (reads PS-004 outputs)
 ```
 
 ## Quality expectations
 
-- preserve raw files without in-place edits
-- validate required columns and year ranges during ingestion
-- document limitations and missing values before modeling
+- Preserve raw files without in-place edits
+- Validate required columns (`year`, `sector`, `count`) and year ranges during ingestion
+- Document all exclusions, nulls, and imputation decisions in `workforce_cleaning_audit.yml`
+- Final clean dataset must pass schema validation before any downstream PS consumes it

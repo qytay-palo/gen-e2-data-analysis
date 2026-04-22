@@ -11,9 +11,22 @@
 - [Index](data_dictionary/index.md)
 - [Workforce Data Dictionary](data_dictionary/01-workforce-sharepoint.md)
 
-## Current Problem Package
+## Problem Statements
 
-- [PS-001 Workforce Trends Forecasting](../artifacts/ps-001-workforce-trends-forecasting/README.md)
+- [Index](objectives/problem_statements/index.md)
+- [PS-001 — Workforce Data Foundation](objectives/problem_statements/ps-001-workforce-data-foundation.md)
+- [PS-002 — Workforce Trends Dashboard](objectives/problem_statements/ps-002-workforce-trends-dashboard.md)
+- [PS-003 — Workforce Growth Rate Analysis](objectives/problem_statements/ps-003-workforce-growth-analysis.md)
+- [PS-004 — Headcount Forecasting Models](objectives/problem_statements/ps-004-headcount-forecasting.md)
+- [PS-005 — Forecast Dashboard Integration](objectives/problem_statements/ps-005-forecast-dashboard-integration.md)
+
+## Artifact Packages
+
+- [PS-001 artifact](../artifacts/ps-001-workforce-data-foundation/)
+- [PS-002 artifact](../artifacts/ps-002-workforce-trends-dashboard/)
+- [PS-003 artifact](../artifacts/ps-003-workforce-growth-analysis/)
+- [PS-004 artifact](../artifacts/ps-004-headcount-forecasting/)
+- [PS-005 artifact](../artifacts/ps-005-forecast-dashboard-integration/)
 
 ## Shared Infrastructure
 
@@ -30,17 +43,19 @@
 
 - Located in: `docs/domain-knowledge/`
 
-## Project Assets
-
-- [Project README](../README.md)
-- [TODO](../TODO.md)
-
 ---
 
 ## Workflow
 
 ```text
-/0-start-gen-e2-data-analysis-project   ← You are here ✅
-/1-planning-stage
-/2-execution-stage <ps-id>
+/0-start-gen-e2-data-analysis-project   ← Completed ✅
+/1-planning-stage                        ← Next: generate user stories per PS
+/2-execution-stage <ps-id>               ← Execute each PS in order
 ```
+
+## Demo map
+
+| Demo | Pre-executed | Live story |
+|------|-------------|------------|
+| Demo 1 — Live Analysis | PS-001, PS-002 | PS-003 |
+| Demo 2 — Forecast | PS-001 → PS-004 | PS-005 |

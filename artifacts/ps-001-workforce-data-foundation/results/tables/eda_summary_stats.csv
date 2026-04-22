@@ -1,0 +1,5 @@
+profession,year_min,year_max,count_min,count_max,count_mean,count_total
+doctors,2006,2019,193,5166,1910.29,149003
+nurses,2006,2019,29,21373,3725.85,469457
+pharmacists,2006,2019,133,1616,770.21,32349
+physiotherapists,2014,2019,2,960,579.83,10437

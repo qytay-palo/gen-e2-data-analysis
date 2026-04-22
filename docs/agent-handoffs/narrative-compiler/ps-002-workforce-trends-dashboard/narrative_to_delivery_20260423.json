@@ -1,0 +1,11 @@
+{
+  "agent": "narrative-compiler",
+  "ps": "ps-002-workforce-trends-dashboard",
+  "status": "success",
+  "timestamp": "2026-04-23",
+  "outputs": [
+    "artifacts/ps-002-workforce-trends-dashboard/results/narrative.md"
+  ],
+  "narrative_path": "artifacts/ps-002-workforce-trends-dashboard/results/narrative.md",
+  "next_agent": "delivery-report"
+}

@@ -1,0 +1,23 @@
+{
+  "agent": "data-cleaning",
+  "ps": "ps-001-workforce-data-foundation",
+  "status": "success",
+  "timestamp": "2026-04-22",
+  "outputs": [
+    "shared/src/data_processing/workforce_cleaning.py",
+    "shared/tests/unit/test_workforce_cleaning.py",
+    "artifacts/ps-001-workforce-data-foundation/scripts/clean_workforce_data.py",
+    "artifacts/ps-001-workforce-data-foundation/notebooks/03_clean_workforce_data.ipynb",
+    "shared/data/4_processed/workforce_clean.parquet",
+    "artifacts/ps-001-workforce-data-foundation/results/tables/workforce_cleaning_audit.yml"
+  ],
+  "clean_parquet_path": "shared/data/4_processed/workforce_clean.parquet",
+  "clean_parquet_schema": {
+    "year": "Int32",
+    "sector": "Categorical",
+    "count": "Int32",
+    "profession": "Categorical"
+  },
+  "unit_tests": "pass",
+  "next_agent": "exploratory-analysis"
+}

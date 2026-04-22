@@ -120,11 +120,14 @@ When generating code or providing technical solutions for this project:
 
 ### Current initialization decisions
 
-- Build local-first code that remains compatible with Databricks deployment.
-- Keep the same code path portable enough for CDSW execution when Databricks is not the immediate target.
+- **Platform:** Local-first, Python 3.11 in `.venv`. Production target is HEALIX/Databricks; MCDR/CDSW retained as fallback.
+- **Data volume:** Small (four CSV files, ~thousands of rows each). No Spark or distributed processing required. Polars lazy evaluation is sufficient. Pipeline runtime target: under 5 minutes locally.
+- **Dashboard:** Plotly Dash for all interactive tabs (PS-002, PS-003, PS-005).
+- **Forecasting:** statsmodels ARIMA + scikit-learn linear baseline (PS-004). Retraining not required at dashboard integration time (PS-005).
+- **Shared clean dataset contract:** `shared/data/4_processed/workforce_clean.parquet` — written by PS-001, read by all downstream PSes.
 - Keep all reusable ingestion code under `shared/src/`.
 - Use YAML configuration for both shared and problem-specific settings.
-- Start with CSV ingestion from SharePoint and add Spark-specific paths only when scale requires it.
+- Start with CSV ingestion from SharePoint; add Spark-specific paths only when scale requires it.
 
 ### Code Quality Standards
 

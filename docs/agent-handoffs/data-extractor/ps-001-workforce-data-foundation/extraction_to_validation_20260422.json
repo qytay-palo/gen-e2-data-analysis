@@ -1,0 +1,23 @@
+{
+  "agent": "data-extractor",
+  "ps": "ps-001-workforce-data-foundation",
+  "status": "success",
+  "timestamp": "2026-04-22",
+  "outputs": [
+    "shared/data/1_raw/workforce/doctors.csv",
+    "shared/data/1_raw/workforce/nurses.csv",
+    "shared/data/1_raw/workforce/pharmacists.csv",
+    "shared/data/1_raw/workforce/physiotherapists.csv",
+    "artifacts/ps-001-workforce-data-foundation/scripts/extract_workforce_data.py",
+    "artifacts/ps-001-workforce-data-foundation/notebooks/01_extract_workforce_data.ipynb",
+    "artifacts/ps-001-workforce-data-foundation/logs/etl/"
+  ],
+  "raw_data_path": "shared/data/1_raw/workforce/",
+  "files_extracted": [
+    "doctors.csv",
+    "nurses.csv",
+    "pharmacists.csv",
+    "physiotherapists.csv"
+  ],
+  "next_agent": "data-validation"
+}

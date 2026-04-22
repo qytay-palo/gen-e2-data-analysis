@@ -1,0 +1,31 @@
+{
+  "agent": "exploratory-analysis",
+  "ps": "ps-001-workforce-data-foundation",
+  "status": "success",
+  "timestamp": "2026-04-23",
+  "outputs": [
+    "artifacts/ps-001-workforce-data-foundation/notebooks/04_exploratory_analysis.ipynb",
+    "artifacts/ps-001-workforce-data-foundation/reports/figures/headcount_by_profession_year.png",
+    "artifacts/ps-001-workforce-data-foundation/reports/figures/headcount_by_sector_year.png",
+    "artifacts/ps-001-workforce-data-foundation/results/tables/eda_summary_stats.csv",
+    "artifacts/ps-001-workforce-data-foundation/results/tables/eda_findings.yml"
+  ],
+  "key_findings": {
+    "top_growth_profession": "nurses",
+    "fastest_growing_sector": "Public",
+    "year_range": [
+      2006,
+      2019
+    ],
+    "peak_year": 2019,
+    "total_workforce_latest_year": 62484,
+    "largest_sector_latest_year": "Public",
+    "profession_rank_by_headcount": [
+      "nurses",
+      "doctors",
+      "pharmacists",
+      "physiotherapists"
+    ]
+  },
+  "next_agent": "narrative-compiler"
+}

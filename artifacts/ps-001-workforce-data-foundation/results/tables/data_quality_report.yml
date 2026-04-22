@@ -1,0 +1,189 @@
+agent: data-validation
+ps: ps-001-workforce-data-foundation
+timestamp: '2026-04-22'
+log_path: artifacts/ps-001-workforce-data-foundation/logs/etl/validation_20260422_230929.log
+files:
+  doctors:
+    file_name: doctors.csv
+    file_path: /Users/alfredtang/Documents/Projects/gen-e2/gen-e2-data-analysis/shared/data/1_raw/workforce/doctors.csv
+    row_count: 78
+    column_count: 4
+    source_columns:
+    - profession
+    - sector
+    - year
+    - headcount
+    matched_columns:
+      year: year
+      sector: sector
+      count: headcount
+    missing_required_columns: []
+    schema_validation: pass
+    null_counts:
+      year: 0
+      sector: 0
+      count: 0
+    null_rates:
+      year: 0.0
+      sector: 0.0
+      count: 0.0
+    duplicate_row_count: 0
+    negative_count_rows: 0
+    unique_year_values:
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    unique_sector_values:
+    - not in active practice
+    - private
+    - public
+    year_range:
+      min: 2006
+      max: 2019
+  nurses:
+    file_name: nurses.csv
+    file_path: /Users/alfredtang/Documents/Projects/gen-e2/gen-e2-data-analysis/shared/data/1_raw/workforce/nurses.csv
+    row_count: 126
+    column_count: 4
+    source_columns:
+    - profession
+    - sector
+    - year
+    - headcount
+    matched_columns:
+      year: year
+      sector: sector
+      count: headcount
+    missing_required_columns: []
+    schema_validation: pass
+    null_counts:
+      year: 0
+      sector: 0
+      count: 0
+    null_rates:
+      year: 0.0
+      sector: 0.0
+      count: 0.0
+    duplicate_row_count: 0
+    negative_count_rows: 0
+    unique_year_values:
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    unique_sector_values:
+    - not in active practice
+    - private
+    - public
+    year_range:
+      min: 2006
+      max: 2019
+  pharmacists:
+    file_name: pharmacists.csv
+    file_path: /Users/alfredtang/Documents/Projects/gen-e2/gen-e2-data-analysis/shared/data/1_raw/workforce/pharmacists.csv
+    row_count: 42
+    column_count: 4
+    source_columns:
+    - profession
+    - sector
+    - year
+    - headcount
+    matched_columns:
+      year: year
+      sector: sector
+      count: headcount
+    missing_required_columns: []
+    schema_validation: pass
+    null_counts:
+      year: 0
+      sector: 0
+      count: 0
+    null_rates:
+      year: 0.0
+      sector: 0.0
+      count: 0.0
+    duplicate_row_count: 0
+    negative_count_rows: 0
+    unique_year_values:
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    unique_sector_values:
+    - not in active practice
+    - private
+    - public
+    year_range:
+      min: 2006
+      max: 2019
+  physiotherapists:
+    file_name: physiotherapists.csv
+    file_path: /Users/alfredtang/Documents/Projects/gen-e2/gen-e2-data-analysis/shared/data/1_raw/workforce/physiotherapists.csv
+    row_count: 18
+    column_count: 4
+    source_columns:
+    - profession
+    - sector
+    - year
+    - headcount
+    matched_columns:
+      year: year
+      sector: sector
+      count: headcount
+    missing_required_columns: []
+    schema_validation: pass
+    null_counts:
+      year: 0
+      sector: 0
+      count: 0
+    null_rates:
+      year: 0.0
+      sector: 0.0
+      count: 0.0
+    duplicate_row_count: 0
+    negative_count_rows: 0
+    unique_year_values:
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    unique_sector_values:
+    - not in active practice
+    - private
+    - public
+    year_range:
+      min: 2014
+      max: 2019
