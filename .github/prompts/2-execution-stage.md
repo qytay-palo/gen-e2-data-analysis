@@ -26,7 +26,8 @@ Read the problem statement **before** running any agent. Use the answers to mark
 | Question | If YES → skip |
 |----------|--------------|
 | Does the **Inputs** section reference only pre-existing processed files (e.g. `4_processed/*.parquet` from a prior PS)? | Phases 1 and 2 (data-extractor, data-validation, data-cleaning) |
-| Does the PS contain **no** feature engineering user story (`{num}-*engineer*`)? | feature-engineering in Phase 3 |
+| Does the PS user stories directory contain no exploratory-analysis story (no file matching `*eda*` or `*exploratory*`)? | Phase 3a (exploratory-analysis) |
+| Does the PS contain **no** feature engineering user story (`{num}-*engineer*`)? | Phase 3b (feature-engineering) |
 | Does the **Outputs** section contain no written report, narrative, or findings document? | Phase 5 (narrative-compiler) |
 
 Apply skip decisions to the Master Trigger Checklist before proceeding.
@@ -70,7 +71,7 @@ Before declaring delivery complete, confirm that `runSubagent` was called for **
 |---|---|---|---|---|---|
 | 1 | `data-extractor` | 1 | Inputs are pre-existing processed files | ☐ / N/A | ☐ / N/A |
 | 2 | `data-validation` and `data-cleaning` | 2 | Inputs are pre-existing processed files | ☐ / N/A | ☐ / N/A |
-| 3a | `exploratory-analysis` | 3 | — | ☐ | ☐ |
+| 3a | `exploratory-analysis` | 3 | No EDA user story in PS user stories directory | ☐ / N/A | ☐ / N/A |
 | 3b | `feature-engineering` | 3 | No feature-engineering user story | ☐ / N/A | ☐ / N/A |
 | 4 | `model-forecasting` | 4 | No forecasting user story | ☐ / N/A | ☐ / N/A |
 | 5 | `narrative-compiler` | 5 | No written report/narrative in PS Outputs | ☐ / N/A | ☐ / N/A |
@@ -147,13 +148,11 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
 - Input: handoff JSON paths from data-cleaning and data-validation
 - If FAIL: re-run failing agent(s) with explicit fix instructions before advancing
 
-## Phase 3: exploratory-analysis and feature-engineering (Parallel)
+## Phase 3: exploratory-analysis and feature-engineering
 
-**exploratory-analysis**
+> **Decision gate**: Apply Pre-flight skip decisions before invoking any agent. If both 3a and 3b are N/A, skip Phase 3 entirely. If at least one applies, call only the applicable agent(s) — run them in parallel if both are needed.
 
-**TRIGGER NOW**: Call `runSubagent` in parallel for `exploratory-analysis` and `feature-engineering`. Wait for it to complete and pass code-quality before advancing to Phase 4.
-
-**exploratory-analysis**:
+**exploratory-analysis** *(skip if marked N/A in Pre-flight)*:
 - Subagent type: `exploratory-analysis`
 - Input:
   1. **Problem Statement**: `docs/objectives/problem_statements/ps-{num}-{name}.md`
