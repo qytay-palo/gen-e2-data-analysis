@@ -28,7 +28,7 @@ MOH workforce planners need to know whether current training and recruitment pip
 | PS | Name | Purpose | Demo role |
 |----|------|---------|-----------|
 | PS-001 | Workforce Data Foundation | Extract, validate, clean → `shared/data/4_processed/workforce_clean.parquet` | Prerequisite |
-| PS-002 | Workforce Trends Dashboard | Dash app with 2 pre-built tabs: Headcount Over Time + Sector Breakdown | Demo 1 opening state |
+| PS-002 | Workforce Trends Dashboard | Dash app with Headcount Over Time + Sector Breakdown tabs | Demo 1 opening state |
 | PS-003 | Workforce Growth Rate Analysis | Computes YoY growth + CAGR; adds Growth Trends tab live during demo | Demo 1 live story |
 | PS-004 | Headcount Forecasting Models | Linear baseline + ARIMA per profession; champion registry + 5-year forecast table | Demo 2 pre-executed |
 | PS-005 | Forecast Dashboard Integration | Adds 5-Year Forecast tab by reading PS-004 outputs — no retraining | Demo 2 live story |
@@ -105,6 +105,29 @@ SHAREPOINT_WORKFORCE_FOLDER=/sites/DataDojo/Shared Documents/Gen-e2/data-analysi
 SHAREPOINT_USERNAME=...
 SHAREPOINT_PASSWORD=...
 ```
+
+## Demo runbook
+
+### Demo 1 — "Live Growth Analysis"
+
+Pre-built state (this branch): PS-001 + PS-002 (Headcount Over Time + Sector Breakdown tabs).
+Live story: executor runs PS-003, which computes growth rates and injects the Growth Trends tab — browser refresh reveals it with no server restart.
+
+```bash
+# 1. Start the dashboard (keep this terminal open)
+source .venv/bin/activate
+python artifacts/ps-002-workforce-trends-dashboard/reports/dashboards/workforce_trends_dashboard.py
+
+# 2. Open browser → http://localhost:8050  (shows 2 tabs)
+
+# 3. In a second terminal — trigger the live story
+source .venv/bin/activate
+python artifacts/ps-003-workforce-growth-analysis/src/run_growth_analysis.py
+
+# 4. Dash hot-reloads (~3 s). Refresh browser → Growth Trends tab now visible.
+```
+
+> Demo 2 ("Live Forecast Integration") is on the `demo-add-forecast` branch.
 
 ## Code quality
 
