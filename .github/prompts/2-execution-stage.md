@@ -17,6 +17,22 @@ Before starting, gather the following context:
 - **Domain Knowledge**: `docs/domain-knowledge/` — **MUST review and apply relevant guides**
 - Create the following directory structure if it does not exist, and place all generated code artifacts in the correct locations:
 
+---
+
+## Pre-flight: Phase Skip Assessment
+
+Read the problem statement **before** running any agent. Use the answers to mark phases N/A in the Master Trigger Checklist — do not invoke agents for N/A phases.
+
+| Question | If YES → skip |
+|----------|--------------|
+| Does the **Inputs** section reference only pre-existing processed files (e.g. `4_processed/*.parquet` from a prior PS)? | Phases 1 and 2 (data-extractor, data-validation, data-cleaning) |
+| Does the PS contain **no** feature engineering user story (`{num}-*engineer*`)? | feature-engineering in Phase 3 |
+| Does **Demo Role** say "**live story**"? | Phase 5 (narrative-compiler) |
+
+Apply skip decisions to the Master Trigger Checklist before proceeding. This is the primary mechanism for reducing latency on demo-path PSes.
+
+---
+
 ### Directory Structure (MANDATORY)
 
 **✅ CORRECT - All relevant artifacts in ONE problem-statement directory:**
@@ -50,16 +66,18 @@ ALWAYS pass the problem statement path to all `runSubagent` calls as context, an
 
 Before declaring delivery complete, confirm that `runSubagent` was called for **every** agent below. Check off each one as it completes:
 
-| # | Agent | Phase | Triggered | Verified by code-quality |
-|---|---|---|---|---|
-| 1 | `data-extractor` | 1 | ☐ | ☐ |
-| 2 | `data-validation` and `data-cleaning` | 2 | ☐ | ☐ |
-| 3 | `exploratory-analysis` and `feature-engineer` | 3 | ☐ | ☐ |
-| 4 | `model-forecasting` | 4 (if applicable) | ☐ / N/A | ☐ / N/A |
-| 5 | `narrative-compiler` | 5 | ☐ / N/A | ☐ / N/A |
-| 6 | `dashboard-visualization` | 6 | ☐ | ☐ |
+| # | Agent | Phase | Skip condition (from Pre-flight) | Triggered | Verified |
+|---|---|---|---|---|---|
+| 1 | `data-extractor` | 1 | Inputs are pre-existing processed files | ☐ / N/A | ☐ / N/A |
+| 2 | `data-validation` and `data-cleaning` | 2 | Inputs are pre-existing processed files | ☐ / N/A | ☐ / N/A |
+| 3a | `exploratory-analysis` | 3 | — | ☐ | ☐ |
+| 3b | `feature-engineering` | 3 | No feature-engineering user story | ☐ / N/A | ☐ / N/A |
+| 4 | `model-forecasting` | 4 | No forecasting user story | ☐ / N/A | ☐ / N/A |
+| 5 | `narrative-compiler` | 5 | Demo Role is "live story" | ☐ / N/A | ☐ / N/A |
+| 6 | `dashboard-visualization` | 6 | — | ☐ | ☐ |
 
-> every non-N/A row must be checked. If any row is unchecked, trigger the missing agent now.
+> Every non-N/A row must show ☐ checked. If any row is unchecked, trigger the missing agent now.
+> **Verify** calls are combined quality+review — one subagent call per phase, not two.
 
 ---
 
@@ -94,14 +112,9 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
     5. **Folder Structure**: `artifacts/ps-{num}-{name}/README.md` and `shared/README.md` 
 - Expected outputs: `docs/agent-handoffs/data-extractor/ps-{num}-{name}/extraction_to_{next_agent}_{timestamp}.json` + jupyter notebooks and respective extracted raw datasets
 
-**code-quality** (verify extraction):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`
-- Input: handoff JSON path from data-extractor; verify all claimed files exist and are non-empty
-- If FAIL: re-run `data-extractor` with explicit fix instructions before advancing
-
-**code-reviewer** (verify code):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-reviewer`
-- Input: handoff JSON path from data-extractor; verify all claimed files exist and are non-empty
+**Verify** (quality + code review in one call):
+- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`, instructing it to also perform a code review pass (check outputs exist, notebooks are non-empty, code is correct)
+- Input: handoff JSON path from data-extractor
 - If FAIL: re-run `data-extractor` with explicit fix instructions before advancing
 
 ## Phase 2: data-validation and data-cleaning (parallel)
@@ -129,15 +142,10 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
     4. **data-extractor Handoff**: `docs/agent-handoffs/data-extractor/ps-{num}-{name}/*`
 - Expected outputs: `docs/agent-handoffs/data-cleaning/ps-{num}-{name}/cleaning_to_{next_agent}_{timestamp}.json` + jupyter notebooks and cleaned datasets
 
-**code-quality** (verify cleaning):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`
-- Input: handoff JSON path from data-cleaning and data-validation
-- If FAIL: re-run `data-cleaning` and `data-validation` with explicit fix instructions before advancing
-
-**code-reviewer** (verify code):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-reviewer`
-- Input: handoff JSON path from data-cleaning and data-validation; verify all claimed files exist and are non-empty
-- If FAIL: re-run `data-cleaning` and `data-validation` with explicit fix instructions before advancing
+**Verify** (quality + code review in one call):
+- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`, instructing it to also perform a code review pass
+- Input: handoff JSON paths from data-cleaning and data-validation
+- If FAIL: re-run failing agent(s) with explicit fix instructions before advancing
 
 ## Phase 3: exploratory-analysis and feature-engineering (Parallel)
 
@@ -154,7 +162,7 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
   4. **User Story**: `docs/objectives/user_stories/problem-statement-{num}-{slug}/` (relevant story)
 - Expected outputs: `docs/agent-handoffs/exploratory-analysis/ps-{num}-{name}/exploratory_to_{next_agent}_{timestamp}.json` + jupyter notebooks
 
-**feature-engineering**:
+**feature-engineering** *(skip if marked N/A in Pre-flight)*:
 - Subagent type: `feature-engineering`
 - Input:
   1. **exploratory-analysis Handoff**: `docs/agent-handoffs/exploratory-analysis/ps-{num}-{name}/*` 
@@ -163,16 +171,11 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
   4. **Domain Knowledge**: `docs/domain-knowledge/` — **read all relevant guides before engineering any features**
 - Expected outputs: `docs/agent-handoffs/feature-engineering/ps-{num}-{name}/features_to_{next_agent}_{timestamp}.json` + jupyter notebooks and interim datasets with new features
 
-**code-quality** (verify feature engineering and exploratory analysis):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`
-- Input: handoff JSON path from feature-engineer and exploratory-analysis
-- If FAIL: re-run `feature-engineer` and `exploratory-analysis` with explicit fix instructions before advancing
+**Verify** (quality + code review in one call):
+- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`, instructing it to also perform a code review pass
+- Input: handoff JSON paths from all Phase 3 agents that ran
 - **CRITICAL**: verify notebook is not empty (common failure) — notebook must be > 1 KB with executed cells
-
-**code-reviewer** (verify code):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-reviewer`
-- Input: handoff JSON path from feature-engineer and exploratory-analysis; verify all claimed files exist and are non-empty
-- If FAIL: re-run `feature-engineer` and `exploratory-analysis` with explicit fix instructions before advancing
+- If FAIL: re-run failing agent(s) with explicit fix instructions before advancing
 
 # Phase 4: model-forecasting (OPTIONAL — only if user story requires forecasting)
 
@@ -191,17 +194,15 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
     6. **Domain knowledge**: `docs/domain-knowledge/`
 - Expected outputs: `docs/agent-handoffs/model-forecasting/ps-{num}-{name}/forecasting_to_{next_agent}_{timestamp}.json` + jupyter notebooks/scripts and forecast results
 
-**code-quality** (verify forecasting):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`
+**Verify** (quality + code review in one call):
+- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`, instructing it to also perform a code review pass
 - Input: handoff JSON path from model-forecasting
 - If FAIL: re-run `model-forecasting` with explicit fix instructions before advancing
 
-**code-reviewer** (verify code):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-reviewer`
-- Input: handoff JSON path from feature-engineer; verify all claimed files exist and are non-empty
-- If FAIL: re-run `feature-engineer` with explicit fix instructions before advancing
-
 # Phase 5: Narrative Compiler
+
+> **Decision gate**: If the Pre-flight assessment marked Phase 5 as N/A (i.e. Demo Role is "live story"), skip this phase entirely. Otherwise call `runSubagent` for narrative-compiler.
+
 all `runSubagent` for narrative-compiler.
 
 **narrative-compiler**:
@@ -224,14 +225,9 @@ all `runSubagent` for narrative-compiler.
     3. **narrative-compiler Handoff**: `docs/agent-handoffs/narrative-compiler/ps-{num}-{name}/*`
 - Expected outputs: `docs/agent-handoffs/dashboard-visualization/ps-{num}-{name}/dashboard_to_{next_agent}_{timestamp}.json` + dashboard scripts
 
-**code-quality** (verify dashboard):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`
+**Verify** (quality + code review in one call):
+- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-quality`, instructing it to also perform a code review pass
 - Input: handoff JSON path from dashboard-visualization
-- If FAIL: re-run `dashboard-visualization` with explicit fix instructions before advancing
-
-**code-reviewer** (verify code):
-- **TRIGGER NOW**: Call `runSubagent` with subagent type `code-reviewer`
-- Input: handoff JSON path from dashboard-visualization; verify all claimed files exist and are non-empty
 - If FAIL: re-run `dashboard-visualization` with explicit fix instructions before advancing
 
 ## Phase 7: Summary
@@ -261,7 +257,7 @@ After all phases complete, present a delivery report:
 2. **Parallel phases must use simultaneous `runSubagent` calls** — call both agents in the same invocation batch; do not call them sequentially.
 3. **Sequential phases must wait** — always wait for `runSubagent` to return before starting the next phase.
 4. **Agents communicate through files** — pass file paths in the `prompt` parameter, never paste code blocks.
-5. **Run code-quality after EACH agent** — verify all claimed outputs exist and are non-empty. If verification fails, re-run the agent immediately with explicit fix instructions.
+5. **Run a combined Verify (code-quality + code-review) after EACH phase** — verify all claimed outputs exist and are non-empty; combine quality and review into one `code-quality` subagent call per phase, not two separate calls. If verification fails, re-run the agent immediately with explicit fix instructions.
 6. **code-reviewer MUST execute all notebooks** — every notebook must run top-to-bottom without errors. Cell ordering bugs (using undefined variables) = immediate failure and must be fixed.
 7. **Respect the dependency chain** — phases 2b, 3b depend on upstream outputs; never start them before upstream `runSubagent` calls have returned.
 8. **Empty notebooks = failed delivery** — notebooks < 1 KB or 0 cells must be recreated.
