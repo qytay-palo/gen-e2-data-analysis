@@ -30,7 +30,7 @@ Read the problem statement **before** running any agent. Use the answers to mark
 | Does the PS contain **no** feature engineering user story (`{num}-*engineer*`)? | Phase 3b (feature-engineering) |
 | Does the **Outputs** section contain no written report, narrative, or findings document? | Phase 5 (narrative-compiler) |
 
-Apply skip decisions to the Master Trigger Checklist, then **print it immediately** before starting Phase 1 — using this exact format, with each row's Triggered/Verified columns filled as `N/A` (skipped) or `☐` (to run):
+Apply skip decisions, then **immediately output the Master Trigger Checklist** with each row pre-filled as `N/A` (skip) or `☐` (to run). Update rows to `✅` as agents complete. Use this exact format:
 
 ```
 ## Master Trigger Checklist — PS-{num} {name}
@@ -45,8 +45,6 @@ Apply skip decisions to the Master Trigger Checklist, then **print it immediatel
 | 5 | `narrative-compiler` | 5 | N/A or ☐ | N/A or ☐ |
 | 6 | `dashboard-visualization` | 6 | N/A or ☐ | N/A or ☐ |
 ```
-
-Update the same table in place as each agent completes (replace `☐` with `✅`).
 
 ---
 
@@ -81,19 +79,19 @@ ALWAYS pass the problem statement path to all `runSubagent` calls as context, an
 
 ## Master Trigger Checklist
 
-Before declaring delivery complete, confirm that `runSubagent` was called for **every** agent below. Check off each one as it completes:
+Before declaring delivery complete, confirm that `runSubagent` was called for **every** applicable agent below:
 
-| # | Agent | Phase | Skip condition (from Pre-flight) | Triggered | Verified |
-|---|---|---|---|---|---|
-| 1 | `data-extractor` | 1 | Inputs are pre-existing processed files | ☐ / N/A | ☐ / N/A |
-| 2 | `data-validation` and `data-cleaning` | 2 | Inputs are pre-existing processed files | ☐ / N/A | ☐ / N/A |
-| 3a | `exploratory-analysis` | 3 | No EDA user story in PS user stories directory | ☐ / N/A | ☐ / N/A |
-| 3b | `feature-engineering` | 3 | No feature-engineering user story | ☐ / N/A | ☐ / N/A |
-| 4 | `model-forecasting` | 4 | No forecasting user story | ☐ / N/A | ☐ / N/A |
-| 5 | `narrative-compiler` | 5 | No written report/narrative in PS Outputs | ☐ / N/A | ☐ / N/A |
+| # | Agent | Phase | Skip condition (pre-flight rule) | Triggered | Verified |
+|---|-------|-------|----------------------------------|-----------|----------|
+| 1 | `data-extractor` | 1 | Inputs reference only pre-existing processed files | N/A or ☐ | N/A or ☐ |
+| 2 | `data-validation` / `data-cleaning` | 2 | Inputs reference only pre-existing processed files | N/A or ☐ | N/A or ☐ |
+| 3a | `exploratory-analysis` | 3 | No `*eda*` / `*exploratory*` user story file | N/A or ☐ | N/A or ☐ |
+| 3b | `feature-engineering` | 3 | No `*engineer*` user story file | N/A or ☐ | N/A or ☐ |
+| 4 | `model-forecasting` | 4 | No `*forecast*` user story file | N/A or ☐ | N/A or ☐ |
+| 5 | `narrative-compiler` | 5 | No written report/narrative in PS Outputs | N/A or ☐ | N/A or ☐ |
 | 6 | `dashboard-visualization` | 6 | — | ☐ | ☐ |
 
-> Every non-N/A row must show ☐ checked. If any row is unchecked, trigger the missing agent now.
+> Every non-N/A row must show ✅ before Phase 7. If any row is unchecked, trigger the missing agent now.
 > **Verify** calls are combined quality+review — one subagent call per phase, not two.
 
 ---
