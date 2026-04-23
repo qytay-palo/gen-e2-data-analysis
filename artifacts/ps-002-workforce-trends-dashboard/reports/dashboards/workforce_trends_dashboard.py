@@ -9,6 +9,7 @@ from dash import dcc, html
 
 from tabs.headcount_over_time import make_tab as make_headcount_tab
 from tabs.headcount_over_time import register_callbacks as reg_headcount
+from tabs.growth_trends import build_growth_trends_tab
 from tabs.sector_breakdown import make_tab as make_sector_tab
 from tabs.sector_breakdown import register_callbacks as reg_sector
 
@@ -48,6 +49,9 @@ app.layout = dbc.Container(
 
 reg_headcount(app, df)
 reg_sector(app, df)
+
+if not any(getattr(tab, "label", None) == "Growth Trends" for tab in TABS):
+    TABS.append(build_growth_trends_tab(app))
 
 
 if __name__ == "__main__":

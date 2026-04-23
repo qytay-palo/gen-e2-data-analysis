@@ -219,7 +219,6 @@ artifacts/*/data/3_interim/
 artifacts/*/data/4_processed/
 
 # Trained model artifacts
-artifacts/*/models/*.pkl
 artifacts/*/models/*.joblib
 
 # Execution logs
