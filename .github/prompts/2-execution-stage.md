@@ -27,9 +27,9 @@ Read the problem statement **before** running any agent. Use the answers to mark
 |----------|--------------|
 | Does the **Inputs** section reference only pre-existing processed files (e.g. `4_processed/*.parquet` from a prior PS)? | Phases 1 and 2 (data-extractor, data-validation, data-cleaning) |
 | Does the PS contain **no** feature engineering user story (`{num}-*engineer*`)? | feature-engineering in Phase 3 |
-| Does **Demo Role** say "**live story**"? | Phase 5 (narrative-compiler) |
+| Does the **Outputs** section contain no written report, narrative, or findings document? | Phase 5 (narrative-compiler) |
 
-Apply skip decisions to the Master Trigger Checklist before proceeding. This is the primary mechanism for reducing latency on demo-path PSes.
+Apply skip decisions to the Master Trigger Checklist before proceeding.
 
 ---
 
@@ -73,7 +73,7 @@ Before declaring delivery complete, confirm that `runSubagent` was called for **
 | 3a | `exploratory-analysis` | 3 | — | ☐ | ☐ |
 | 3b | `feature-engineering` | 3 | No feature-engineering user story | ☐ / N/A | ☐ / N/A |
 | 4 | `model-forecasting` | 4 | No forecasting user story | ☐ / N/A | ☐ / N/A |
-| 5 | `narrative-compiler` | 5 | Demo Role is "live story" | ☐ / N/A | ☐ / N/A |
+| 5 | `narrative-compiler` | 5 | No written report/narrative in PS Outputs | ☐ / N/A | ☐ / N/A |
 | 6 | `dashboard-visualization` | 6 | — | ☐ | ☐ |
 
 > Every non-N/A row must show ☐ checked. If any row is unchecked, trigger the missing agent now.
@@ -201,7 +201,7 @@ Call `runSubagent` for data-extractor. After completion, immediately call `runSu
 
 # Phase 5: Narrative Compiler
 
-> **Decision gate**: If the Pre-flight assessment marked Phase 5 as N/A (i.e. Demo Role is "live story"), skip this phase entirely. Otherwise call `runSubagent` for narrative-compiler.
+> **Decision gate**: If the Pre-flight assessment marked Phase 5 as N/A (i.e. no written report or narrative in PS Outputs), skip this phase entirely. Otherwise call `runSubagent` for narrative-compiler.
 
 all `runSubagent` for narrative-compiler.
 
