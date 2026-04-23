@@ -1,6 +1,6 @@
 # Data Sources: MOH Workforce Trends Analysis
 
-**Last Updated:** 17 April 2026  
+**Last Updated:** 23 April 2026  
 **Status:** Active, Fully Documented
 
 ---
@@ -10,9 +10,9 @@
 ### Overview
 
 **Source**: Ministry of Health SharePoint  
-**Site**: DataDojo  
-**Site URL**: `/sites/DataDojo`  
-**Primary Folder**: `/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce/`  
+**Site**: TestSite-FileSync  
+**Site URL**: `https://paloit2016.sharepoint.com/sites/TestSite-FileSync`  
+**Primary Folder**: `Shared Documents/gen-e2-data-analysis test/`  
 **Data Domain**: Healthcare Workforce Analytics  
 **Access Method**: SharePoint REST API / Microsoft Graph API  
 **Format**: CSV files  
@@ -21,8 +21,8 @@
 
 ### Data Repository Structure
 
-**SharePoint Site**: DataDojo  
-**Primary Data Folder**: `/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce/`
+**SharePoint Site**: TestSite-FileSync  
+**Primary Data Folder**: `Shared Documents/gen-e2-data-analysis test/`
 
 **Available Datasets:**
 - `doctors.csv` - Doctor workforce data
@@ -39,7 +39,7 @@
 | `pharmacists.csv` | Pharmacist workforce data | Monthly | CSV |
 | `physiotherapists.csv` | Physiotherapist workforce data | Monthly | CSV |
 
-**Data Location**: `/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce/`
+**Data Location**: `Shared Documents/gen-e2-data-analysis test/`
 **Local landing zone**: `shared/data/1_raw/workforce/`
 
 **Primary stakeholder for this delivery**: Team lead
@@ -69,7 +69,7 @@ ctx = ClientContext(site_url).with_credentials(
 )
 
 # Define workforce data folder
-workforce_folder_path = "/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce"
+workforce_folder_path = "Shared Documents/gen-e2-data-analysis test"
 
 # List of workforce files to download
 workforce_files = ["doctors.csv", "nurses.csv", "pharmacists.csv", "physiotherapists.csv"]
@@ -143,7 +143,7 @@ if "access_token" not in token:
 headers = {"Authorization": f"Bearer {token['access_token']}"}
 
 # Define workforce files
-workforce_folder = "Gen-e2/data-analysis/workforce"
+workforce_folder = "Shared Documents/gen-e2-data-analysis test"
 workforce_files = ["doctors.csv", "nurses.csv", "pharmacists.csv", "physiotherapists.csv"]
 
 # Download and load all workforce files dynamically
@@ -191,7 +191,7 @@ from shared.src.data_processing.sharepoint_connector import SharePointConnector
 connector = SharePointConnector()
 
 # Define workforce folder path
-workforce_folder = "/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce"
+workforce_folder = "Shared Documents/gen-e2-data-analysis test"
 
 # Method 1: Extract all CSV files from workforce folder
 all_workforce_files = connector.extract_folder(
@@ -267,10 +267,10 @@ physiotherapists_df = workforce_data['physiotherapists']
 SHAREPOINT_TENANT_ID="your-tenant-id"
 SHAREPOINT_CLIENT_ID="your-client-id"
 SHAREPOINT_CLIENT_SECRET="your-client-secret"
-SHAREPOINT_SITE_URL="https://moh.sharepoint.com/sites/DataDojo"
-SHAREPOINT_SITE_ID="moh.sharepoint.com,{site-guid},{web-guid}"
+SHAREPOINT_SITE_URL="https://paloit2016.sharepoint.com/sites/TestSite-FileSync"
+SHAREPOINT_SITE_ID="paloit2016.sharepoint.com,{site-guid},{web-guid}"
 SHAREPOINT_DRIVE_ID="your-drive-id"
-SHAREPOINT_WORKFORCE_FOLDER="/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce"
+SHAREPOINT_WORKFORCE_FOLDER="Shared Documents/gen-e2-data-analysis test"
 ```
 
 **Load environment variables in Python:**
@@ -293,8 +293,8 @@ client_id = os.getenv("SHAREPOINT_CLIENT_ID")
 # Add to .env file (NEVER commit this file to version control)
 SHAREPOINT_USERNAME="your_email@moh.gov.sg"
 SHAREPOINT_PASSWORD="your_password"
-SHAREPOINT_SITE_URL="https://moh.sharepoint.com/sites/DataDojo"
-SHAREPOINT_WORKFORCE_FOLDER="/sites/DataDojo/Shared Documents/Gen-e2/data-analysis/workforce"
+SHAREPOINT_SITE_URL="https://paloit2016.sharepoint.com/sites/TestSite-FileSync"
+SHAREPOINT_WORKFORCE_FOLDER="Shared Documents/gen-e2-data-analysis test"
 ```
 
 **Load in Python:**
