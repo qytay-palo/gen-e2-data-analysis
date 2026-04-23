@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "agent": "exploratory-analysis",
+  "problem_statement": "ps-004-headcount-forecasting",
+  "timestamp": "20260423",
+  "outputs": {
+    "notebook": "artifacts/ps-004-headcount-forecasting/notebooks/02_eda_headcount_series.ipynb",
+    "figure": "artifacts/ps-004-headcount-forecasting/reports/figures/headcount_time_series.png"
+  },
+  "key_findings": {
+    "professions": [
+      "doctors",
+      "nurses",
+      "pharmacists",
+      "physiotherapists"
+    ],
+    "year_range": "overall 2006-2019; doctors 2006-2019, nurses 2006-2019, pharmacists 2006-2019, physiotherapists 2014-2019",
+    "trend_direction": "All four professions trend upward from first observed year to last observed year in the executed EDA. Note: the canonical parquet contained zero rows where sector == 'All', so the notebook fell back to profession-year totals summed across available sectors to complete the exploratory series checks."
+  }
+}

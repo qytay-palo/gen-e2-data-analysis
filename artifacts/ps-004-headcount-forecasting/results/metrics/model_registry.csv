@@ -1,0 +1,5 @@
+profession,model_type,mape,mae,rmse,mape_target_met,forecast_start_year,forecast_end_year
+doctors,arima,1.5406,215.4938,244.6269,true,2020,2024
+nurses,arima,2.9819,1262.6283,1373.8763,true,2020,2024
+pharmacists,linear,2.0482,66.7848,69.8195,true,2020,2024
+physiotherapists,arima,2.326,46.0152,61.122,true,2020,2024

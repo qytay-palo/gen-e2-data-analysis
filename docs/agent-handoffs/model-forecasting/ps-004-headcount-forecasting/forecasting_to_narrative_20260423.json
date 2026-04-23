@@ -1,0 +1,34 @@
+{
+  "status": "success",
+  "agent": "model-forecasting",
+  "problem_statement": "ps-004-headcount-forecasting",
+  "timestamp": "20260423",
+  "outputs": {
+    "arima_script": "artifacts/ps-004-headcount-forecasting/src/models/arima_model.py",
+    "evaluation_script": "artifacts/ps-004-headcount-forecasting/src/model_evaluation.py",
+    "notebook": "artifacts/ps-004-headcount-forecasting/notebooks/03_modeling_and_forecast.ipynb",
+    "model_comparison_csv": "artifacts/ps-004-headcount-forecasting/results/metrics/model_comparison.csv",
+    "model_registry_csv": "artifacts/ps-004-headcount-forecasting/results/metrics/model_registry.csv",
+    "forecast_table_csv": "artifacts/ps-004-headcount-forecasting/results/exports/forecast_table.csv",
+    "forecast_figure": "artifacts/ps-004-headcount-forecasting/reports/figures/forecast_by_profession.png"
+  },
+  "champion_models": {
+    "doctors": "arima",
+    "nurses": "arima",
+    "pharmacists": "linear",
+    "physiotherapists": "arima"
+  },
+  "forecast_years": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "mape_target_met": {
+    "doctors": true,
+    "nurses": true,
+    "pharmacists": true,
+    "physiotherapists": true
+  }
+}

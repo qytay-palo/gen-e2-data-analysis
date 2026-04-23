@@ -1,0 +1,9 @@
+profession,model_type,mape,mae,rmse
+doctors,arima,1.5406,215.4938,244.6269
+doctors,linear,2.2538,314.7303,346.8399
+nurses,arima,2.9819,1262.6283,1373.8763
+nurses,linear,8.6084,3639.6727,3817.8366
+pharmacists,arima,4.1095,135.1503,149.9334
+pharmacists,linear,2.0482,66.7848,69.8195
+physiotherapists,arima,2.326,46.0152,61.122
+physiotherapists,linear,3.0473,60.1667,74.9472

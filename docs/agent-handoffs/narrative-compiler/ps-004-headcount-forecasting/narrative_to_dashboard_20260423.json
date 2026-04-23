@@ -1,0 +1,9 @@
+{
+  "status": "success",
+  "agent": "narrative-compiler",
+  "problem_statement": "ps-004-headcount-forecasting",
+  "timestamp": "20260423",
+  "outputs": {
+    "narrative": "artifacts/ps-004-headcount-forecasting/results/narrative.md"
+  }
+}

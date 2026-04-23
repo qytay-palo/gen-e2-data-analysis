@@ -1,0 +1,26 @@
+{
+  "status": "success",
+  "agent": "feature-engineering",
+  "problem_statement": "ps-004-headcount-forecasting",
+  "timestamp": "20260423",
+  "outputs": {
+    "feature_script": "artifacts/ps-004-headcount-forecasting/src/feature_engineering.py",
+    "linear_model_script": "artifacts/ps-004-headcount-forecasting/src/models/linear_model.py",
+    "features_parquet": "artifacts/ps-004-headcount-forecasting/data/3_interim/features.parquet",
+    "unit_tests": "artifacts/ps-004-headcount-forecasting/tests/unit/test_feature_engineering.py",
+    "notebook": "artifacts/ps-004-headcount-forecasting/notebooks/01_feature_engineering.ipynb",
+    "pkl_files": [
+      "artifacts/ps-004-headcount-forecasting/models/doctors_linear_20260423.pkl",
+      "artifacts/ps-004-headcount-forecasting/models/nurses_linear_20260423.pkl",
+      "artifacts/ps-004-headcount-forecasting/models/pharmacists_linear_20260423.pkl",
+      "artifacts/ps-004-headcount-forecasting/models/physiotherapists_linear_20260423.pkl"
+    ]
+  },
+  "professions": [
+    "doctors",
+    "nurses",
+    "pharmacists",
+    "physiotherapists"
+  ],
+  "holdout_years": 3
+}
