@@ -11,6 +11,7 @@ from tabs.headcount_over_time import make_tab as make_headcount_tab
 from tabs.headcount_over_time import register_callbacks as reg_headcount
 from tabs.sector_breakdown import make_tab as make_sector_tab
 from tabs.sector_breakdown import register_callbacks as reg_sector
+from tabs.growth_trends import DF_GROWTH, make_tab as make_growth_tab, register_callbacks as reg_growth
 
 
 ROOT = Path(__file__).resolve().parents[4]
@@ -29,6 +30,7 @@ PROFESSIONS = sorted(df["profession"].unique().tolist())
 TABS = [
     make_headcount_tab(YEAR_MIN, YEAR_MAX, PROFESSIONS),
     make_sector_tab(YEAR_MIN, YEAR_MAX, PROFESSIONS),
+    make_growth_tab(PROFESSIONS),
 ]
 
 
@@ -48,6 +50,7 @@ app.layout = dbc.Container(
 
 reg_headcount(app, df)
 reg_sector(app, df)
+reg_growth(app, DF_GROWTH)
 
 
 if __name__ == "__main__":

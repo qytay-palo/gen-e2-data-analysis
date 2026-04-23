@@ -1,0 +1,9 @@
+{
+  "agent": "narrative-compiler",
+  "ps": "ps-003-workforce-growth-analysis",
+  "status": "success",
+  "timestamp": "2026-04-23",
+  "outputs": ["artifacts/ps-003-workforce-growth-analysis/results/narrative.md"],
+  "narrative_path": "artifacts/ps-003-workforce-growth-analysis/results/narrative.md",
+  "next_agent": "dashboard-visualization"
+}
