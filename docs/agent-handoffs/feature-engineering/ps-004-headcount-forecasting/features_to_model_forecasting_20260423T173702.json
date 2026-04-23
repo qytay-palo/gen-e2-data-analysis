@@ -1,0 +1,23 @@
+{
+  "status": "success",
+  "problem_statement": "PS-004 Headcount Forecasting",
+  "handoff_metadata": {
+    "agent": "feature-engineering",
+    "problem_statement_id": "ps-004",
+    "timestamp": "20260423T173702"
+  },
+  "artifacts": [
+    "artifacts/ps-004-headcount-forecasting/src/feature_engineering.py",
+    "artifacts/ps-004-headcount-forecasting/src/models/linear_model.py",
+    "artifacts/ps-004-headcount-forecasting/data/3_interim/features.parquet",
+    "artifacts/ps-004-headcount-forecasting/models/<profession>_linear_20260423.pkl x4"
+  ],
+  "outputs": [
+    "artifacts/ps-004-headcount-forecasting/data/3_interim/features.parquet",
+    "artifacts/ps-004-headcount-forecasting/models/doctors_linear_20260423.pkl",
+    "artifacts/ps-004-headcount-forecasting/models/nurses_linear_20260423.pkl",
+    "artifacts/ps-004-headcount-forecasting/models/pharmacists_linear_20260423.pkl",
+    "artifacts/ps-004-headcount-forecasting/models/physiotherapists_linear_20260423.pkl"
+  ],
+  "notes": "Feature table was aggregated to annual profession totals across sectors and written with schema profession, year, count, year_index, lag_1, lag_2. LinearRegression baselines were trained with a 3-year chronological holdout; physiotherapists had a shorter history, so its training range was 2014-2016. Existing ARIMA model files were already present in the models directory and were left unchanged."
+}
