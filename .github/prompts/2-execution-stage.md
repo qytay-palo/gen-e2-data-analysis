@@ -30,7 +30,23 @@ Read the problem statement **before** running any agent. Use the answers to mark
 | Does the PS contain **no** feature engineering user story (`{num}-*engineer*`)? | Phase 3b (feature-engineering) |
 | Does the **Outputs** section contain no written report, narrative, or findings document? | Phase 5 (narrative-compiler) |
 
-Apply skip decisions to the Master Trigger Checklist before proceeding.
+Apply skip decisions to the Master Trigger Checklist, then **print it immediately** before starting Phase 1 — using this exact format, with each row's Triggered/Verified columns filled as `N/A` (skipped) or `☐` (to run):
+
+```
+## Master Trigger Checklist — PS-{num} {name}
+
+| # | Agent | Phase | Triggered | Verified |
+|---|-------|-------|-----------|----------|
+| 1 | `data-extractor` | 1 | N/A or ☐ | N/A or ☐ |
+| 2 | `data-validation` / `data-cleaning` | 2 | N/A or ☐ | N/A or ☐ |
+| 3a | `exploratory-analysis` | 3 | N/A or ☐ | N/A or ☐ |
+| 3b | `feature-engineering` | 3 | N/A or ☐ | N/A or ☐ |
+| 4 | `model-forecasting` | 4 | N/A or ☐ | N/A or ☐ |
+| 5 | `narrative-compiler` | 5 | N/A or ☐ | N/A or ☐ |
+| 6 | `dashboard-visualization` | 6 | N/A or ☐ | N/A or ☐ |
+```
+
+Update the same table in place as each agent completes (replace `☐` with `✅`).
 
 ---
 
