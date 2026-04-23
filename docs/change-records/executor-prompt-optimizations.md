@@ -7,7 +7,7 @@
 
 ## Summary
 
-Four changes to the execution-stage prompt that together reduced PS-003 runtime from ~20 minutes to ~9 minutes 19 seconds — a 53% reduction.
+Four changes to the execution-stage prompt that together reduced PS-003 runtime from ~20 minutes to ~16 minutes — a ~20% reduction on a cold-start run (all artifacts generated from scratch).
 
 ---
 
