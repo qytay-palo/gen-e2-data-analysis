@@ -19,9 +19,7 @@ def make_tab(year_min: int, year_max: int, professions: list[str]) -> dcc.Tab:
                         max=year_max,
                         step=1,
                         value=[year_min, year_max],
-                        marks={
-                            year: str(year) for year in range(year_min, year_max + 1)
-                        },
+                        marks={year: str(year) for year in range(year_min, year_max + 1)},
                     ),
                     html.Label("Profession filter", className="mt-4"),
                     dcc.Dropdown(
@@ -52,8 +50,7 @@ def register_callbacks(app, df_pandas: pd.DataFrame) -> None:
         filtered = df_pandas.copy()
         if year_range:
             filtered = filtered[
-                (filtered["year"] >= year_range[0])
-                & (filtered["year"] <= year_range[1])
+                (filtered["year"] >= year_range[0]) & (filtered["year"] <= year_range[1])
             ]
         if selected_professions:
             filtered = filtered[filtered["profession"].isin(selected_professions)]
@@ -66,11 +63,7 @@ def register_callbacks(app, df_pandas: pd.DataFrame) -> None:
             color="sector",
             barmode="stack",
             title="Workforce Headcount by Profession and Sector",
-            labels={
-                "count": "Headcount",
-                "profession": "Profession",
-                "sector": "Sector",
-            },
+            labels={"count": "Headcount", "profession": "Profession", "sector": "Sector"},
         )
         fig.update_layout(legend_title_text="Sector")
         return fig
