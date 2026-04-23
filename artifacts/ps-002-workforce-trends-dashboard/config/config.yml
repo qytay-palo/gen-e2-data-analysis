@@ -2,5 +2,5 @@ data:
   parquet_path: shared/data/4_processed/workforce_clean.parquet
 app:
   port: 8050
-  debug: false
+  debug: true
   title: MOH Workforce Trends

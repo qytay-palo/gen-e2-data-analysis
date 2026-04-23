@@ -15,7 +15,7 @@ Which professions and sectors are growing fastest, and at what compound annual r
 ## Success Criteria
 1. `artifacts/ps-003-workforce-growth-analysis/src/growth_analysis.py` computes YoY % change and CAGR per profession and per sector with no hardcoded values
 2. Results exported to `artifacts/ps-003-workforce-growth-analysis/results/tables/growth_rates.parquet`
-3. A new `dcc.Tab` labelled "Growth Trends" is appended to the PS-002 app's tab list and the app hot-reloads to show it
+3. A new `dcc.Tab` labelled "Growth Trends" is appended automatically by the executor pipeline — no separate injection command — and the app hot-reloads to show it
 4. Growth Trends tab contains: (a) a bar chart of CAGR by profession, (b) a line chart of YoY growth rate over time per profession, both with profession filter
 5. Analysis completes and tab appears within 60 seconds of the agent being invoked (demo latency requirement)
 
@@ -40,5 +40,7 @@ Which professions and sectors are growing fastest, and at what compound annual r
 - CAGR = `(count_final / count_initial) ^ (1 / n_years) - 1`
 - Growth calculations are annual because the validated cross-file analytical grain is `year`, not month or facility
 - All computation in Polars; convert to pandas only at Plotly boundary
-- Tab injection must not require restarting the Dash server — use the appendable tabs pattern from PS-002
+- The executor pipeline performs injection as its final step: writes `growth_trends.py` tab module into the PS-002 `tabs/` directory, then patches `workforce_trends_dashboard.py` to import and append it — no separate command
+- Patch is idempotent (safe to run twice without duplicating the tab)
+- PS-002 must run with `debug: true` (hot-reload) — prerequisite enforced by PS-002 `config.yml`
 - Module must expose a reusable `compute_growth_rates` function for standalone execution and dashboard integration tests
