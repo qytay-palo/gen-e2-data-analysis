@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 import dash
 import dash_bootstrap_components as dbc
@@ -15,6 +16,9 @@ from tabs.sector_breakdown import register_callbacks as reg_sector
 
 
 ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / "artifacts/ps-005-forecast-dashboard-integration/src"))
+from forecast_tab import build_forecast_tab
+
 CFG_PATH = Path(__file__).resolve().parents[2] / "config" / "config.yml"
 cfg = yaml.safe_load(CFG_PATH.read_text())
 PARQUET_PATH = ROOT / cfg["data"]["parquet_path"]
@@ -52,6 +56,9 @@ reg_sector(app, df)
 
 if not any(getattr(tab, "label", None) == "Growth Trends" for tab in TABS):
     TABS.append(build_growth_trends_tab(app))
+
+if not any(getattr(tab, "label", None) == "5-Year Forecast" for tab in TABS):
+    TABS.append(build_forecast_tab(app))
 
 
 if __name__ == "__main__":
