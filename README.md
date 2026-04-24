@@ -111,7 +111,7 @@ SHAREPOINT_PASSWORD=...
 ### Demo 1 — "Live Growth Analysis"
 
 Pre-built state (this branch): PS-001 + PS-002 (Headcount Over Time + Sector Breakdown tabs).
-Live story: executor runs PS-003, which computes growth rates and injects the Growth Trends tab — browser refresh reveals it with no server restart.
+Live story: agent plans PS-003, then executes it — computing growth rates and injecting the Growth Trends tab with no server restart.
 
 ```bash
 # 1. Start the dashboard (keep this terminal open)
@@ -120,11 +120,21 @@ python artifacts/ps-002-workforce-trends-dashboard/reports/dashboards/workforce_
 
 # 2. Open browser → http://localhost:8050  (shows 2 tabs)
 
-# 3. In a second terminal — trigger the live story
-source .venv/bin/activate
+# 3. Plan PS-003 — open GitHub Copilot Chat and run:
+#
+#   #file:.github/prompts/1-planning-stage.md PS-003
+#
+#   This generates user stories + implementation plan under
+#   docs/objectives/user_stories/problem-statement-003-workforce-growth-analysis/
+
+# 4. Execute PS-003 — open GitHub Copilot Chat and run:
+#
+#   #file:.github/prompts/2-execution-stage.md PS-003
+#
+#   Or run the output script directly:
 python artifacts/ps-003-workforce-growth-analysis/src/run_growth_analysis.py
 
-# 4. Dash hot-reloads (~3 s). Refresh browser → Growth Trends tab now visible.
+# 5. Dash hot-reloads (~3 s). Refresh browser → Growth Trends tab now visible.
 ```
 
 > Demo 2 ("Live Forecast Integration") is on the `demo-add-forecast` branch.
