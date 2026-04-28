@@ -80,20 +80,14 @@ Dashboard types:
 - **Complete an objective coverage table before coding**; zero gaps allowed
 - **Load data once at app startup**; never reload inside callbacks
 - **Every page/tab must contain**:
-  - a priority label (colored text, no filled background) and a problem-statement sentence
+  - a priority/problem-statement header
   - a narrative subheading
   - at least 2 visuals
   - at least 1 insight/action section
-- **Filters from narrative-compiler handoff are mandatory** — read the handoff JSON before coding; every filter listed (year range, facility type, sector, age group, LTC type) must be implemented as a working interactive control that updates the relevant charts; a filter with no effect is a bug
 - **Every filter must work**; any dropdown, checklist, slider, or button without a callback is a bug
 - **“All” means all**; never silently default to one entity when the filter value is `all`
 - **No empty chart frames**; hide empty containers instead of showing placeholder plots
 - **Chart titles must state the insight**
-- **Every chart lives in its own white card** — each individual chart or KPI group must be wrapped in its own card container with a white background, rounded corners (`border-radius: 14px`), a subtle drop shadow (`box-shadow: 0 2px 8px rgba(0,0,0,0.08)`), and consistent internal padding (`20–24px`); never place two unrelated charts inside a single shared card background
-- **Card width must be proportional to chart content** — a wide time-series or bar chart that requires horizontal space should span a larger column fraction (e.g. 2/3 of the row); a compact chart such as a donut or single-metric visual should occupy a narrower column (e.g. 1/3); size the card to fit the chart, not the other way around; never stretch a compact chart to fill an oversized card
-- **Charts must fit inside their white card container** — set `paper_bgcolor` to match the card background (`#FFFFFF`) and use `autosize=True`; never let a chart overflow or clip its parent card box
-- **Never clip chart content** — chart item containers must use `min-height` (not a fixed `height`) and `overflow: visible` so that multi-line titles, rotated axis labels, legends, and annotations are never cut off; if a chart exceeds its default card height, the card expands to fit rather than hiding content; if a grid column becomes too narrow for a chart to render fully, move that chart to its own full-width row instead of squeezing it
-- **No static images** — do not embed PNG/JPG figures; replicate any static chart as a fully interactive Plotly figure so users can hover, zoom, and filter
 - **KPI color meaning must be outcome-based**, not direction-based
 - **Use accessible visual design**; never rely on color alone to distinguish series
 
@@ -164,9 +158,9 @@ Rules:
 
 Every page must begin with a structured header block in this order:
 
-1. **Priority label** — render `Priority 1`, `Priority 2`, or `Priority 3` as **colored text** (not a filled background strip); use the priority tier color applied to the font only, keeping the background transparent or white
-2. **Problem statement line** — one sentence describing the objective addressed on this page, displayed as plain body text inline with or directly below the priority label
-3. **Main key point heading** — the single most important finding on the page, expressed as a complete declarative sentence (e.g. "Elderly admissions are rising 3× faster than bed growth")
+1. **Priority strip** — `Priority 1`, `Priority 2`, or `Priority 3`
+2. **Problem statement line** — one sentence describing the objective addressed on this page
+3. **Main key point heading** — the single most important finding on the page
 4. **Subheading** — brief explanation of why it matters
 5. **Optional action** — export, reset, or filter action
 
@@ -174,9 +168,9 @@ Example structure:
 
 | Header element | Purpose |
 |---|---|
-| Priority label | Signals page importance immediately via colored text, not a background band |
-| Problem statement line | Keeps the user anchored to the objective in a single sentence |
-| Main heading | States the conclusion as a complete sentence, not a topic label |
+| Priority strip | Signals page importance immediately |
+| Problem statement line | Keeps the user anchored to the objective |
+| Main heading | States the conclusion, not the subject |
 | Subheading | Adds context in plain language |
 
 Bad heading: `Disease Trends by Year`  
@@ -211,7 +205,6 @@ Discard these first:
 KPI display rules:
 - Show **4–6 KPIs max** on the executive page
 - Show **2–4 KPIs max** on supporting pages
-- **KPI cards must remain visible on every page/tab** — pin the KPI row above the content area so it persists regardless of which section is active; users should never lose sight of the headline metrics while navigating deeper pages
 - Each KPI must include:
   - value
   - label
@@ -231,45 +224,16 @@ Use a clear reading path:
 Design rules:
 - use whitespace to create importance
 - avoid more than one dominant visual per page
-- every chart has its own isolated card; no two unrelated charts share a card background
-- card width is determined by the chart's data density and complexity, not by a uniform grid slot
-- keep consistent card padding (`20–24px`), border radius (`14px`), and shadow depth (`0 2px 8px rgba(0,0,0,0.08)`) across all cards
-- the main content area uses a slightly off-white or light grey background (`#F4F6F8`) so white cards stand out with visible contrast
+- keep consistent card padding, border radius, and shadow depth
 - use restrained accent colors; highlight only what matters
 - keep legends outside the plot area where possible
 - do not overload pages with many small charts
-
-#### Card Sizing Reference
-
-Size each card column based on the chart it contains:
-
-| Chart type | Recommended column fraction | Rationale |
-|---|---|---|
-| Time-series line or grouped bar | 2/3 to 3/4 of row | Needs horizontal space for time axis |
-| Donut, single-metric ring, or gauge | 1/4 to 1/3 of row | Compact; wastes space if stretched |
-| Ranked horizontal bar | 1/2 to 2/3 of row | Moderate horizontal demand |
-| Scatter or dual-axis | 1/2 row minimum | Requires visual area for point spread |
-| KPI card (single number) | 1/4 or equal-split across 4–6 cards | Grid of equal-width small cards |
-| Full-width insight or hero chart | Full row | Single dominant visual per section |
-
-#### Sidebar Navigation
-
-All dashboards must include a left sidebar for navigation. The sidebar should:
-
-- Display the product or dashboard logo and name at the top
-- Include a prominent primary action button (e.g. "Register patient" or equivalent context-specific CTA) directly below the logo, styled in the primary brand color with a "+" icon
-- List all pages as navigation items, each with a filled icon and a short label
-- Highlight the active page with a filled or bold icon and slightly darker label
-- Inactive pages use muted icon and label styling
-- Place secondary items (e.g. Settings) at the bottom of the sidebar, separated from main navigation
-- The sidebar background should be white or very light neutral; the main content area uses a slightly off-white or light grey background to create visual separation
-- Sidebar width should be fixed and narrow; it should not collapse on desktop
 
 Recommended page composition:
 
 | Page area | Recommended content |
 |---|---|
-| Top band | Problem statement objectives + main key point heading |
+| Top band | Problem statement + main key point heading |
 | First row | KPI cards or one hero chart |
 | Second row | 2 supporting visuals |
 | Bottom row | Insights, actions, or evidence table |
@@ -350,10 +314,9 @@ Implementation rules:
 
 ### Components
 
-- **Chart cards**: every chart is wrapped in its own white card (`background: #FFFFFF`, `border-radius: 14px`, `box-shadow: 0 2px 8px rgba(0,0,0,0.08)`, `padding: 20–24px`); the card width is sized to be proportional to the chart — do not stretch a compact chart to fill an oversized card
-- **KPI cards**: clean and modern, not decorative; equal-width grid of 4–6 cards across the top of a page; each card has the same rounded card treatment as chart cards
-- **Insight cards**: explain what happened, the evidence, and the recommended action; use the same card container style for visual consistency
-- **Tables**: belong in the detail layer, not the primary story layer; when shown, wrap them in the same card container
+- KPI cards should feel clean and modern, not decorative
+- Insight cards should explain: what happened, evidence, action
+- Tables belong in the detail layer, not the primary story layer
 
 ---
 
@@ -363,7 +326,7 @@ Every page must include all of the following:
 
 | Required element | Minimum expectation |
 |---|---|
-| Priority label (colored text) + problem you are solving | Present at top of page; priority rendered as colored font, not a filled background band |
+| Priority/problem-statement header | Present at top of page |
 | Main key point heading | 1 clear takeaway |
 | Supporting explanation | 1–2 sentences |
 | Visuals | At least 2 |
@@ -390,7 +353,7 @@ If a page does not meet this contract, it is incomplete.
 
 ### Relevance
 - [ ] Every visible KPI and chart maps to a problem-statement objective
-- [ ] Every page starts with a priority label (colored text, no filled background), a problem-statement objective, and a complete-sentence key point heading
+- [ ] Every page starts with a proper heading and priority context
 - [ ] Every KPI has been screened for meaning and actionability
 - [ ] Irrelevant, duplicate, or low-signal outputs were removed
 
@@ -400,10 +363,6 @@ If a page does not meet this contract, it is incomplete.
 - [ ] Titles state findings, not topics
 - [ ] Layout is clean, balanced, and not overcrowded
 - [ ] Colors, spacing, and typography are consistent
-- [ ] Every chart is in its own isolated white card with rounded corners and a subtle shadow
-- [ ] Card widths are proportional to chart content; compact charts are not stretched into oversized cards
-- [ ] All cards use consistent border-radius (14px), padding (20–24px), and shadow depth
-- [ ] Main content area uses a light grey/off-white background so white cards are visually distinct
 
 ### Functional quality
 - [ ] Filters are connected and behave correctly
